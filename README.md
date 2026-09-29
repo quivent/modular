@@ -1,57 +1,56 @@
 <p align="center">
-  <img src="assets/readme-cover.svg" alt="Modular — build a server command from a model, engine, and configuration" width="100%">
+  <img src="assets/readme-cover.svg" alt="Modular: a quiet interface for the dense work of configuring model servers" width="100%">
 </p>
 
-<p align="center"><strong>Choose the pieces. See the command. Understand every flag.</strong></p>
+<p align="center"><strong>A quiet surface for the noisy work of model serving.</strong></p>
 
-Modular is a browser-based configurator for model-serving commands. Pick a checkpoint and a serving engine, set the hardware and runtime choices that matter, and inspect the generated output as it changes. The page also points out conflicting choices and settings the selected engine cannot express.
-
-The interface takes its cues from a technical worksheet: numbered decisions on a warm paper canvas, fine separators, generous space, and a pale green accent reserved for active choices. A persistent output panel makes the command feel like the result of those decisions, with a clear path back to each setting.
+Modular turns a model, a serving engine, and a set of runtime decisions into a command you can read. It brings a wide set of controls into a sparse workspace: make the main choices first, open the detail you need, and keep the resulting command in view.
 
 ```text
-  01  MODEL                 02  ENGINE               03  CONFIGURATION
-      Qwen3 8B                 vLLM                       1 GPU · 24 GB
-      Hugging Face             SGLang                     8K context
-      text generation         TGI · llama.cpp            memory · scheduling
-                              Ollama · MLX LM            network · flags
-                              or your own
-            \                       |                       /
-             +----------------------+----------------------+
-                                    |
-                                    v
-                   +--------------------------------------+
-                   | YOUR CONFIGURATION                   |
-                   |                                      |
-                   | vllm serve 'Qwen/Qwen3-8B' \        |
-                   |   --host '0.0.0.0' --port 8000 \     |
-                   |   --max-model-len 8192 ...           |
-                   |                                      |
-                   | CLI  /  ONE LINE  /  DOCKER  /  JSON |
-                   |                                      |
-                   | CHECKS  +  WHERE EACH CHOICE GOES   |
-                   +--------------------------------------+
+modular.                                Build a server command.
+------------------------------------------------------------------------
+
+01 / MODEL                              YOUR CONFIGURATION
+  Qwen3 8B                              +------------------------------+
+  Hugging Face / Text                   | CLI  ONE LINE  DOCKER  JSON  |
+  All   Favorites   Recent              |                              |
+                                        | vllm serve 'Qwen/Qwen3-8B'   |
+02 / ENGINE                             |   --max-model-len 8192       |
+  [ vLLM ]  SGLang  TGI                 |   --tensor-parallel-size 1  |
+  llama.cpp  Ollama  MLX LM             |   --gpu-memory-utilization   |
+                                        |     0.90                     |
+03 / CONFIGURATION                      |                              |
+  Hardware    1 GPU / 24 GB             | [ Copy command ]             |
+  Context     8K tokens                 +------------------------------+
+  Scheduling  Auto                      CHECKS
+  Memory      GPU target                No setting conflicts detected.
+  Advanced    Network / flags           WHERE EACH CHOICE GOES [+]
+
+------------------------------------------------------------------------
+  15 curated models / 6 named engines / focused controls / live output
 ```
 
-### What you can do
+### The design idea
 
-| Choose | Inspect | Keep |
-| :--- | :--- | :--- |
-| Browse 15 curated models, choose a published Ornith checkpoint build, paste another model reference, or load public models from a Hugging Face profile. | Switch among six named engines or supply a command template. Tune GPU count, memory, context, quantization, and engine-specific settings. | Copy or export a readable CLI command, a one-line command, or JSON. vLLM also has a Docker command. |
-| Mark favorites and a default model. | Read checks for selected conflicts and omitted settings, then expand **Where each choice goes** to trace command parts to controls. | Save and restore configurations in this browser. |
+**Little on the surface. Depth close at hand.** The page uses numbered sections, warm off-white space, fine rules, dark green type, and a single soft green accent. Common choices are visible; tuning controls unfold where they belong. The preview remains beside the controls and can trace generated flags back to the setting that produced them. That contrast between an approachable page and a capable configurator is the point.
 
-### Open it
+### What is inside
+
+- **Models with context.** Fifteen curated starting models, published Ornith checkpoint builds, custom references, and public models loaded from a Hugging Face profile. Favorites, recent models, and a default make the catalog easier to revisit.
+- **Engines with their own vocabulary.** vLLM, SGLang, TGI, llama.cpp, Ollama, and MLX LM, plus a custom command template. Engine-specific controls appear when relevant; choices that do not translate are called out.
+- **Configuration that stays inspectable.** GPU count and memory, context, quantization, scheduling, cache, networking, and extra arguments feed a live preview. Output is available as readable CLI, one-line CLI, or JSON; vLLM also offers Docker.
+- **Checks alongside output.** The page flags selected conflicts, omitted settings, and unchecked extra arguments. The expandable flag map shows where each choice lands in the command.
+
+### Run locally
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Visit `http://localhost:8000`. There is no build step or backend. Loading a Hugging Face profile fetches its public model list from the Hugging Face API; favorites and saved configurations live in browser storage.
+Open `http://localhost:8000`. Modular is a static page with no build step. The Hugging Face profile option reads public model data from the Hugging Face API. Favorites and saved configurations are kept in your browser.
 
-### Project files
+### In this repository
 
-- [`index.html`](index.html) — the live prototype.
-- [`next.html`](next.html) — the identical working copy.
-- [`DESIGN.md`](DESIGN.md) — UX direction, design decisions, and iteration notes.
-- [`catalog-draft.html`](catalog-draft.html) and [`original.html`](original.html) — earlier explorations.
+[`index.html`](index.html) is the live prototype. [`next.html`](next.html) is its working copy. [`DESIGN.md`](DESIGN.md) records the product direction and iteration decisions; [`catalog-draft.html`](catalog-draft.html) and [`original.html`](original.html) preserve earlier explorations.
 
-<sub>Modular produces a starting specification. Check model, weights, hardware fit, and flags against the version of your serving engine before deployment.</sub>
+<sub>Modular builds a starting specification. Check model, weights, hardware fit, and flags against your installed serving engine before deployment.</sub>
