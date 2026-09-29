@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f4">
+  <title>Modular — Model configuration, made clear</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f7f7f4;--surface:#fff;--ink:#20231f;--muted:#777d75;--line:#e4e7e0;--accent:#c8fb75;--accent-dark:#5d8a21;--dark:#202621;--shadow:0 18px 55px rgba(32,43,29,.055)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a7da54;outline-offset:2px}a{color:inherit;text-decoration:none}
+    .shell{max-width:1512px;margin:auto;min-height:100vh;display:grid;grid-template-columns:238px minmax(0,1fr)}
+    .sidebar{padding:30px 22px;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:100vh;position:sticky;top:0;height:100vh;background:#f8f9f6}
+    .brand{display:flex;align-items:center;gap:10px;padding:4px 8px;font-family:Manrope,sans-serif;font-size:22px;font-weight:800;letter-spacing:-1.4px}.mark{width:29px;height:29px;background:var(--ink);border-radius:8px;display:grid;place-items:center;transform:rotate(-8deg)}.mark span{height:14px;width:14px;border:3px solid var(--accent);border-radius:4px;transform:rotate(8deg)}
+    .side-label{font-size:10px;font-weight:800;letter-spacing:.15em;color:#a3a9a0;text-transform:uppercase;margin:48px 12px 14px}.nav-link{display:flex;gap:12px;align-items:center;border-radius:11px;padding:12px 13px;color:#6c736b;font-weight:600;font-size:13px;margin:2px 0}.nav-link.active{background:#e8f1dc;color:#293c1e}.nav-link svg{width:17px;height:17px;stroke-width:1.8}.soon{font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-left:auto;color:#a0a79c}.side-bottom{margin-top:auto;padding:18px 11px 3px;border-top:1px solid var(--line);color:#949b91;font-size:11px;line-height:1.5}.side-bottom strong{display:block;color:#5c645b;font-size:12px;margin-bottom:3px}
+    main{padding:27px clamp(26px,4.2vw,68px) 52px;min-width:0}.topbar{height:45px;display:flex;align-items:center;justify-content:space-between}.breadcrumbs{font-size:12px;color:#9ba198;font-weight:600}.breadcrumbs b{color:#566057;font-weight:700}.top-actions{display:flex;gap:10px;align-items:center}.badge{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;padding:8px 11px;border-radius:100px;color:#677066;font-size:11px;font-weight:700}.dot{width:6px;height:6px;background:#86c13f;border-radius:50%}.avatar{width:31px;height:31px;display:grid;place-items:center;background:#e4e9dc;border-radius:50%;font-size:10px;font-weight:800;color:#547341}
+    .hero{margin-top:41px;margin-bottom:34px;display:flex;justify-content:space-between;align-items:end;gap:20px}.eyebrow{font-size:10px;font-weight:800;letter-spacing:.18em;color:#7c9a60;text-transform:uppercase;margin:0 0 13px}.hero h1{font-family:Manrope,sans-serif;font-size:clamp(31px,3vw,43px);line-height:1.12;letter-spacing:-.06em;margin:0 0 10px;font-weight:800}.hero p:last-child{margin:0;color:#899087;font-size:13px;line-height:1.6}.save-button{border:1px solid #d8ddd2;background:#fff;padding:11px 15px;border-radius:10px;font-size:12px;font-weight:700;color:#3f483d;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,.02)}.save-button:hover{border-color:#96bb69}
+    .workspace{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(310px,.9fr);gap:21px;align-items:start}.stack{display:grid;gap:17px}.panel{background:var(--surface);border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);padding:22px}.section-head{display:flex;align-items:start;justify-content:space-between;gap:15px;margin-bottom:19px}.section-id{display:flex;gap:12px;align-items:start}.number{width:25px;height:25px;flex:none;border:1px solid #e0e7d8;background:#f7faf2;border-radius:8px;display:grid;place-items:center;font:500 10px 'DM Mono',monospace;color:#6e9448}.section-head h2{font-family:Manrope,sans-serif;font-size:16px;letter-spacing:-.035em;margin:0 0 4px;font-weight:800}.section-head p{font-size:11px;color:#a0a69c;margin:0;line-height:1.5}.help{font-size:14px;color:#aeb4aa;border:1px solid #e8ebe5;width:20px;height:20px;display:grid;place-items:center;border-radius:50%;line-height:1}
+    .engine-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.engine{border:1px solid #e5e9e1;background:#fff;border-radius:11px;text-align:left;padding:13px 11px 12px;min-height:86px;position:relative;transition:.15s}.engine:hover,.choice:hover{border-color:#a7c887}.engine.active{border-color:#94bb66;background:#f5faee;box-shadow:inset 0 0 0 1px #a6cf78}.engine.active:after{content:'✓';position:absolute;right:10px;top:9px;background:#b9ed76;border-radius:50%;height:15px;width:15px;display:grid;place-items:center;font-size:10px;font-weight:800}.engine-icon{width:20px;height:20px;display:grid;place-items:center;border-radius:5px;background:#edf0ea;color:#3d5039;font:800 11px Manrope,sans-serif;margin-bottom:9px}.engine.active .engine-icon{background:#e2f3cc}.engine-name{display:block;font-size:12px;font-weight:800;letter-spacing:-.01em}.engine-sub{display:block;margin-top:2px;font-size:10px;color:#9ba298}
+    .model-selected{display:flex;align-items:center;gap:14px;border:1px solid #dfe5d9;background:#fafcf8;border-radius:11px;padding:13px 14px}.model-glyph{width:37px;height:37px;border-radius:10px;background:#d8edc4;color:#4b7337;display:grid;place-items:center;font-size:17px;font-weight:800}.model-title{font-weight:800;font-size:13px}.model-meta{font-size:10px;color:#9ca49a;margin-top:3px}.change{margin-left:auto;border:1px solid #dfe4d8;border-radius:8px;background:white;padding:8px 10px;font-size:10px;font-weight:800;white-space:nowrap}.change:hover{background:#f3f9eb}.model-path{margin-top:14px}.field-label{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:800;color:#6e756d;margin-bottom:8px}.field-label span:last-child{font-weight:500;color:#a6ada3}.text-field{width:100%;border:1px solid #e3e7df;border-radius:9px;background:#fff;padding:10px 12px;font:11px 'DM Mono',monospace;color:#424a40;min-height:37px}.field-hint{color:#a2a9a0;font-size:10px;line-height:1.5;margin:8px 0 0}
+    .divider{height:1px;background:#eff1ec;margin:19px 0}.subheading{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#90998d;margin:0 0 11px}.choice-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.choice-row:has(.choice:only-child){grid-template-columns:1fr}.choice{border:1px solid #e3e8df;background:#fff;border-radius:9px;padding:10px 5px;font-size:10px;font-weight:800;color:#667064;transition:.15s}.choice.active{background:#ecf8dd;border-color:#9cc770;color:#46692e;box-shadow:inset 0 0 0 1px #b7de91}.choice:disabled{cursor:not-allowed;opacity:.42}.quant-note{margin:10px 0 0;font-size:10px;color:#969f93;line-height:1.5}
+    .row-two{display:grid;grid-template-columns:1fr 1fr;gap:17px}.select-wrap{position:relative}.select-wrap:after{content:'⌄';position:absolute;right:12px;top:50%;transform:translateY(-57%);pointer-events:none;color:#899283;font-size:19px}.select-field{appearance:none;width:100%;height:39px;background:#fff;border:1px solid #e3e8df;border-radius:9px;color:#454e43;padding:0 33px 0 12px;font-size:11px;font-weight:700}.metric{display:flex;align-items:center;justify-content:space-between;margin-top:16px}.metric:first-of-type{margin-top:4px}.metric-title{font-size:11px;font-weight:700}.metric-desc{font-size:10px;color:#a0a79d;margin-top:3px}.stepper{display:flex;align-items:center;border:1px solid #e1e6dd;border-radius:8px;overflow:hidden;height:32px}.stepper button{border:0;background:#fbfcf9;width:30px;height:30px;color:#697567;font-size:15px}.stepper button:hover{background:#eef7e5}.stepper output{min-width:35px;text-align:center;font:11px 'DM Mono',monospace}.switch-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-top:1px solid #f0f2ee}.switch-row:first-of-type{border-top:0}.switch-copy strong{display:block;font-size:11px}.switch-copy span{display:block;color:#a0a79d;font-size:10px;margin-top:3px}.switch{border:0;padding:0;width:33px;height:19px;border-radius:30px;background:#dce2d8;position:relative;transition:background .18s;flex:none}.switch:before{content:'';position:absolute;left:3px;top:3px;width:13px;height:13px;background:#fff;border-radius:50%;box-shadow:0 1px 2px #0002;transition:transform .18s}.switch.on{background:#9bcf60}.switch.on:before{transform:translateX(14px)}
+    .preview{background:var(--dark);border-color:#293229;color:#f1f5ed;padding:0;overflow:hidden;position:sticky;top:27px;box-shadow:0 18px 45px #17231920}.preview-head{padding:19px 20px 16px;border-bottom:1px solid #39413a;display:flex;align-items:center;justify-content:space-between}.preview-head h2{font-size:13px;margin:0;font-weight:800;letter-spacing:-.02em}.preview-head p{color:#8d9a8d;font-size:10px;margin:4px 0 0}.live{display:flex;align-items:center;gap:5px;color:#b1e66f;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.live .dot{background:#b2e771}.preview-body{padding:20px}.terminal{border:1px solid #3a433b;background:#1b211c;border-radius:10px;overflow:hidden}.terminal-top{height:35px;border-bottom:1px solid #353d35;display:flex;align-items:center;gap:5px;padding:0 12px}.traffic{width:6px;height:6px;background:#596459;border-radius:50%}.terminal-top span:last-child{margin-left:auto;font:9px 'DM Mono',monospace;color:#7b8979}.terminal pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:17px 15px 21px;font:11px/1.8 'DM Mono',monospace;color:#dbe4d5;min-height:178px}.terminal .prompt{color:#a9dd6b}.terminal .flag{color:#a9dd6b}.terminal .value{color:#e8dba6}.copy{width:100%;background:#c5f57e;border:0;color:#253320;border-radius:9px;font-weight:800;font-size:11px;height:39px;margin-top:13px;display:flex;gap:8px;align-items:center;justify-content:center}.copy:hover{background:#d5ffa0}.copy svg{height:14px;width:14px}.preview-foot{border-top:1px solid #39413a;padding:15px 20px 20px}.preview-foot-label{text-transform:uppercase;letter-spacing:.12em;font-size:9px;font-weight:800;color:#8b9b88;margin-bottom:10px}.summary{display:flex;gap:5px;flex-wrap:wrap}.summary span{font-size:9px;color:#c4cec0;border:1px solid #495549;padding:6px 8px;border-radius:5px}.note{color:#8c9b89;font-size:10px;line-height:1.55;margin:13px 0 0}.footer{margin:25px 2px 0;display:flex;justify-content:space-between;gap:20px;color:#a0a89e;font-size:10px;line-height:1.5}.footer a{text-decoration:underline;text-underline-offset:2px}.footer a:hover{color:#517a39}
+    dialog{border:0;border-radius:18px;padding:0;width:min(720px,calc(100vw - 30px));max-height:min(760px,90vh);box-shadow:0 30px 90px #151d1980;color:var(--ink)}dialog::backdrop{background:#1c281d99;backdrop-filter:blur(4px)}.modal-head{padding:24px 25px 17px;border-bottom:1px solid var(--line);display:flex;align-items:start;justify-content:space-between}.modal-head h2{margin:0;font:800 21px Manrope,sans-serif;letter-spacing:-.05em}.modal-head p{margin:5px 0 0;color:#9ba398;font-size:11px}.close{background:#f4f6f1;border:0;border-radius:8px;width:28px;height:28px;font-size:18px;color:#758070}.modal-body{padding:18px 25px 25px;overflow:auto;max-height:calc(90vh - 96px)}.search{width:100%;border:1px solid #dfe5da;border-radius:9px;padding:11px 13px;font-size:12px;margin-bottom:15px}.model-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}.model-option{border:1px solid #e2e8df;border-radius:10px;background:#fff;text-align:left;padding:12px;display:flex;align-items:center;gap:10px}.model-option:hover,.model-option.active{border-color:#9cc873;background:#f6faef}.model-option strong{font-size:11px;display:block}.model-option small{font-size:9px;color:#9ca59a;display:block;margin-top:3px}.model-option .model-glyph{width:28px;height:28px;font-size:12px;flex:none}.empty{font-size:12px;color:#8c9788;padding:30px 0;text-align:center;grid-column:1/-1}
+    @media(max-width:1120px){.shell{grid-template-columns:70px minmax(0,1fr)}.sidebar{padding:30px 13px}.brand{padding:3px 7px}.brand-name,.side-label,.nav-link span,.soon,.side-bottom{display:none}.nav-link{justify-content:center;padding:12px}.nav-link svg{width:20px;height:20px}.workspace{grid-template-columns:minmax(0,1.35fr) minmax(290px,.9fr)}}
+    @media(max-width:800px){.shell{display:block}.sidebar{position:static;height:62px;min-height:0;border-right:0;border-bottom:1px solid var(--line);padding:12px 21px;display:flex;flex-direction:row;align-items:center}.brand-name{display:block}.nav-link,.side-label,.side-bottom{display:none}main{padding:22px 20px 40px}.hero{margin-top:28px}.workspace{grid-template-columns:1fr}.preview{position:static}.engine-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:560px){main{padding:18px 14px 35px}.top-actions .badge{display:none}.hero{align-items:start}.hero h1{font-size:31px}.hero p:last-child{max-width:300px}.save-button{padding:10px;font-size:10px}.panel{padding:18px}.engine-grid{grid-template-columns:repeat(2,1fr)}.engine{min-height:77px}.row-two{gap:10px}.model-list{grid-template-columns:1fr}.footer{display:block}.footer span{display:block;margin-bottom:8px}}
+    /* The builder is deliberately quiet; type and spacing carry the hierarchy. */
+    :root{--bg:#f6f7f3;--surface:#fff;--ink:#222b22;--muted:#627262;--line:#e2e8df;--dark:#202821;--shadow:0 12px 38px rgba(29,48,28,.035)}
+    .sidebar{background:#f9faf7;padding-top:35px}
+    .brand{font-size:23px;letter-spacing:-1.5px}
+    .nav-link{font-size:13px;padding:13px 14px}
+    .side-bottom{font-size:12px;color:#758174;line-height:1.65}
+    .side-bottom strong{font-size:12px;color:#3f503d}
+    main{padding-top:34px}
+    .breadcrumbs{font-size:12px;color:#8a9589}
+    .badge{font-size:11px;padding:9px 13px;background:#fbfdf9}
+    .hero{margin-top:54px;margin-bottom:39px}
+    .eyebrow{font-size:11px;letter-spacing:.16em;margin-bottom:15px;color:#688d4a}
+    .hero h1{font-size:clamp(36px,3.25vw,47px);line-height:1.13;margin-bottom:12px}
+    .hero p:last-child{font-size:14px;color:#6f7c6e;line-height:1.6;max-width:580px}
+    .save-button{padding:12px 16px;font-size:12px;border-color:#d7e0d2;transition:background .18s,border-color .18s,transform .18s}
+    .save-button:hover{background:#f3faeb;transform:translateY(-1px)}
+    .workspace{gap:24px;grid-template-columns:minmax(0,1.55fr) minmax(320px,.9fr)}
+    .stack{gap:20px}
+    .panel{border-radius:19px;padding:27px;box-shadow:var(--shadow)}
+    .section-head{margin-bottom:23px}
+    .section-id{gap:13px}
+    .number{width:27px;height:27px;font-size:11px;background:#f3f8ee;color:#608745;border-color:#deead5}
+    .section-head h2{font-size:18px;line-height:1.3;margin-bottom:5px}
+    .section-head p{font-size:12px;color:#657664}
+    .help{color:#899688;border-color:#e3e9e0}
+    .engine-grid{gap:10px}
+    .engine{padding:16px 14px 15px;min-height:103px;border-radius:12px;box-shadow:0 1px 0 rgba(28,45,27,.025);transition:background .18s,border-color .18s,transform .18s,box-shadow .18s}
+    .engine:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(47,79,36,.06)}
+    .engine.active{background:#f2f9e9;border-color:#8fbd66;box-shadow:inset 0 0 0 1px #b4d996,0 4px 14px rgba(75,128,51,.065)}
+    .engine-icon{width:24px;height:24px;border-radius:7px;font-size:12px;margin-bottom:13px}
+    .engine-name{font-size:13px}
+    .engine-sub{font-size:11px;color:#667765;margin-top:4px}
+    .model-selected{padding:15px 16px;border-radius:12px;gap:15px}
+    .model-glyph{width:40px;height:40px;border-radius:11px}
+    .model-title{font-size:14px}
+    .model-meta{font-size:11px;color:#687a68;margin-top:4px}
+    .change{font-size:11px;padding:9px 11px;border-color:#dbe5d5;transition:background .18s,border-color .18s}
+    .model-path{margin-top:18px}
+    .field-label{font-size:11px;margin-bottom:9px;letter-spacing:.025em;color:#596958}
+    .field-label span:last-child{color:#899687}
+    .text-field{min-height:42px;font-size:12px;padding:11px 13px;border-color:#dce5d9}
+    .field-hint,.quant-note{font-size:11px;line-height:1.55;color:#677966;margin-top:9px}
+    .divider{margin:23px 0}
+    .subheading{font-size:11px;margin-bottom:13px;color:#758474}
+    .choice-row{gap:9px}
+    .choice{font-size:11px;padding:11px 8px;border-radius:9px}
+    .select-field{height:43px;font-size:12px;border-color:#dce5d9}
+    .metric{margin-top:18px}
+    .metric-title,.switch-copy strong{font-size:12px}
+    .metric-desc,.switch-copy span{font-size:11px;color:#697a68;line-height:1.4}
+    .stepper{height:36px;border-color:#dce5d9}
+    .stepper button{height:34px;width:33px}
+    .stepper output{min-width:42px;font-size:12px}
+    .switch-row{padding:14px 0;gap:18px}
+    .switch{width:36px;height:21px}
+    .switch:before{width:15px;height:15px}
+    .switch.on:before{transform:translateX(15px)}
+    .preview{padding:0;border-color:#263328;box-shadow:0 19px 48px rgba(22,39,23,.13)}
+    .preview-head{padding:23px 23px 19px}
+    .preview-head h2{font-size:15px}
+    .preview-head p{font-size:11px;color:#9baa98;margin-top:5px}
+    .preview-body{padding:23px}
+    .terminal{border-color:#3d4a3e;border-radius:11px}
+    .terminal pre{font-size:12px;line-height:1.75;padding:20px 17px 24px;min-height:195px}
+    .copy{height:44px;font-size:12px;margin-top:14px;transition:background .18s,transform .18s}
+    .copy:hover{transform:translateY(-1px)}
+    .preview-foot{padding:19px 23px 24px}
+    .preview-foot-label{font-size:10px;margin-bottom:12px;color:#a8b8a3}
+    .summary{gap:7px}
+    .summary span{font-size:10px;padding:7px 9px;border-color:#526251;color:#d0ddcb}
+    .note{font-size:11px;color:#a7b5a2;line-height:1.6;margin-top:15px}
+    .footer{margin-top:31px;font-size:11px;color:#819080;line-height:1.6}
+    dialog{border-radius:20px}
+    .modal-head h2{font-size:23px}
+    .modal-head p{font-size:12px;color:#7e8b7c}
+    .search{font-size:13px;padding:13px 14px}
+    .model-option{padding:14px;gap:12px}
+    .model-option strong{font-size:12px}
+    .model-option small{font-size:10px}
+    @media(max-width:1120px){.sidebar{padding:30px 13px}.workspace{grid-template-columns:minmax(0,1.3fr) minmax(290px,.9fr)}}
+    @media(max-width:800px){.sidebar{padding:12px 21px}.nav-link{display:none}main{padding:22px 20px 40px}.hero{margin-top:31px}.workspace{grid-template-columns:1fr}.preview{position:static}.panel{padding:25px}.preview{padding:0}}
+    @media(max-width:560px){main{padding:18px 14px 35px}.hero{margin-top:28px;margin-bottom:30px;gap:10px}.hero h1{font-size:32px}.hero p:last-child{font-size:12px}.save-button{padding:10px 11px;font-size:10px}.panel{padding:20px}.preview{padding:0}.engine-grid{grid-template-columns:repeat(2,1fr)}.engine{min-height:89px}.model-selected{gap:10px;padding:12px}.model-title{font-size:12px}.model-meta{font-size:10px}.change{font-size:10px;padding:8px}.row-two{gap:10px}.model-list{grid-template-columns:1fr}.footer{display:block}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="Modular home"><span class="mark"><span></span></span><span class="brand-name">modular<span style="color:#87ae56">.</span></span></a>
+      <div class="side-label">Workspace</div>
+      <a class="nav-link active" href="#builder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Configurator</span></a>
+      <div class="side-bottom"><strong>Made for the curious.</strong>One clear decision at a time.<br>Early prototype · v0.1</div>
+    </aside>
+    <main id="top">
+      <div class="topbar"><div class="breadcrumbs">Workspace <span style="margin:0 7px">/</span> <b>Configurator</b></div><div class="top-actions"><span class="badge"><span class="dot"></span> Local preview</span></div></div>
+      <header class="hero"><div><p class="eyebrow">Your deployment, simplified</p><h1>Configure your model<span style="color:#95bc61">.</span></h1><p>Pick your stack. Tune the details. Leave with a command you understand.</p></div><button class="save-button" id="downloadBtn" type="button">↓ &nbsp; Export config</button></header>
+      <div class="workspace" id="builder">
+        <div class="stack">
+          <section class="panel" aria-labelledby="engine-title"><div class="section-head"><div class="section-id"><span class="number">01</span><div><h2 id="engine-title">Choose your engine</h2><p>The serving runtime that brings your model to life.</p></div></div><span class="help" title="Engines expose different flags and model formats">?</span></div><div class="engine-grid" id="engineGrid"></div></section>
+          <section class="panel" aria-labelledby="model-title"><div class="section-head"><div class="section-id"><span class="number">02</span><div><h2 id="model-title">Choose your model</h2><p>Start with a familiar checkpoint or enter your own.</p></div></div><span class="help" title="Some models need access approval or a matching quantized checkpoint">?</span></div><div class="model-selected"><span class="model-glyph" id="modelGlyph">Q</span><div><div class="model-title" id="modelName">Qwen3 32B</div><div class="model-meta" id="modelMeta">Qwen · 32B parameters · Text</div></div><button type="button" class="change" id="chooseModel">Change model ↗</button></div><div class="model-path"><label class="field-label" for="modelPath">MODEL ID / PATH <span>Editable</span></label><input class="text-field" id="modelPath" spellcheck="false" autocomplete="off"><p class="field-hint" id="modelHint">Use a Hugging Face model ID or a local checkpoint path.</p></div><div class="divider"></div><p class="subheading">Precision &amp; weights</p><div class="choice-row" id="quantChoices"></div><p class="quant-note" id="quantNote"></p></section>
+          <section class="panel" aria-labelledby="runtime-title"><div class="section-head"><div class="section-id"><span class="number">03</span><div><h2 id="runtime-title">Tune your runtime</h2><p>The useful flags, with the jargon dialed down.</p></div></div><span class="help" title="The command preview updates with every change">?</span></div><div class="row-two"><div id="hardwareField"><label class="field-label" for="gpuSelect">HARDWARE PRESET</label><div class="select-wrap"><select class="select-field" id="gpuSelect"><option value="single">Single GPU</option><option value="multi">Multi GPU</option></select></div></div><div><label class="field-label" id="contextLabel" for="contextSelect">CONTEXT WINDOW</label><div class="select-wrap"><select class="select-field" id="contextSelect"><option value="4096">4K tokens</option><option value="8192" selected>8K tokens</option><option value="16384">16K tokens</option><option value="32768">32K tokens</option><option value="65536">64K tokens</option><option value="131072">128K tokens</option></select></div></div></div><div class="divider"></div><div class="metric" id="parallelMetric"><div><div class="metric-title" id="parallelTitle">GPU parallelism</div><div class="metric-desc" id="parallelDesc">Split the model across GPUs</div></div><div class="stepper"><button type="button" id="gpuMinus" aria-label="Decrease parallel count">−</button><output id="gpuCount">1</output><button type="button" id="gpuPlus" aria-label="Increase parallel count">+</button></div></div><div class="metric" id="memoryMetric"><div><div class="metric-title">GPU memory target</div><div class="metric-desc">Leave room for other processes</div></div><div class="stepper"><button type="button" id="memMinus" aria-label="Decrease GPU memory target">−</button><output id="memoryValue">90%</output><button type="button" id="memPlus" aria-label="Increase GPU memory target">+</button></div></div><div class="divider"></div><div id="switches"></div></section>
+        </div>
+        <aside class="panel preview" aria-label="Generated command preview"><div class="preview-head"><div><h2>Your launch command</h2><p>Ready to copy. Easy to inspect.</p></div><span class="live"><span class="dot"></span> Live</span></div><div class="preview-body"><div class="terminal"><div class="terminal-top"><i class="traffic"></i><i class="traffic"></i><i class="traffic"></i><span>terminal</span></div><pre id="commandPreview" aria-live="polite"></pre></div><button class="copy" id="copyBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy command</span></button></div><div class="preview-foot"><div class="preview-foot-label">Configuration at a glance</div><div class="summary" id="summary"></div><p class="note" id="previewNote"></p></div></aside>
+      </div>
+      <footer class="footer"><span>A starting point for real deployments. Check checkpoint support, memory needs, and flags against your installed engine version.</span><span>Docs: <a href="https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md" target="_blank" rel="noopener">MLX LM</a> · <a href="https://docs.vllm.ai/" target="_blank" rel="noopener">vLLM</a> · <a href="https://docs.sglang.ai/" target="_blank" rel="noopener">SGLang</a> · <a href="https://github.com/ollama/ollama/blob/main/docs/faq.mdx" target="_blank" rel="noopener">Ollama</a></span></footer>
+    </main>
+  </div>
+  <dialog id="modelDialog"><div class="modal-head"><div><h2>Find a model</h2><p>Popular open and open-weight checkpoints to get you started.</p></div><button type="button" class="close" id="closeDialog" aria-label="Close model picker">×</button></div><div class="modal-body"><input id="modelSearch" class="search" type="search" placeholder="Search models, families, or sizes…" aria-label="Search models"><div class="model-list" id="modelList"></div></div></dialog>
+  <script>
+    const engines = [
+      {id:'mlx',name:'MLX',sub:'Apple silicon',icon:'M'},
+      {id:'vllm',name:'vLLM',sub:'High throughput',icon:'V'},
+      {id:'sglang',name:'SGLang',sub:'Fast serving',icon:'S'},
+      {id:'ollama',name:'Ollama',sub:'Local models',icon:'O'}
+    ];
+    const models = [
+      {name:'Qwen3 32B',id:'Qwen/Qwen3-32B',family:'Qwen',size:'32B',type:'Text',glyph:'Q'},
+      {name:'Qwen3 8B',id:'Qwen/Qwen3-8B',family:'Qwen',size:'8B',type:'Text',glyph:'Q'},
+      {name:'QwQ 32B',id:'Qwen/QwQ-32B',family:'Qwen',size:'32B',type:'Reasoning',glyph:'Q'},
+      {name:'Qwen2.5 Coder 32B',id:'Qwen/Qwen2.5-Coder-32B-Instruct',family:'Qwen',size:'32B',type:'Code',glyph:'Q'},
+      {name:'DeepSeek R1 Distill Qwen 32B',id:'deepseek-ai/DeepSeek-R1-Distill-Qwen-32B',family:'DeepSeek',size:'32B',type:'Reasoning',glyph:'D'},
+      {name:'DeepSeek R1 Distill Llama 8B',id:'deepseek-ai/DeepSeek-R1-Distill-Llama-8B',family:'DeepSeek',size:'8B',type:'Reasoning',glyph:'D'},
+      {name:'Llama 3.3 70B Instruct',id:'meta-llama/Llama-3.3-70B-Instruct',family:'Meta',size:'70B',type:'Text',glyph:'L'},
+      {name:'Llama 3.1 8B Instruct',id:'meta-llama/Llama-3.1-8B-Instruct',family:'Meta',size:'8B',type:'Text',glyph:'L'},
+      {name:'Gemma 3 27B',id:'google/gemma-3-27b-it',family:'Google',size:'27B',type:'Multimodal',glyph:'G'},
+      {name:'Gemma 3 12B',id:'google/gemma-3-12b-it',family:'Google',size:'12B',type:'Multimodal',glyph:'G'},
+      {name:'Mistral Small 3.1 24B',id:'mistralai/Mistral-Small-3.1-24B-Instruct-2503',family:'Mistral',size:'24B',type:'Multimodal',glyph:'M'},
+      {name:'Ministral 8B',id:'mistralai/Ministral-8B-Instruct-2410',family:'Mistral',size:'8B',type:'Text',glyph:'M'},
+      {name:'Phi-4',id:'microsoft/phi-4',family:'Microsoft',size:'14B',type:'Text',glyph:'Φ'},
+      {name:'GPT-OSS 20B',id:'openai/gpt-oss-20b',family:'OpenAI',size:'20B',type:'Reasoning',glyph:'O'},
+      {name:'Hermes 3 Llama 8B',id:'NousResearch/Hermes-3-Llama-3.1-8B',family:'Nous',size:'8B',type:'Text',glyph:'H'}
+    ];
+    const state={engine:'mlx',model:0,quant:'weights',gpus:1,memory:90,prefix:true,chunked:false,eager:false};
+    const $=id=>document.getElementById(id);
+    const shellQuote=value=>"'"+String(value).replaceAll("'","'\\''")+"'";
+    const escapeHtml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const quantOptions={mlx:['weights'],vllm:['auto','fp8','awq','gptq'],sglang:['auto','fp8','awq','gptq'],ollama:['tag']};
+    const modelAliases={
+      mlx:{0:'mlx-community/Qwen3-32B-4bit'},
+      ollama:{0:'qwen3:32b',1:'qwen3:8b',2:'qwq:32b',3:'qwen2.5-coder:32b',4:'deepseek-r1:32b',5:'deepseek-r1:8b',6:'llama3.3:70b',7:'llama3.1:8b',8:'gemma3:27b',9:'gemma3:12b',10:'mistral-small3.1:24b',12:'phi4:14b',13:'gpt-oss:20b'}
+    };
+    const modelValue=()=>state.engine==='mlx'?(modelAliases.mlx[state.model]||''):state.engine==='ollama'?(modelAliases.ollama[state.model]||''):models[state.model].id;
+    const switchOptions={
+      mlx:[['prefix','4-bit KV cache','Use less memory for long conversations'],['chunked','Smaller prefill steps','Process long prompts in smaller pieces'],['eager','Trust remote code','Allow custom tokenizer code']],
+      vllm:[['prefix','Prefix caching','Reuse work across shared prompts'],['chunked','Chunked prefill','Break up long prompt processing'],['eager','Eager execution','Skip CUDA graph capture']],
+      sglang:[['prefix','Radix cache','Reuse work across shared prompts'],['chunked','Chunked prefill','Process long prompts in pieces'],['eager','Disable CUDA graphs','Use eager execution']],
+      ollama:[['prefix','Flash attention','Use fast attention where supported'],['chunked','8-bit KV cache','Reduce cache memory use'],['eager','Keep model loaded','Keep the model warm between requests']]
+    };
+    function renderEngines(){ $('engineGrid').innerHTML=engines.map(e=>`<button type="button" class="engine ${state.engine===e.id?'active':''}" data-engine="${e.id}" aria-pressed="${state.engine===e.id}"><span class="engine-icon">${e.icon}</span><span class="engine-name">${e.name}</span><span class="engine-sub">${e.sub}</span></button>`).join('');document.querySelectorAll('[data-engine]').forEach(b=>b.onclick=()=>{state.engine=b.dataset.engine;state.quant=quantOptions[state.engine][0];state.gpus=1;state.prefix=state.engine==='vllm'||state.engine==='sglang';state.chunked=false;state.eager=false;$('modelPath').value=modelValue();$('gpuSelect').value='single';render()})}
+    function renderModel(){const m=models[state.model];$('modelGlyph').textContent=m.glyph;$('modelName').textContent=m.name;$('modelMeta').textContent=`${m.family} · ${m.size} parameters · ${m.type}`;$('modelPath').placeholder=state.engine==='mlx'?'Enter a converted MLX model ID':state.engine==='ollama'?'Enter an Ollama model tag':'Enter a model ID or local path';$('modelHint').textContent=state.engine==='mlx'?'MLX needs an MLX-converted checkpoint; enter one if this model has no suggested ID.':state.engine==='ollama'?'Ollama uses its own model tags. Edit this field to use a different tag.':'Use a model ID or checkpoint path. Quantization requires matching weights.'}
+    function renderQuant(){const opts=quantOptions[state.engine];$('quantChoices').innerHTML=opts.map(q=>`<button type="button" class="choice ${q===state.quant?'active':''}" data-quant="${q}" aria-pressed="${q===state.quant}">${q==='auto'?'Auto':q==='weights'?'Set by MLX checkpoint':q==='tag'?'Set by Ollama tag':q}</button>`).join('');document.querySelectorAll('[data-quant]').forEach(b=>b.onclick=()=>{state.quant=b.dataset.quant;renderQuant();renderPreview()});$('quantNote').textContent=state.engine==='mlx'?'Choose a converted checkpoint with the weight precision you want. The server reads it from the model.':state.engine==='ollama'?'Choose a model tag with the quantization you want. Ollama manages the weights.':'Use Auto for the checkpoint’s native format. Other choices need compatible pre-quantized weights.'}
+    function renderContext(){const mlx=state.engine==='mlx';$('contextLabel').textContent=mlx?'MAX OUTPUT TOKENS':'CONTEXT WINDOW';const values=mlx?[['256','256 tokens'],['512','512 tokens'],['1024','1K tokens'],['2048','2K tokens'],['4096','4K tokens']]:[['4096','4K tokens'],['8192','8K tokens'],['16384','16K tokens'],['32768','32K tokens'],['65536','64K tokens'],['131072','128K tokens']];const current=$('contextSelect').value;$('contextSelect').innerHTML=values.map(([v,label])=>`<option value="${v}">${label}</option>`).join('');$('contextSelect').value=values.some(([v])=>v===current)?current:(mlx?'512':'8192')}
+    function renderRuntime(){const local=state.engine==='mlx'||state.engine==='ollama';$('hardwareField').style.display=local?'none':'';$('parallelMetric').style.display=state.engine==='mlx'?'none':'';$('parallelTitle').textContent=state.engine==='ollama'?'Parallel requests':'GPU parallelism';$('parallelDesc').textContent=state.engine==='ollama'?'Requests served at the same time':'Split the model across GPUs';$('memoryMetric').style.display=local?'none':'';$('gpuCount').textContent=state.gpus;$('memoryValue').textContent=state.memory+'%';$('switches').innerHTML=switchOptions[state.engine].map(([key,title,desc])=>`<div class="switch-row"><div class="switch-copy"><strong>${title}</strong><span>${desc}</span></div><button type="button" class="switch ${state[key]?'on':''}" data-switch="${key}" role="switch" aria-label="${title}" aria-checked="${state[key]}"></button></div>`).join('');document.querySelectorAll('[data-switch]').forEach(b=>b.onclick=()=>{state[b.dataset.switch]=!state[b.dataset.switch];renderRuntime();renderPreview()})}
+    function buildCommand(){const model=$('modelPath').value.trim()||modelValue()||(state.engine==='mlx'?'YOUR_MLX_MODEL_ID':'YOUR_OLLAMA_TAG');const ctx=$('contextSelect').value;const q=shellQuote(model);let parts=[];if(state.engine==='mlx'){parts=['mlx_lm.server','--model '+q,'--max-tokens '+ctx];if(state.prefix)parts.push('--kv-bits 4');if(state.chunked)parts.push('--prefill-step-size 512');if(state.eager)parts.push('--trust-remote-code')}
+      if(state.engine==='vllm'){parts=['vllm serve '+q,'--max-model-len '+ctx,'--tensor-parallel-size '+state.gpus,'--gpu-memory-utilization '+(state.memory/100).toFixed(2)];if(state.quant!=='auto')parts.push('--quantization '+state.quant);if(state.prefix)parts.push('--enable-prefix-caching');if(state.chunked)parts.push('--enable-chunked-prefill');if(state.eager)parts.push('--enforce-eager')}
+      if(state.engine==='sglang'){parts=['python -m sglang.launch_server','--model-path '+q,'--context-length '+ctx,'--tp '+state.gpus,'--mem-fraction-static '+(state.memory/100).toFixed(2)];if(state.quant!=='auto')parts.push('--quantization '+state.quant);if(!state.prefix)parts.push('--disable-radix-cache');if(state.chunked)parts.push('--chunked-prefill-size 4096');if(state.eager)parts.push('--disable-cuda-graph')}
+      if(state.engine==='ollama'){const env=['OLLAMA_CONTEXT_LENGTH='+ctx,'OLLAMA_NUM_PARALLEL='+state.gpus];if(state.prefix)env.push('OLLAMA_FLASH_ATTENTION=1');if(state.chunked)env.push('OLLAMA_KV_CACHE_TYPE=q8_0');if(state.eager)env.push('OLLAMA_KEEP_ALIVE=-1');return 'ollama pull '+q+'\n'+env.join(' ')+' ollama serve'}
+      return parts.map((p,i)=>(i?'  '+p:p)+(i<parts.length-1?' \\':'')).join('\n')}
+    function renderPreview(){const command=buildCommand();$('commandPreview').textContent='$ '+command;const selected=engines.find(e=>e.id===state.engine);$('summary').innerHTML=[selected.name,models[state.model].name,state.engine==='mlx'?'MLX weights':state.engine==='ollama'?'Ollama tag':state.quant==='auto'?'Native precision':state.quant.toUpperCase(),$('contextSelect').selectedOptions[0].text].map(x=>`<span>${escapeHtml(x)}</span>`).join('');$('previewNote').textContent=state.engine==='mlx'?'MLX uses Apple silicon and an MLX-converted checkpoint. The selected token limit controls generated output.':state.engine==='ollama'?'Pull the selected tag first, then start Ollama with these settings. Stop any existing Ollama server before using the launch line.':'Preview only. Validate checkpoint compatibility, memory, and engine flags before running.'}
+    function render(){renderEngines();renderModel();renderQuant();renderContext();renderRuntime();renderPreview()}
+    function renderModelList(){const term=$('modelSearch').value.trim().toLowerCase();const matches=models.map((m,i)=>({...m,index:i})).filter(m=>(m.name+' '+m.family+' '+m.size+' '+m.type).toLowerCase().includes(term));$('modelList').innerHTML=matches.length?matches.map(m=>`<button type="button" class="model-option ${m.index===state.model?'active':''}" data-model="${m.index}"><span class="model-glyph">${m.glyph}</span><span><strong>${escapeHtml(m.name)}</strong><small>${escapeHtml(m.family)} · ${escapeHtml(m.size)} · ${escapeHtml(m.type)}</small></span></button>`).join(''):'<div class="empty">No models found. You can enter any model ID in the main form.</div>';document.querySelectorAll('[data-model]').forEach(b=>b.onclick=()=>{state.model=Number(b.dataset.model);$('modelPath').value=modelValue();$('modelDialog').close();render()})}
+    $('chooseModel').onclick=()=>{$('modelSearch').value='';renderModelList();$('modelDialog').showModal();$('modelSearch').focus()};$('closeDialog').onclick=()=>$('modelDialog').close();$('modelSearch').oninput=renderModelList;$('modelDialog').onclick=e=>{if(e.target===$('modelDialog'))$('modelDialog').close()};
+    $('gpuMinus').onclick=()=>{state.gpus=Math.max(1,state.gpus-1);renderRuntime();renderPreview()};$('gpuPlus').onclick=()=>{state.gpus=Math.min(8,state.gpus+1);renderRuntime();renderPreview()};$('memMinus').onclick=()=>{state.memory=Math.max(50,state.memory-5);renderRuntime();renderPreview()};$('memPlus').onclick=()=>{state.memory=Math.min(95,state.memory+5);renderRuntime();renderPreview()};
+    $('gpuSelect').onchange=()=>{if($('gpuSelect').value==='multi')state.gpus=Math.max(2,state.gpus);if($('gpuSelect').value==='single'||$('gpuSelect').value==='cpu')state.gpus=1;renderRuntime();renderPreview()};$('contextSelect').onchange=renderPreview;$('modelPath').oninput=renderPreview;
+    $('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(buildCommand());$('copyBtn').querySelector('span').textContent='Copied to clipboard';setTimeout(()=>$('copyBtn').querySelector('span').textContent='Copy command',1800)}catch{$('copyBtn').querySelector('span').textContent='Select the command to copy'}};
+    $('downloadBtn').onclick=()=>{const content='# Modular configuration preview\n# Validate checkpoint compatibility and engine flags before running.\n'+buildCommand()+'\n';const url=URL.createObjectURL(new Blob([content],{type:'text/plain'}));const a=document.createElement('a');a.href=url;a.download='modular-launch.sh';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+    $('modelPath').value=modelValue();render();
+  </script>
+</body>
+</html>
