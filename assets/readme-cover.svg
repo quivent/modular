@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 390" role="img" aria-labelledby="title desc">
+  <title id="title">Modular — build a server command</title>
+  <desc id="desc">A light paper-colored banner with Modular branding, green accents, and a schematic from model, engine, and configuration to a command.</desc>
+  <rect width="1200" height="390" fill="#f8f9f6"/>
+  <path d="M50 72H1150M50 334H1150" stroke="#dfe6dc" stroke-width="2"/>
+  <rect x="50" y="29" width="33" height="33" rx="8" fill="#1f2820"/>
+  <rect x="60" y="39" width="13" height="13" rx="2" fill="none" stroke="#def5b6" stroke-width="2"/>
+  <text x="96" y="55" fill="#1f2820" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" letter-spacing="-1.5">modular.</text>
+  <text x="1150" y="51" text-anchor="end" fill="#687568" font-family="monospace" font-size="12" letter-spacing="1">MODEL / ENGINE / COMMAND</text>
+
+  <text x="50" y="145" fill="#1f2820" font-family="Arial, Helvetica, sans-serif" font-size="46" font-weight="700" letter-spacing="-2.5">Build a server command<tspan fill="#81a95b">.</tspan></text>
+  <text x="51" y="179" fill="#687568" font-family="Arial, Helvetica, sans-serif" font-size="16">A clearer path from the model you choose to the command you run.</text>
+
+  <rect x="50" y="222" width="240" height="75" rx="10" fill="#ffffff" stroke="#dfe6dc"/>
+  <text x="68" y="247" fill="#719a54" font-family="monospace" font-size="11">01 / MODEL</text>
+  <text x="68" y="276" fill="#1f2820" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">Qwen3 8B</text>
+
+  <path d="M301 259H333" stroke="#8d998b" stroke-width="2"/>
+  <path d="m327 253 7 6-7 6" fill="none" stroke="#8d998b" stroke-width="2"/>
+
+  <rect x="346" y="222" width="240" height="75" rx="10" fill="#ffffff" stroke="#dfe6dc"/>
+  <text x="364" y="247" fill="#719a54" font-family="monospace" font-size="11">02 / ENGINE</text>
+  <text x="364" y="276" fill="#1f2820" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">vLLM</text>
+
+  <path d="M597 259H629" stroke="#8d998b" stroke-width="2"/>
+  <path d="m623 253 7 6-7 6" fill="none" stroke="#8d998b" stroke-width="2"/>
+
+  <rect x="642" y="222" width="240" height="75" rx="10" fill="#ffffff" stroke="#dfe6dc"/>
+  <text x="660" y="247" fill="#719a54" font-family="monospace" font-size="11">03 / CONFIGURATION</text>
+  <text x="660" y="276" fill="#1f2820" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">1 GPU · 8K context</text>
+
+  <path d="M893 259H925" stroke="#8d998b" stroke-width="2"/>
+  <path d="m919 253 7 6-7 6" fill="none" stroke="#8d998b" stroke-width="2"/>
+
+  <rect x="938" y="222" width="212" height="75" rx="10" fill="#def5b6" stroke="#c5e6a1"/>
+  <text x="956" y="247" fill="#315a1d" font-family="monospace" font-size="11">LIVE OUTPUT</text>
+  <text x="956" y="276" fill="#1f2820" font-family="monospace" font-size="15" font-weight="700">vllm serve ...</text>
+
+  <text x="50" y="360" fill="#687568" font-family="monospace" font-size="11">VISIBLE CHOICES</text>
+  <text x="249" y="360" fill="#81a95b" font-family="monospace" font-size="11">·</text>
+  <text x="268" y="360" fill="#687568" font-family="monospace" font-size="11">TRACEABLE FLAGS</text>
+  <text x="467" y="360" fill="#81a95b" font-family="monospace" font-size="11">·</text>
+  <text x="486" y="360" fill="#687568" font-family="monospace" font-size="11">EXPLICIT CHECKS</text>
+</svg>
