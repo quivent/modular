@@ -12,6 +12,13 @@
       "probe_gate": "passed (deterministic, no leaks, real DB untouched, test fails when the app is broken)",
       "observation": "runner output x2 identical; mutation to default model turned the probe red",
       "gates": "PASS"
+    },
+    {
+      "n": 2,
+      "task": "#9 Automated tests",
+      "action": "unit tests: memory estimate (17), catalog invariants (21), flag data (43)",
+      "observation": "three injected regressions each turned exactly the right tests red; restored run green (82)",
+      "gates": "PASS"
     }
   ]
 }
