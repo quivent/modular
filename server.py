@@ -7,11 +7,11 @@
 The database (db/modular.db) is created from db/schema.sql on first run and
 seeded from ROADMAP.md. The server only listens on localhost.
 """
-import argparse, base64, hashlib, json, mimetypes, pathlib, re, socket, sqlite3, struct, subprocess, sys, threading
+import argparse, base64, os, hashlib, json, mimetypes, pathlib, re, socket, sqlite3, struct, subprocess, sys, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = pathlib.Path(__file__).resolve().parent
-DB_PATH = ROOT / "db" / "modular.db"
+DB_PATH = pathlib.Path(os.environ.get("MODULAR_DB") or ROOT / "db" / "modular.db")  # tests point this at a temp file
 MAX_BODY = 1_000_000
 STATE_VERSION = 1  # shape of the /api/state envelope; the page sends and expects the same number
 STATUSES = ("todo", "doing", "blocked", "done")
@@ -373,7 +373,7 @@ def main():
     except OSError as e:
         sys.exit(f"Cannot listen on 127.0.0.1:{args.port} ({e.strerror}). "
                  f"Something else is using it; try: python3 server.py --port {args.port + 1}")
-    print(f"Modular on http://127.0.0.1:{args.port}  (db: {DB_PATH.relative_to(ROOT)})")
+    print(f"Modular on http://127.0.0.1:{args.port}  (db: {DB_PATH})", flush=True)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

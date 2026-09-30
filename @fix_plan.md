@@ -59,7 +59,7 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
   Link each version-specific flag to its documentation, and label unknown compatibility as unknown.
   Depends on: #6  (waiting on 1)
   Blocks: #22
-- [ ] **#9 Automated tests**
+- [~] **#9 Automated tests**
   Golden-file tests for every engine and output format, plus a test for each check (oversubscription, omitted settings, duplicate arguments).
   Blocks: #5, #6, #19, #21, #22
 - [x] **#10 Better fit estimates**
@@ -113,7 +113,6 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
 
 ## Ready now (highest priority first)
 
-1. #9 Automated tests
 1. #11 Input validation
 1. #12 More command forms
 1. #14 Share and import

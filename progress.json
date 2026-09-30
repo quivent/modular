@@ -4,5 +4,14 @@
   "profile": "generic",
   "max_iterations": 9,
   "completion_promise": "TRACKER_TASKS_DONE",
-  "iterations": []
+  "iterations": [
+    {
+      "n": 1,
+      "task": "#9 Automated tests",
+      "action": "harness: throwaway server + headless Chrome on free ports, own-PID cleanup; runner; probe test",
+      "probe_gate": "passed (deterministic, no leaks, real DB untouched, test fails when the app is broken)",
+      "observation": "runner output x2 identical; mutation to default model turned the probe red",
+      "gates": "PASS"
+    }
+  ]
 }
