@@ -2027,13 +2027,7 @@
         });
     }
     function persistUserPrefs() {
-      try {
-        localStorage.setItem(
-          'modular.preferences',
-          JSON.stringify({ favorites: state.favorites, defaultModel: state.defaultModel }),
-        );
-        localStorage.setItem('modular.configs', JSON.stringify(state.savedConfigs));
-      } catch (e) {}
+      storeSavedData();
       if (window.modularPushState) window.modularPushState();
     }
     function modelIsFavorite(index) {
@@ -2702,17 +2696,120 @@
           };
         });
     }
+    /* ▸ js: saved-data versions */
+    /* Every saved shape carries a version. Older shapes are upgraded when read; shapes written by a
+       newer Modular are kept untouched and never overwritten by this one. */
+    var SNAPSHOT_VERSION = 1; // one saved configuration
+    var STORAGE_VERSION = 1; // the local-storage and server envelopes
+    var storageLocked = {}; // keys a newer version wrote: read-only here
+    var NOT_PART_OF_A_SETUP = ['favorites', 'recent', 'defaultModel']; // dropped from snapshots in v1
+    function catalogIndex(ref) {
+      for (var i = 0; i < models.length; i++) if (models[i].ref === ref) return i;
+      return -1;
+    }
+    function upgradeSnapshot(snap) {
+      if (!snap || typeof snap !== 'object' || Array.isArray(snap)) return null;
+      var version = Number.isInteger(snap.v) ? snap.v : 0;
+      if (version > SNAPSHOT_VERSION) return snap;
+      var out = {};
+      Object.keys(snap).forEach(function (key) {
+        out[key] = snap[key];
+      });
+      if (version < 1) {
+        // v0 -> v1: name the catalog model (indexes shift when the catalog changes) and stop
+        // carrying favorites, recents, and the default model inside a setup.
+        if (!out.catalogRef && !out.customModel && Number.isInteger(out.model) && models[out.model])
+          out.catalogRef = models[out.model].ref;
+        NOT_PART_OF_A_SETUP.forEach(function (key) {
+          delete out[key];
+        });
+      }
+      out.v = SNAPSHOT_VERSION;
+      return out;
+    }
+    function upgradeConfigs(items) {
+      return items
+        .map(function (item) {
+          var snapshot = item && upgradeSnapshot(item.snapshot);
+          return snapshot ? { name: String(item.name || 'Configuration'), snapshot: snapshot } : null;
+        })
+        .filter(Boolean);
+    }
+    function configStatus(item) {
+      var snap = item.snapshot;
+      if (snap.v > SNAPSHOT_VERSION) return 'newer';
+      if (snap.catalogRef && catalogIndex(snap.catalogRef) < 0) return 'missing-model';
+      return 'ok';
+    }
+    var CONFIG_STATUS_NOTE = {
+      newer: 'Saved by a newer version of Modular',
+      'missing-model': 'This model is no longer in the catalog',
+    };
+    function resolveSnapshot(snap) {
+      var out = {};
+      Object.keys(snap).forEach(function (key) {
+        out[key] = snap[key];
+      });
+      if (snap.catalogRef) out.model = catalogIndex(snap.catalogRef);
+      return out;
+    }
+    function readStored(key) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || 'null');
+      } catch (e) {
+        return null;
+      }
+    }
+    function loadSavedData() {
+      var prefs = readStored('modular.preferences');
+      if (prefs && typeof prefs === 'object') {
+        if ((prefs.v || 0) > STORAGE_VERSION) storageLocked['modular.preferences'] = true;
+        else {
+          if (Array.isArray(prefs.favorites)) state.favorites = prefs.favorites;
+          if (Number.isInteger(prefs.defaultModel) && models[prefs.defaultModel])
+            state.defaultModel = prefs.defaultModel;
+        }
+      }
+      var stored = readStored('modular.configs');
+      if (stored) {
+        var items = Array.isArray(stored) ? stored : stored.items; // v0 stored a bare array
+        if ((Array.isArray(stored) ? 0 : stored.v || 0) > STORAGE_VERSION)
+          storageLocked['modular.configs'] = true;
+        else if (Array.isArray(items)) state.savedConfigs = upgradeConfigs(items);
+      }
+    }
+    function storeSavedData() {
+      try {
+        if (!storageLocked['modular.preferences'])
+          localStorage.setItem(
+            'modular.preferences',
+            JSON.stringify({
+              v: STORAGE_VERSION,
+              favorites: state.favorites,
+              defaultModel: state.defaultModel,
+            }),
+          );
+        if (!storageLocked['modular.configs'])
+          localStorage.setItem(
+            'modular.configs',
+            JSON.stringify({ v: STORAGE_VERSION, items: state.savedConfigs }),
+          );
+      } catch (e) {}
+    }
     /* ▸ js: saved configurations */
     function renderSavedConfigs() {
       $('savedConfigCount').textContent = state.savedConfigs.length;
       $('savedConfigList').innerHTML = state.savedConfigs
         .map(function (item, index) {
+          var note = CONFIG_STATUS_NOTE[configStatus(item)];
           return (
             '<div class="saved-config-row"><span>' +
             esc(item.name) +
             '</span><span><button type="button" data-load-config="' +
             index +
-            '">Load</button> · <button type="button" data-delete-config="' +
+            '"' +
+            (note ? ' disabled title="' + esc(note) + '"' : '') +
+            '>Load</button> · <button type="button" data-delete-config="' +
             index +
             '">Delete</button></span></div>'
           );
@@ -2722,7 +2819,9 @@
         .querySelectorAll('[data-load-config]')
         .forEach(function (button) {
           button.onclick = function () {
-            restoreSnapshot(state.savedConfigs[Number(button.dataset.loadConfig)].snapshot);
+            restoreSnapshot(
+              resolveSnapshot(state.savedConfigs[Number(button.dataset.loadConfig)].snapshot),
+            );
           };
         });
       $('savedConfigList')
@@ -2738,8 +2837,15 @@
     function snapshot() {
       var copy = {};
       Object.keys(state).forEach(function (key) {
-        if (['savedConfigs', 'profileModels', 'modelView'].indexOf(key) === -1) copy[key] = state[key];
+        if (
+          ['savedConfigs', 'profileModels', 'modelView', 'v', 'catalogRef']
+            .concat(NOT_PART_OF_A_SETUP)
+            .indexOf(key) === -1
+        )
+          copy[key] = state[key];
       });
+      copy.v = SNAPSHOT_VERSION;
+      if (!state.customModel && models[state.model]) copy.catalogRef = models[state.model].ref;
       copy.values = {};
       [
         'source',
@@ -2770,7 +2876,7 @@
     function restoreSnapshot(copy) {
       if (!copy) return;
       Object.keys(copy).forEach(function (key) {
-        if (key !== 'values' && key !== 'toggles') state[key] = copy[key];
+        if (['values', 'toggles', 'v', 'catalogRef'].indexOf(key) === -1) state[key] = copy[key];
       });
       Object.keys(copy.values || {}).forEach(function (id) {
         if ($(id)) $(id).value = copy.values[id];
@@ -2785,6 +2891,7 @@
       renderOrnithServing();
       renderModelViews();
       renderModelList();
+      renderServers();
       renderHardware();
       renderServerFields();
       renderTuning();
@@ -3573,14 +3680,8 @@
         URL.revokeObjectURL(url);
       }, 1000);
     };
-    try {
-      var prefs = JSON.parse(localStorage.getItem('modular.preferences') || '{}');
-      if (Array.isArray(prefs.favorites)) state.favorites = prefs.favorites;
-      if (Number.isInteger(prefs.defaultModel) && models[prefs.defaultModel])
-        state.defaultModel = prefs.defaultModel;
-      var configs = JSON.parse(localStorage.getItem('modular.configs') || '[]');
-      if (Array.isArray(configs)) state.savedConfigs = configs;
-    } catch (e) {}
+    loadSavedData();
+    storeSavedData(); // writes upgraded shapes back
     if (models[state.defaultModel]) state.model = state.defaultModel;
     $('modelRef').value = models[state.model].ref;
     renderSource();
@@ -3612,7 +3713,8 @@
         list = $('trackerList'),
         filters = $('trackerFilters'),
         data = null,
-        filter = 'all';
+        filter = 'all',
+        live = false;
       var LABEL = { todo: 'To do', doing: 'Doing', blocked: 'Blocked', done: 'Done' };
       function api(method, path, body) {
         return fetch('/api/tasks' + path, {
@@ -3643,7 +3745,7 @@
       function render() {
         var c = counts();
         $('trackerSummary').textContent =
-          'Road to a finished release · ' + c.done + ' of ' + c.total + ' done';
+          'Road to a finished release · ' + c.done + ' of ' + c.total + ' done' + (live ? ' · live' : '');
         $('trackerBar').style.width = (c.total ? (c.done / c.total) * 100 : 0) + '%';
         filters.textContent = '';
         ['all', 'todo', 'doing', 'blocked', 'done'].forEach(function (f) {
@@ -3741,6 +3843,66 @@
           })
           .catch(offline);
       }
+      function findTask(id) {
+        for (var i = 0; i < data.tasks.length; i++) if (data.tasks[i].id === id) return data.tasks[i];
+        return null;
+      }
+      function refresh() {
+        if (dlg.open) render();
+        else renderCount();
+      }
+      // Events pushed by the server. Applying one twice is harmless, so the change this page
+      // just made itself (which also arrives as an event) does not redraw anything.
+      function handleEvent(ev) {
+        if (!data) return;
+        var changed = false,
+          t;
+        if (ev.event === 'task.created' || ev.event === 'task.updated') {
+          t = findTask(ev.task.id);
+          if (!t) {
+            data.tasks.push(ev.task);
+            changed = true;
+          } else if (JSON.stringify(t) !== JSON.stringify(ev.task)) {
+            Object.assign(t, ev.task);
+            changed = true;
+          }
+        } else if (ev.event === 'task.deleted') {
+          var before = data.tasks.length;
+          data.tasks = data.tasks.filter(function (x) {
+            return x.id !== ev.id;
+          });
+          changed = data.tasks.length !== before;
+        }
+        if (changed) refresh();
+      }
+      var retries = 0,
+        everOpened = false;
+      function connect() {
+        if (!window.WebSocket) return;
+        var ws = new WebSocket(
+          (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/api/events',
+        );
+        ws.onopen = function () {
+          var reconnect = everOpened;
+          everOpened = true;
+          retries = 0;
+          live = true;
+          if (reconnect) load(); // events may have been missed while disconnected
+          else if (data) refresh();
+        };
+        ws.onmessage = function (m) {
+          try {
+            handleEvent(JSON.parse(m.data));
+          } catch (e) {}
+        };
+        ws.onclose = function () {
+          live = false;
+          if (data && dlg.open) render();
+          if (!everOpened) return; // no live server here (plain static hosting): do not keep trying
+          retries = Math.min(retries + 1, 5);
+          setTimeout(connect, 500 * Math.pow(2, retries));
+        };
+      }
       $('trackerOpen').onclick = function () {
         if (dlg.showModal) dlg.showModal();
         else dlg.setAttribute('open', '');
@@ -3765,7 +3927,9 @@
           })
           .catch(offline);
       };
-      load();
+      load().then(function () {
+        if (data) connect();
+      });
     })();
 
     /* ▸ js: saved state sync (server API) */
@@ -3783,12 +3947,13 @@
           profile = localStorage.getItem('modular.hfNamespace') || '';
         } catch (e) {}
         return {
+          version: STORAGE_VERSION,
           favorites: state.favorites.map(ref).filter(Boolean),
           defaultModel: ref(state.defaultModel),
           configs: state.savedConfigs.map(function (c) {
             return {
               name: c.name,
-              modelRef: (c.snapshot && ref(c.snapshot.model)) || '',
+              modelRef: (c.snapshot && c.snapshot.catalogRef) || '',
               snapshot: c.snapshot,
             };
           }),
@@ -3821,20 +3986,14 @@
           state.model = d;
           $('modelRef').value = models[d].ref;
         }
-        state.savedConfigs = saved.configs.map(function (c) {
-          return { name: c.name, snapshot: c.snapshot };
-        });
+        state.savedConfigs = upgradeConfigs(saved.configs);
         var profile = saved.preferences && saved.preferences.hfNamespace;
         try {
           if (profile) {
             localStorage.setItem('modular.hfNamespace', profile);
           }
-          localStorage.setItem(
-            'modular.preferences',
-            JSON.stringify({ favorites: state.favorites, defaultModel: state.defaultModel }),
-          );
-          localStorage.setItem('modular.configs', JSON.stringify(state.savedConfigs));
         } catch (e) {}
+        storeSavedData();
         renderSource();
         renderArch();
         renderModelViews();
@@ -3859,6 +4018,7 @@
           return r.json();
         })
         .then(function (saved) {
+          if ((saved.version || 0) > STORAGE_VERSION) return; // written by a newer Modular: leave it alone
           if (saved.empty) {
             ready = true;
             push();

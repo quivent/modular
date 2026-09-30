@@ -7,15 +7,18 @@
 The database (db/modular.db) is created from db/schema.sql on first run and
 seeded from ROADMAP.md. The server only listens on localhost.
 """
-import argparse, json, mimetypes, pathlib, re, sqlite3, subprocess, sys
+import argparse, base64, hashlib, json, mimetypes, pathlib, re, socket, sqlite3, struct, subprocess, sys, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = pathlib.Path(__file__).resolve().parent
 DB_PATH = ROOT / "db" / "modular.db"
 MAX_BODY = 1_000_000
+STATE_VERSION = 1  # shape of the /api/state envelope; the page sends and expects the same number
 STATUSES = ("todo", "doing", "blocked", "done")
 PRIVATE = {"db", "archive"}  # never served as static files
 LOCAL_HOSTS = re.compile(r"^(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$")
+LOCAL_ORIGIN = re.compile(r"^https?://(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$")
+WS_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
 
 def connect():
@@ -35,13 +38,17 @@ def migrate(conn, version):
         if old_default:
             conn.execute("INSERT OR REPLACE INTO preferences (key, value) VALUES ('defaultModel', ?)",
                          (json.dumps(old_default[0]),))
+        version = 2
+    if version == 2:  # v3: saved configurations record the shape version of their snapshot
+        conn.execute("ALTER TABLE saved_configurations ADD COLUMN snapshot_version INTEGER NOT NULL DEFAULT 0")
+        conn.execute("UPDATE saved_configurations SET snapshot_version = COALESCE(json_extract(settings, '$.v'), 0)")
 
 
 def init_db():
     fresh = not DB_PATH.exists()
     with connect() as conn:
         version = conn.execute("PRAGMA user_version").fetchone()[0]
-        if version == 1:
+        if 0 < version < 3:
             migrate(conn, version)
         conn.executescript((ROOT / "db" / "schema.sql").read_text())
     if fresh:
@@ -65,6 +72,73 @@ def list_tasks():
     return {"groups": [dict(g) for g in groups], "tasks": [task_row(r) for r in rows]}
 
 
+# ── live events (WebSocket, server -> page) ──────────────────────────────
+def ws_frame(opcode, payload=b""):
+    head = bytes([0x80 | opcode])
+    n = len(payload)
+    if n < 126:
+        head += bytes([n])
+    elif n < 65536:
+        head += bytes([126]) + struct.pack(">H", n)
+    else:
+        head += bytes([127]) + struct.pack(">Q", n)
+    return head + payload
+
+
+def read_exact(sock, n):
+    buf = b""
+    while len(buf) < n:
+        chunk = sock.recv(n - len(buf))
+        if not chunk:
+            raise EOFError
+        buf += chunk
+    return buf
+
+
+def read_frame(sock):
+    """Returns (opcode, payload). The page only ever sends ping/pong/close, so frames are tiny."""
+    b0, b1 = read_exact(sock, 2)
+    length = b1 & 0x7F
+    if length == 126:
+        length = struct.unpack(">H", read_exact(sock, 2))[0]
+    elif length == 127:
+        length = struct.unpack(">Q", read_exact(sock, 8))[0]
+    if length > 65536:
+        raise EOFError
+    mask = read_exact(sock, 4) if b1 & 0x80 else b""
+    payload = read_exact(sock, length)
+    if mask:
+        payload = bytes(b ^ mask[i % 4] for i, b in enumerate(payload))
+    return b0 & 0x0F, payload
+
+
+class Subscriber:
+    def __init__(self, sock):
+        self.sock, self.lock = sock, threading.Lock()
+
+    def send(self, frame):
+        try:
+            with self.lock:
+                self.sock.sendall(frame)
+            return True
+        except OSError:
+            return False
+
+
+SUBSCRIBERS = set()
+SUBSCRIBERS_LOCK = threading.Lock()
+
+
+def broadcast(event):
+    frame = ws_frame(0x1, json.dumps(event).encode())
+    with SUBSCRIBERS_LOCK:
+        subs = list(SUBSCRIBERS)
+    for sub in subs:
+        if not sub.send(frame):
+            with SUBSCRIBERS_LOCK:
+                SUBSCRIBERS.discard(sub)
+
+
 def get_state():
     with connect() as conn:
         favorites = [r[0] for r in conn.execute("SELECT model_ref FROM favorite_models ORDER BY position, added_at")]
@@ -72,7 +146,7 @@ def get_state():
                    for r in conn.execute("SELECT id, name, settings FROM saved_configurations ORDER BY id")]
         prefs = {r["key"]: json.loads(r["value"]) for r in conn.execute("SELECT key, value FROM preferences")}
     default = prefs.pop("defaultModel", None)
-    return {"favorites": favorites, "defaultModel": default, "configs": configs, "preferences": prefs,
+    return {"version": STATE_VERSION, "favorites": favorites, "defaultModel": default, "configs": configs, "preferences": prefs,
             "empty": not (favorites or configs or default or prefs)}
 
 
@@ -82,6 +156,9 @@ def put_state(data):
     configs = data.get("configs", [])
     prefs = data.get("preferences", {})
     default = data.get("defaultModel")
+    version = data.get("version", STATE_VERSION)
+    if not isinstance(version, int) or version > STATE_VERSION:
+        raise ValueError(f"state version {version!r} is newer than this server understands ({STATE_VERSION})")
     if not (isinstance(favorites, list) and all(isinstance(f, str) for f in favorites)
             and isinstance(configs, list) and isinstance(prefs, dict)
             and (default is None or isinstance(default, str))):
@@ -96,9 +173,11 @@ def put_state(data):
         conn.execute("DELETE FROM saved_configurations")
         for c in configs:
             snap = c["snapshot"]
-            conn.execute("INSERT INTO saved_configurations (name, model_ref, engine, settings) VALUES (?,?,?,?)",
+            conn.execute("INSERT INTO saved_configurations (name, model_ref, engine, settings, snapshot_version) "
+                         "VALUES (?,?,?,?,?)",
                          (str(c.get("name", ""))[:200], str(c.get("modelRef", ""))[:300],
-                          str(snap.get("server", ""))[:40], json.dumps(snap)))
+                          str(snap.get("server", ""))[:40], json.dumps(snap),
+                          snap.get("v") if isinstance(snap.get("v"), int) else 0))
         conn.execute("DELETE FROM preferences")
         items = dict(prefs)
         if default:
@@ -139,6 +218,50 @@ class Handler(BaseHTTPRequestHandler):
             return None
         return data if isinstance(data, dict) else None
 
+    # ── live events ──
+    def serve_events(self):
+        key = self.headers.get("Sec-WebSocket-Key")
+        origin = self.headers.get("Origin")
+        if origin and not LOCAL_ORIGIN.match(origin):  # WebSockets ignore CORS, so check it here
+            return self.send_json(403, {"error": "forbidden origin"})
+        if (self.headers.get("Upgrade", "").lower() != "websocket" or not key
+                or self.headers.get("Sec-WebSocket-Version") != "13"):
+            return self.send_json(400, {"error": "expected a WebSocket upgrade"})
+        accept = base64.b64encode(hashlib.sha1((key + WS_GUID).encode()).digest()).decode()
+        # Browsers expect HTTP/1.1 here; BaseHTTPRequestHandler would say HTTP/1.0.
+        self.wfile.write(("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\n"
+                          "Connection: Upgrade\r\nSec-WebSocket-Accept: " + accept + "\r\n\r\n").encode())
+        self.wfile.flush()
+        sock = self.connection
+        sub = Subscriber(sock)
+        with SUBSCRIBERS_LOCK:
+            SUBSCRIBERS.add(sub)
+        sub.send(ws_frame(0x1, json.dumps({"event": "hello"}).encode()))
+        try:
+            while True:
+                sock.settimeout(25)
+                try:
+                    first = sock.recv(1, socket.MSG_PEEK)
+                except socket.timeout:
+                    if not sub.send(ws_frame(0x9)):  # keep-alive ping
+                        break
+                    continue
+                if not first:
+                    break
+                sock.settimeout(5)
+                opcode, payload = read_frame(sock)
+                if opcode == 0x8:
+                    sub.send(ws_frame(0x8))
+                    break
+                if opcode == 0x9:
+                    sub.send(ws_frame(0xA, payload))
+        except (OSError, EOFError):
+            pass
+        finally:
+            with SUBSCRIBERS_LOCK:
+                SUBSCRIBERS.discard(sub)
+            self.close_connection = True
+
     # ── static ──
     def do_GET(self):
         if not self.host_ok():
@@ -150,6 +273,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json(200, list_tasks())
         if path == "/api/state":
             return self.send_json(200, get_state())
+        if path == "/api/events":
+            return self.serve_events()
         if path.startswith("/api/"):
             return self.send_json(404, {"error": "not found"})
         rel = pathlib.PurePosixPath("/" + path.lstrip("/")).relative_to("/")
@@ -215,14 +340,22 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send_json(404, {"error": "no such task"})
                 code = 200
             elif method == "DELETE" and tid is not None:
-                cur = conn.execute("DELETE FROM tasks WHERE id = ?", (tid,))
-                return self.send_json(200 if cur.rowcount else 404, {"deleted": cur.rowcount})
+                deleted = conn.execute("DELETE FROM tasks WHERE id = ?", (tid,)).rowcount
+                code = None
             else:
                 return self.send_json(405, {"error": "method not allowed"})
-            row = conn.execute(
-                "SELECT t.id, g.slug AS 'group', t.position, t.title, t.detail, t.status, t.done_at "
-                "FROM tasks t JOIN task_groups g ON g.id = t.group_id WHERE t.id = ?", (tid,)).fetchone()
-        self.send_json(code, task_row(row))
+            if code is not None:
+                row = conn.execute(
+                    "SELECT t.id, g.slug AS 'group', t.position, t.title, t.detail, t.status, t.done_at "
+                    "FROM tasks t JOIN task_groups g ON g.id = t.group_id WHERE t.id = ?", (tid,)).fetchone()
+        # The with-block above has committed; only now tell the pages.
+        if code is None:
+            if deleted:
+                broadcast({"event": "task.deleted", "id": tid})
+            return self.send_json(200 if deleted else 404, {"deleted": deleted})
+        task = task_row(row)
+        broadcast({"event": "task.created" if code == 201 else "task.updated", "task": task})
+        self.send_json(code, task)
 
     def do_POST(self): self.api_write("POST")
     def do_PATCH(self): self.api_write("PATCH")

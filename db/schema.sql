@@ -2,7 +2,7 @@
 -- Timestamps are ISO-8601 UTC text. Ids are integers; slugs are stable keys.
 
 PRAGMA foreign_keys = ON;
-PRAGMA user_version = 2;          -- bump with each migration (see migrate() in server.py)
+PRAGMA user_version = 3;          -- bump with each migration (see migrate() in server.py)
 
 -- ── Tracker ───────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS task_groups (
@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS saved_configurations (
   model_ref  TEXT NOT NULL,               -- e.g. 'Qwen/Qwen3-8B'
   engine     TEXT NOT NULL,               -- 'vllm', 'sglang', ...
   settings   TEXT NOT NULL CHECK (json_valid(settings)),  -- the full configuration
+  snapshot_version INTEGER NOT NULL DEFAULT 0,             -- shape version of `settings` (see the page's SNAPSHOT_VERSION)
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
