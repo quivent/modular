@@ -183,7 +183,6 @@ Favorites, a default model, and saved configurations live in browser local stora
 | [db](db) | SQLite schema and roadmap seeding script |
 | [ROADMAP.md](ROADMAP.md) | Checklist to a finished release |
 | [LICENSE](LICENSE) | MIT license |
-| [archive](archive) | Earlier explorations (`original.html`, `catalog-draft.html`) |
 | [assets/readme](assets/readme) | Artwork, actual interface captures, generated ASCII-art SVGs (`ascii.py`), and editable README compositions |
 
 </details>
