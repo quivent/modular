@@ -13,7 +13,7 @@ Modular today is a complete, working prototype. This checklist is the path from 
 ### Trust
 
 - [ ] **6. Versioned engine profiles.** Describe each engine's flags, defaults, accepted values, and conflicts as data per version, then generate the renderer and checks from it.
-- [ ] **7. Engine version selector.** Let people pick the version they run, and show how defaults or spellings differ before export.
+- [ ] **7. Engine version.** Show the latest version each engine profile targets. A version picker waits until there is a reason for one.
 - [ ] **8. Source links and last-checked dates.** Link each version-specific flag to its documentation, and label unknown compatibility as unknown.
 - [x] **9. Automated tests.** `node tests/run.mjs` runs 190+ checks: the memory estimate, the catalog, the flag data, browser flows in headless Chrome, the server and its WebSocket, saved-data upgrades, themes, and the docs. Five injected regressions were each caught.
 - [x] **10. Better fit estimates.** Every catalog model with a published architecture now gets a real "will it start?" check: weights at the chosen precision, KV cache for a full-length request, attention heads divisible by the GPU count, CPU offload, and fixed KV memory, each with a concrete fix. Custom models and Ornith builds keep the weight-only note.

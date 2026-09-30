@@ -172,7 +172,7 @@ Docker output listens inside the container and publishes only on your loopback, 
 | 🟡 | **TGI** | text-generation-inference | Shared context, GPU, and quantization choices |
 | 🟠 | **llama.cpp** | llama.cpp server | Shared context, GPU, and quantization choices |
 | 🔴 | **Ollama** | `ollama pull` + `ollama serve` with environment settings | Host, context length, parallel requests, GGUF references |
-| ⚪ | **MLX LM** | MLX LM server | Shared context and quantization choices |
+| ⚪ | **MLX** | MLX LM server | Shared context and quantization choices |
 
 <details>
 <summary>Models, engines, and output formats</summary>
@@ -183,7 +183,7 @@ Docker output listens inside the container and publishes only on your loopback, 
 | Kinds | Language (Dense, Mixture of experts, Multimodal), Image, Video, Audio (speech to text, text to speech, music), Embeddings, Reranker |
 | Views | All, Favorites, Recent |
 | Model-specific controls | Ornith 1.5 checkpoint choices (BF16, FP8, NVFP4, GGUF where published) and conditional reasoning and tool-call parsers |
-| Engines | vLLM, SGLang, TensorRT-LLM, TGI, llama.cpp, Ollama, MLX LM |
+| Engines | vLLM, SGLang, TensorRT-LLM, TGI, llama.cpp, Ollama, MLX |
 | Hardware | B300, B200, H200, H100, A100 80 GB and 40 GB, RTX PRO 6000, RTX 5090, 4090, 3090; or a memory size of your own |
 | Tuning | Context, GPU count and memory, quantization, plus applicable scheduling, precision, cache, offload, network, and extra-argument controls |
 | Output | All flags, readable CLI, one-line CLI, and JSON; Docker for vLLM. Image, video and speech/music generation have no launch command yet |
@@ -247,7 +247,7 @@ Modular is a prototype, and this is the plain list of what stands between it and
 ### Trust
 
 - [ ] **6. Versioned engine profiles.** Describe each engine's flags, defaults, accepted values, and conflicts as data per version, then generate the renderer and checks from it.
-- [ ] **7. Engine version selector.** Let people pick the version they run, and show how defaults or spellings differ before export.
+- [ ] **7. Engine version.** Show the latest version each engine profile targets. A version picker waits until there is a reason for one.
 - [ ] **8. Source links and last-checked dates.** Link each version-specific flag to its documentation, and label unknown compatibility as unknown.
 - [x] **9. Automated tests.** `node tests/run.mjs` runs 190+ checks: the memory estimate, the catalog, the flag data, browser flows in headless Chrome, the server and its WebSocket, saved-data upgrades, themes, and the docs. Five injected regressions were each caught.
 - [x] **10. Better fit estimates.** Every catalog model with a published architecture now gets a real "will it start?" check: weights at the chosen precision, KV cache for a full-length request, attention heads divisible by the GPU count, CPU offload, and fixed KV memory, each with a concrete fix. Custom models and Ornith builds keep the weight-only note.
@@ -256,7 +256,7 @@ Modular is a prototype, and this is the plain list of what stands between it and
 ### Reach
 
 - [ ] **12. More command forms.** Add environment-variable output and Kubernetes or Compose snippets, generated from the same configuration state.
-- [ ] **13. Complete the remaining engines.** Bring TGI, llama.cpp, and MLX LM to the same depth as vLLM and SGLang.
+- [ ] **13. Complete the remaining engines.** Bring TGI, llama.cpp, and MLX to the same depth as vLLM and SGLang.
 - [ ] **14. Share and import.** Export a configuration as a link or file and import it, so a setup can move between people and machines.
 - [ ] **15. Catalog upkeep.** Refresh the curated models, and add a lightweight way to update the catalog without editing the page.
 - [ ] **16. Private repositories.** Offer a clear, token-free path for private Hugging Face repositories beyond pasting an exact reference.

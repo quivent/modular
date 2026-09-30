@@ -51,8 +51,8 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
   Slice done: vLLM, SGLang and TensorRT-LLM are profiles (data). The command and the “where each choice goes” map are both generated from them, byte-identical to the old hand-written code (250 golden commands and 250 golden maps per engine, plus thousands of random configurations). A test checks every profile flag exists in that engine's documentation. Still to do: TGI, llama.cpp, Ollama, MLX LM as profiles; the checks generated from the same data; the version dimension.
   Depends on: #9
   Blocks: #7, #8, #13, #22
-- [ ] **#7 Engine version selector**
-  Let people pick the version they run, and show how defaults or spellings differ before export.
+- [ ] **#7 Engine version.**
+  Show the latest version each engine profile targets. A version picker waits until there is a reason for one.
   Depends on: #6  (waiting on 1)
   Blocks: #22
 - [ ] **#8 Source links and last-checked dates**

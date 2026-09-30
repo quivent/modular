@@ -3109,7 +3109,7 @@
       },
       {
         id: 'mlx',
-        name: 'MLX LM',
+        name: 'MLX',
         sub: 'Apple silicon',
         quant: ['Set by checkpoint', 'MLX 4-bit', 'MLX 8-bit', 'Custom…'],
         note: 'Needs a converted MLX checkpoint. The weights set the quantization.',
@@ -5188,7 +5188,7 @@
       if (r.server === 'ollama' && source !== 'ollama' && !(c.model.build === 'GGUF'))
         return 'Ollama expects a registry tag. Choose Ollama as the source and enter a tag.';
       if (r.server === 'mlx' && source === 'ollama')
-        return 'MLX LM expects a converted checkpoint, usually a Hugging Face ID or path.';
+        return 'MLX expects a converted checkpoint, usually a Hugging Face ID or path.';
       if (r.server === 'llama' && source !== 'path' && source !== 'huggingface')
         return 'llama.cpp expects a GGUF path or compatible Hugging Face reference.';
       if ((arch === 'speech' || arch === 'diffusion' || arch === 'reranker') && r.server !== 'custom')
