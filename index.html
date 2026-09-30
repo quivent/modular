@@ -3070,49 +3070,49 @@
         name: 'vLLM',
         sub: 'High-throughput serving',
         quant: ['Native / auto', 'FP8', 'AWQ', 'GPTQ', 'bitsandbytes', 'Custom…'],
-        note: 'Serves supported Hugging Face checkpoints and paths. Check architecture and quantization support for your installed version.',
+        note: '',
       },
       {
         id: 'sglang',
         name: 'SGLang',
         sub: 'Structured generation',
         quant: ['Native / auto', 'FP8', 'AWQ', 'GPTQ', 'Custom…'],
-        note: 'Supports a wide model set, with engine-specific support for architectures and weight formats.',
+        note: '',
       },
       {
         id: 'trtllm',
         name: 'TensorRT-LLM',
         sub: 'NVIDIA-optimized serving',
         quant: ['Native / auto', 'FP8', 'NVFP4', 'Custom…'],
-        note: 'Serves Hugging Face checkpoints on NVIDIA GPUs. FP8 and NVFP4 checkpoints load as they were quantized.',
+        note: 'NVIDIA GPUs only. FP8 and NVFP4 checkpoints load as they were quantized.',
       },
       {
         id: 'tgi',
         name: 'TGI',
         sub: 'Hugging Face serving',
         quant: ['Native / auto', 'AWQ', 'GPTQ', 'bitsandbytes', 'EETQ', 'Custom…'],
-        note: 'TGI accepts Hugging Face IDs and mounted model paths. Its launcher controls differ from other servers.',
+        note: '',
       },
       {
         id: 'llama',
         name: 'llama.cpp',
         sub: 'GGUF ecosystem',
         quant: ['Set by checkpoint', 'GGUF Q4', 'GGUF Q5', 'GGUF Q8', 'Custom…'],
-        note: 'Use a compatible GGUF file path or Hugging Face GGUF reference. Quantization is encoded in the file.',
+        note: 'Needs a GGUF file or reference. The file sets the quantization.',
       },
       {
         id: 'ollama',
         name: 'Ollama',
         sub: 'Registry-based models',
         quant: ['Set by tag', 'Custom…'],
-        note: 'Ollama uses model tags. Choose an Ollama registry reference or enter a tag manually.',
+        note: 'Uses registry tags, not Hugging Face IDs.',
       },
       {
         id: 'mlx',
         name: 'MLX LM',
         sub: 'Apple silicon',
         quant: ['Set by checkpoint', 'MLX 4-bit', 'MLX 8-bit', 'Custom…'],
-        note: 'MLX LM requires a converted MLX checkpoint; quantization is encoded in its weights.',
+        note: 'Needs a converted MLX checkpoint. The weights set the quantization.',
       },
     ];
     var state = {
@@ -3435,6 +3435,7 @@
           };
         });
       $('serverNote').textContent = server().note;
+      $('serverNote').hidden = !server().note;
     }
     /* ▸ js: render — quantization & checkpoint */
     function renderQuant() {
@@ -3659,7 +3660,7 @@
       $('capabilityNote').hidden = visible;
       if (!visible)
         $('capabilityNote').textContent =
-          'This engine uses a different flag vocabulary. Engine-specific choices stay saved; unsupported ones are omitted from this command and listed in Checks.';
+          'Engine-specific choices stay saved. Unsupported ones are listed in Checks.';
       var choices = {
         batch: [
           ['auto', 'Auto'],
@@ -4636,7 +4637,7 @@
             gibText(weightsOnGpu) +
             ' fit in the ' +
             gibText(room) +
-            ' available. The KV cache for this model\u2019s attention design is not estimated.',
+            ' available (KV cache not estimated).',
         };
       var kvPool = o.kvGb > 0 ? o.kvGb * gpus : room - weightsOnGpu;
       if (o.kvGb > 0 && weightsOnGpu / gpus + o.kvGb + RUNTIME_OVERHEAD_GIB > o.vramGb)
@@ -4726,18 +4727,22 @@
         found.unshift([engine === 'sglang' ? '--model-path' : '--model', model[1].replace(/^['"]|['"]$/g, '')]);
       return found;
     }
-    // A description that only restates the flag's own name ("Host name." under --host) says nothing.
-    var HELP_FILLER = /^(the|a|an|of|to|for|and|or|in|on|is|be|use|used|using|whether|enable|enables|set|specify|specifies|number|size|count|groups|name|names|path|value|id|hugging|face|huggingface|hf|http|https|server|listen|listens|ip|address|addresses|interface|bind|default)$/;
+    // What a flag's description shows. Long ones are cut to their first sentence; ones that only repeat the flag
+    // are dropped; the informative short ones stay. (Reviewed by hand against every engine's list.)
+    var HELP_FILLER = /^(the|a|an|of|to|for|and|or|in|on|is|be|use|used|using|whether|enable|enables|set|specify|specifies|choose|chosen|select|number|size|count|groups|name|names|path|value|id|file|files|dir|directory|hugging|face|huggingface|hf|http|https|server|listen|listens|ip|address|addresses|interface|bind|default)$/;
+    var HELP_SAME = { logging: 'log', statistics: 'stat', stats: 'stat', maximum: 'max', minimum: 'min', num: 'number', directories: 'directory', certificates: 'cert', certificate: 'cert', parallelism: 'parallel', hostname: 'host', enabled: 'enable', disabled: 'disable' };
+    // Short descriptions that add a unit, a default, or a status beyond the name.
+    var HELP_KEEP = { '--page-size': 1, '--disaggregation-transfer-backend': 1, '--disaggregation-bootstrap-port': 1, '--predict': 1, '--parallel': 1, '--backend-sampling': 1 };
     function helpWords(t) {
       return t
         .toLowerCase()
         .split(/[^a-z0-9]+/)
-        .filter(Boolean)
         .filter(function (w) {
           return w && !/^\d+$/.test(w) && !HELP_FILLER.test(w); // filler is judged on the word as written
         })
         .map(function (w) {
-          return w === 'hostname' ? 'host' : w.replace(/(ing|es|s)$/, '');
+          var stem = w.replace(/(ing|es|s)$/, '');
+          return HELP_SAME[w] || HELP_SAME[stem] || stem;
         })
         .filter(function (w) {
           return w && !HELP_FILLER.test(w);
@@ -4745,10 +4750,49 @@
     }
     function helpRestatesName(flag) {
       if (!flag.help) return true;
-      var own = helpWords(flag.name.replace(/^-+/, '')).concat(helpWords((flag.aliases || []).join(' ')));
-      return helpWords(flag.help).every(function (w) {
-        return own.indexOf(w) !== -1;
+      var own = helpWords(flag.name.replace(/^-+/, '').replace(/_/g, ' ')).concat(
+        helpWords((flag.aliases || []).join(' ').replace(/_/g, ' ')),
+      );
+      var uncovered = helpWords(flag.help).filter(function (w) {
+        return !own.some(function (o) {
+          return o === w || (o.length > 2 && w.length > 2 && (o.indexOf(w) !== -1 || w.indexOf(o) !== -1));
+        });
       });
+      if (!uncovered.length) return true;
+      return uncovered.length === 1 && flag.help.length < 70 && !HELP_KEEP[flag.name];
+    }
+    // First sentence of a long description, without the markup the docs use.
+    function trimHelp(h) {
+      h = h.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+      if (h.length <= 180) return h;
+      var masked = h.replace(/\b(e\.g|i\.e|etc|vs|approx)\./gi, function (m) {
+        return m.replace('.', '\u0001');
+      });
+      var end = masked.search(/[.!?](\s|$)/);
+      var first = (end === -1 ? masked : masked.slice(0, end + 1)).replace(/\u0001/g, '.');
+      if (first.length <= 200) return first;
+      var cut = first.slice(40, 200).search(/[:;]\s|\s\(|\s—\s/);
+      if (cut !== -1) return first.slice(0, 40 + cut).replace(/[,;:]$/, '');
+      return first.slice(0, first.lastIndexOf(' ', 180)).replace(/[,;:]$/, '') + '…';
+    }
+    function flagHelpText(flag) {
+      var full = (flag.help || '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+      var restates = function (t) {
+        return helpRestatesName({ name: flag.name, aliases: flag.aliases, help: t });
+      };
+      if (full.length <= 180) return restates(full) ? '' : full;
+      // Long: a first sentence that only repeats the flag is skipped; the first one that says something is kept.
+      var masked = full.replace(/\b(e\.g|i\.e|etc|vs|approx)\./gi, function (m) {
+        return m.replace('.', '\u0001');
+      });
+      var sentences = masked.split(/(?<=[.!?])\s+/).map(function (x) {
+        return x.replace(/\u0001/g, '.');
+      });
+      for (var i = 0; i < sentences.length; i++) {
+        var t = trimHelp(sentences[i]);
+        if (t && !restates(t)) return t;
+      }
+      return '';
     }
     function flagLine(flag, value, isSet, config) {
       var shown = isSet ? value : flag.default,
@@ -4759,7 +4803,7 @@
         (shown ? '<code class="flag-value' + (isSet ? '' : ' is-default') + '">' + esc(shown) + '</code>' : (flag.value ? '<code class="flag-value is-default">' + esc(flag.value) + '</code>' : '')) +
         (alias ? '<span class="flag-alias">' + esc(alias) + '</span>' : '') +
         '</div>' +
-        (helpRestatesName(flag) ? '' : '<p class="flag-help">' + esc(flag.help) + '</p>') +
+        (flagHelpText(flag) ? '<p class="flag-help">' + esc(flagHelpText(flag)) + '</p>' : '') +
         (flag.choices && flag.choices.length ? '<p class="flag-choices">' + esc(flag.choices.join('  ·  ')) + '</p>' : '') +
         '</div>'
       );
@@ -5047,7 +5091,7 @@
         if (estimate) return { warn: estimate.level === 'fail', text: estimate.text };
         return {
           warn: false,
-          text: 'GPU memory is a reference, not a server flag. Check actual checkpoint requirements.',
+          text: 'No memory estimate for this model.',
         };
       }
       var build = c.model.build,
@@ -5153,7 +5197,7 @@
         return 'Most server commands expect a model ID or mounted path. Fetch or mount the URL first.';
       if (!c.model.build && qIsSpecial(r.quantization) && r.server !== 'custom')
         return 'Make sure the checkpoint is already in this format and the server supports it.';
-      return 'Starting configuration. Confirm checkpoint support, memory needs, and flags for your server version.';
+      return '';
     }
     function qIsSpecial(q) {
       return q !== 'Native / auto' && q !== 'Set by checkpoint' && q !== 'Set by tag';
@@ -5226,11 +5270,8 @@
         .join('');
       var message = issue(config);
       $('status').textContent = message;
-      $('status').classList.toggle(
-        'warn',
-        message !==
-          'Starting configuration. Confirm checkpoint support, memory needs, and flags for your server version.',
-      );
+      $('status').hidden = !message; // nothing to say is nothing shown
+      $('status').classList.toggle('warn', !!message);
       var checks = [];
       if (state.hardware === 'multi' && !['vllm', 'sglang', 'trtllm', 'tgi'].includes(state.server))
         checks.push(['warn', 'Selected GPU count is not represented by this engine command.']);
