@@ -158,7 +158,7 @@ The first screen is a working, cautious starting point. Every default is a decis
 
 Docker output listens inside the container and publishes only on your loopback, so the safe default works there too.
 
-**All flags** lists every flag of the selected engine, straight from that engine’s own documentation (vLLM 311, SGLang 423, llama.cpp 255, TGI 56, TensorRT-LLM 50, Ollama 30, MLX LM 26). The flags your configuration sets are highlighted with their values; the rest show the documented default. Copy command copies the runnable command. `python3 tools/flags.py` re-reads the docs.
+**All flags** lists every flag of the selected engine, straight from that engine’s own documentation (vLLM 311, SGLang 423, llama.cpp 255, TGI 56, TensorRT 50, Ollama 30, MLX LM 26). The flags your configuration sets are highlighted with their values; the rest show the documented default. Copy command copies the runnable command. `python3 tools/flags.py` re-reads the docs.
 
 <br>
 
@@ -168,7 +168,7 @@ Docker output listens inside the container and publishes only on your loopback, 
 | --- | --- | --- | --- |
 | 🟢 | **vLLM** | `vllm serve …` | Tensor and pipeline parallelism, CPU offload, fixed KV cache, priority scheduling, prefix caching, chunked prefill, dtype, request logging, Docker output |
 | 🔵 | **SGLang** | `python -m sglang.launch_server …` | Tensor parallelism, static memory fraction, radix cache toggle, reasoning and tool-call parsers |
-| 🟣 | **TensorRT-LLM** | `trtllm-serve …` | Tensor and pipeline parallelism, KV-cache memory fraction, sequence length; FP8 and NVFP4 checkpoints load as shipped |
+| 🟣 | **TensorRT** | `trtllm-serve …` | Tensor and pipeline parallelism, KV-cache memory fraction, sequence length; FP8 and NVFP4 checkpoints load as shipped |
 | 🟡 | **TGI** | text-generation-inference | Shared context, GPU, and quantization choices |
 | 🟠 | **llama.cpp** | llama.cpp server | Shared context, GPU, and quantization choices |
 | 🔴 | **Ollama** | `ollama pull` + `ollama serve` with environment settings | Host, context length, parallel requests, GGUF references |
@@ -183,7 +183,7 @@ Docker output listens inside the container and publishes only on your loopback, 
 | Kinds | Language (Dense, Mixture of experts, Multimodal), Image, Video, Audio (speech to text, text to speech, music), Embeddings, Reranker |
 | Views | All, Favorites, Recent |
 | Model-specific controls | Ornith 1.5 checkpoint choices (BF16, FP8, NVFP4, GGUF where published) and conditional reasoning and tool-call parsers |
-| Engines | vLLM, SGLang, TensorRT-LLM, TGI, llama.cpp, Ollama, MLX |
+| Engines | vLLM, SGLang, TensorRT, TGI, llama.cpp, Ollama, MLX |
 | Hardware | B300, B200, H200, H100, A100 80 GB and 40 GB, RTX PRO 6000, RTX 5090, 4090, 3090; or a memory size of your own |
 | Tuning | Context, GPU count and memory, quantization, plus applicable scheduling, precision, cache, offload, network, and extra-argument controls |
 | Output | All flags, readable CLI, one-line CLI, and JSON; Docker for vLLM. Image, video and speech/music generation have no launch command yet |

@@ -34,7 +34,7 @@ export default async function (t) {
     t.ok(!/Qwen3 8B|Llama 3\.3|Gemma 3|Mixtral|Phi-4|Qwen2\.5/.test(visible), 'no previous-generation model is visible');
 
     // ── engines ──
-    t.equal(await $(() => [...document.querySelectorAll('#serverList .server strong')].map((x) => x.textContent)), ['vLLM', 'SGLang', 'TensorRT-LLM', 'TGI', 'llama.cpp', 'Ollama', 'MLX'], 'seven engines, no "Other server"');
+    t.equal(await $(() => [...document.querySelectorAll('#serverList .server strong')].map((x) => x.textContent)), ['vLLM', 'SGLang', 'TensorRT', 'TGI', 'llama.cpp', 'Ollama', 'MLX'], 'seven engines, no "Other server"');
     t.equal(await $(() => !!document.getElementById('portChoices')), false, 'there is no port selector');
     t.equal(await $(() => [document.getElementById('engineCount').textContent, String(document.querySelectorAll('#serverList .server').length)]), ['7', '7'], 'the Engines heading counts the engines actually listed');
 
