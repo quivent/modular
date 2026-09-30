@@ -1,0 +1,8 @@
+{
+  "run": "ralph-loop over the tracker",
+  "started": "2026-09-30",
+  "profile": "generic",
+  "max_iterations": 9,
+  "completion_promise": "TRACKER_TASKS_DONE",
+  "iterations": []
+}
