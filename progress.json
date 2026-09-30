@@ -27,6 +27,20 @@
       "observation": "five injected regressions each failed the right test; the suite found three real defects; full run 190 green, no leaked processes",
       "gates": "PASS",
       "result": "#9 done after 3 iterations"
+    },
+    {
+      "n": 4,
+      "task": "#5 Contributing guide",
+      "action": "wrote CONTRIBUTING.md; followed it literally in a fresh git clone",
+      "observation": "port-busy message, server, map, three checks all worked; 190 green on Python 3.14 and 3.9",
+      "gates": "PASS"
+    },
+    {
+      "n": 5,
+      "task": "#5 Contributing guide",
+      "action": "followed the add-a-model and refresh-flags recipes in a clone; made the duplicate-reference failure name the duplicate; stated tested versions and that the tracker db is local",
+      "observation": "recipe 1: 190 green; done badly: clear failure; recipe 2: reproducible, no diff",
+      "gates": "PASS"
     }
   ]
 }
