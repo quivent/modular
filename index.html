@@ -4954,6 +4954,103 @@
           if (state.tab === 'all') box.textContent = 'The flag reference could not be loaded here. Open the CLI tab for the command.';
         });
     }
+    /* ▸ js: engine profiles */
+    /* An engine profile is data: the flags an engine takes and which setting feeds each one. One small
+       renderer turns a profile and a configuration into the command. Every flag named here has to exist in
+       that engine's documentation (catalog/flags/<engine>.json); a test checks it. Paths read the
+       configuration that spec() builds ("runtime.port", "model.reference"). Conditions: truthy, falsy, eq,
+       neq, gt, and, not. Formats: raw (default), sh (shell-quoted), fraction (percent as 0.90), bytes (GiB
+       to bytes), lower_sh (lower-cased, quoted). */
+    var ENGINE_PROFILES = {
+      vllm: {
+        engine: 'vllm',
+        documented: '2026-09-30',
+        head: 'vllm serve {model}',
+        rules: [
+          { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0' },
+          { flag: '--port', value: 'runtime.port' },
+          { flag: '--max-model-len', value: 'runtime.context_tokens' },
+          { flag: '--tensor-parallel-size', value: 'runtime.parallel_devices' },
+          { flag: '--kv-cache-memory-bytes', value: 'runtime.kv_cache_gb', format: 'bytes', when: { truthy: 'runtime.kv_cache_gb' } },
+          { flag: '--gpu-memory-utilization', value: 'runtime.gpu_memory_percent', format: 'fraction', when: { falsy: 'runtime.kv_cache_gb' } },
+          { flag: '--pipeline-parallel-size', value: 'runtime.pipeline_stages', when: { gt: ['runtime.pipeline_stages', 1] } },
+          { flag: '--cpu-offload-gb', value: 'runtime.cpu_offload_gb', when: { truthy: 'runtime.cpu_offload_gb' } },
+          { flag: '--scheduling-policy', literal: 'priority', when: { eq: ['runtime.scheduling.policy', 'priority'] } },
+          { flag: '--enable-log-requests', when: { truthy: 'runtime.request_logging' } },
+          { flag: '--quantization', value: 'runtime.quantization', format: 'lower_sh', when: { and: [{ falsy: 'model.build' }, { neq: ['runtime.quantization', 'Native / auto'] }] } },
+          { flag: '--trust-remote-code', when: { truthy: 'runtime.trust_model_code' } },
+          { flag: '--enable-prefix-caching', when: { truthy: 'runtime.prefix_cache' } },
+          { flag: '--served-model-name', value: 'model.served_name', format: 'sh', when: { truthy: 'model.ornith_profile' } },
+          { flag: '--reasoning-parser', literal: 'qwen3', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.reasoning_parser' }] } },
+          { flag: '--enable-auto-tool-choice', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] } },
+          { flag: '--tool-call-parser', literal: 'qwen3_xml', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] } },
+          { flag: '--max-num-batched-tokens', value: 'runtime.scheduling.max_num_batched_tokens', when: { truthy: 'runtime.scheduling.max_num_batched_tokens' } },
+          { flag: '--max-num-seqs', value: 'runtime.scheduling.max_num_seqs', when: { truthy: 'runtime.scheduling.max_num_seqs' } },
+          { flag: '--enable-chunked-prefill', when: { truthy: 'runtime.scheduling.chunked_prefill' } },
+          { flag: '--enforce-eager', when: { truthy: 'runtime.scheduling.enforce_eager' } },
+          { flag: '--dtype', value: 'runtime.scheduling.dtype', when: { neq: ['runtime.scheduling.dtype', 'auto'] } },
+          { flag: '--kv-cache-dtype', value: 'runtime.scheduling.kv_cache_dtype', when: { neq: ['runtime.scheduling.kv_cache_dtype', 'auto'] } },
+        ],
+      },
+    };
+    function profileGet(config, path) {
+      return path.split('.').reduce(function (o, k) {
+        return o == null ? undefined : o[k];
+      }, config);
+    }
+    function profileHolds(cond, config) {
+      if (!cond) return true;
+      if (cond.truthy) return !!profileGet(config, cond.truthy);
+      if (cond.falsy) return !profileGet(config, cond.falsy);
+      if (cond.eq) return profileGet(config, cond.eq[0]) === cond.eq[1];
+      if (cond.neq) return profileGet(config, cond.neq[0]) !== cond.neq[1];
+      if (cond.gt) return profileGet(config, cond.gt[0]) > cond.gt[1];
+      if (cond.and)
+        return cond.and.every(function (c) {
+          return profileHolds(c, config);
+        });
+      if (cond.not) return !profileHolds(cond.not, config);
+      return false;
+    }
+    var PROFILE_FORMATS = {
+      raw: function (v) {
+        return String(v);
+      },
+      sh: function (v) {
+        return sh(v);
+      },
+      fraction: function (v) {
+        return (v / 100).toFixed(2);
+      },
+      bytes: function (v) {
+        return String(v * 1073741824);
+      },
+      lower_sh: function (v) {
+        return sh(String(v).toLowerCase());
+      },
+    };
+    // The parts of the command, in order: the head, then one entry per flag whose condition holds.
+    function profileParts(profile, config) {
+      var parts = [profile.head.replace('{model}', sh(config.model.reference || 'MODEL_REFERENCE'))];
+      profile.rules.forEach(function (rule) {
+        if (!profileHolds(rule.when, config)) return;
+        var value = rule.literal !== undefined ? rule.literal : rule.value ? profileGet(config, rule.value) : undefined;
+        if ((value === undefined || value === null || value === '') && rule.fallback !== undefined && rule.value)
+          value = rule.fallback;
+        parts.push(rule.flag + (rule.value || rule.literal !== undefined ? ' ' + (PROFILE_FORMATS[rule.format || 'raw'])(value) : ''));
+      });
+      return parts;
+    }
+    // The finished command: one flag per line, then any extra arguments the user typed.
+    function profileCommand(profile, config) {
+      var parts = profileParts(profile, config);
+      if (config.runtime.extra_arguments) parts.push(config.runtime.extra_arguments);
+      return parts
+        .map(function (x, i) {
+          return (i ? '  ' : '') + x + (i < parts.length - 1 ? ' \\' : '');
+        })
+        .join('\n');
+    }
     /* ▸ js: flag map, checks, fit estimate */
     function renderFlagMap(c) {
       var rows = flagRows(c);
