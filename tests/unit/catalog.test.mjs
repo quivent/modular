@@ -9,7 +9,9 @@ export default async function (t) {
   const live = models.filter((m) => !m.retired);
   const KINDS = ['language', 'image', 'video', 'audio', 'embedding', 'reranker'];
 
-  t.equal(new Set(models.map((m) => m.ref)).size, models.length, 'every reference is unique');
+  const count = {};
+  for (const m of models) count[m.ref] = (count[m.ref] || 0) + 1;
+  t.equal(Object.keys(count).filter((r) => count[r] > 1), [], 'every reference is unique (a repeated one is listed here)');
   t.equal(models.filter((m) => !m.name || !m.ref || !m.kind || !(m.group || m.family) || !m.arch).map((m) => m.ref), [], 'every model has a name, reference, kind, group and architecture');
   t.equal(live.filter((m) => KINDS.indexOf(m.kind) === -1).map((m) => m.ref), [], 'every kind is one of the six');
   t.equal(live.filter((m) => m.kind === 'audio' && ['speech-to-text', 'text-to-speech', 'music'].indexOf(m.role) === -1).map((m) => m.ref), [], 'every audio model has a role');
