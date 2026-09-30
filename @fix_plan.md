@@ -47,8 +47,8 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
 
 ## Trust
 
-- [ ] **#6 Versioned engine profiles**
-  Describe each engine's flags, defaults, accepted values, and conflicts as data per version, then generate the renderer and checks from it.
+- [~] **#6 Versioned engine profiles**
+  First slice done: vLLM, SGLang and TensorRT-LLM are profiles (data) and command() is generated from them, byte-identical to the old hand-written code (250 golden commands each, 3,000 random configurations compared). A test checks every profile flag exists in that engine's documentation. Still to do: TGI, llama.cpp, Ollama, MLX LM as profiles; the flag map and the checks generated from the same data; the version dimension.
   Depends on: #9
   Blocks: #7, #8, #13, #22
 - [ ] **#7 Engine version selector**
@@ -113,7 +113,6 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
 
 ## Ready now (highest priority first)
 
-1. #6 Versioned engine profiles
 1. #11 Input validation
 1. #12 More command forms
 1. #14 Share and import

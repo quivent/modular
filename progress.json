@@ -49,6 +49,20 @@
       "observation": "the docs test failed on real drift (roadmap still listed tests as undone), then passed; 204 green",
       "gates": "PASS",
       "result": "#5 done after 3 iterations"
+    },
+    {
+      "n": 7,
+      "task": "#6 Versioned engine profiles",
+      "action": "vLLM as data + renderer; probe: 4,000 configs identical to the hand-written command; docs check for every flag",
+      "probe_gate": "passed",
+      "gates": "PASS"
+    },
+    {
+      "n": 8,
+      "task": "#6 Versioned engine profiles",
+      "action": "SGLang and TensorRT-LLM profiles; golden commands recorded from the hand-written code; command() now generated from profiles; hand-written branches deleted",
+      "observation": "golden comparison 3x250 exact; mutations caught by golden and docs checks; page pixel-identical apart from an earlier deliberate description fix; README screenshots refreshed",
+      "gates": "PASS (219)"
     }
   ]
 }

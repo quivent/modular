@@ -15,6 +15,6 @@ export default async function (t) {
     const missing = profile.rules.map((r) => r.flag).filter((f) => !known.has(f));
     t.equal(missing, [], `${engine}: every flag in the profile is in the documentation (${profile.rules.length} rules, read ${docs.fetched})`);
     t.equal(profile.rules.filter((r) => !r.flag || (r.value && r.literal !== undefined)).length, 0, `${engine}: every rule has a flag, and takes a value or a literal, not both`);
-    t.ok(/^\d{4}-\d\d-\d\d$/.test(profile.documented) && profile.head.includes('{model}'), `${engine}: the profile says when it was checked and where the model goes`);
+    t.ok(/^\d{4}-\d\d-\d\d$/.test(profile.documented) && (profile.head.includes('{model}') || profile.rules.some((r) => r.value === 'model.reference')), `${engine}: the profile says when it was checked and puts the model in the head or in a flag`);
   }
 }

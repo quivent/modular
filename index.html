@@ -4348,70 +4348,9 @@
         ctx = r.context_tokens,
         tp = r.parallel_devices,
         q = r.quantization;
+      // vLLM, SGLang and TensorRT-LLM are profiles (see js: engine profiles); the rest are built below.
+      if (ENGINE_PROFILES[r.server]) return profileCommand(ENGINE_PROFILES[r.server], c);
       var parts = [];
-      if (r.server === 'vllm') {
-        parts = [
-          'vllm serve ' + m,
-          '--host ' + host,
-          '--port ' + port,
-          '--max-model-len ' + ctx,
-          '--tensor-parallel-size ' + tp,
-          r.kv_cache_gb
-            ? '--kv-cache-memory-bytes ' + r.kv_cache_gb * 1073741824
-            : '--gpu-memory-utilization ' + (r.gpu_memory_percent / 100).toFixed(2),
-        ];
-        if (r.pipeline_stages > 1) parts.push('--pipeline-parallel-size ' + r.pipeline_stages);
-        if (r.cpu_offload_gb) parts.push('--cpu-offload-gb ' + r.cpu_offload_gb);
-        if (r.scheduling.policy === 'priority') parts.push('--scheduling-policy priority');
-        if (r.request_logging) parts.push('--enable-log-requests');
-        if (!c.model.build && q !== 'Native / auto')
-          parts.push('--quantization ' + sh(q.toLowerCase()));
-        if (r.trust_model_code) parts.push('--trust-remote-code');
-        if (r.prefix_cache) parts.push('--enable-prefix-caching');
-        if (c.model.ornith_profile) {
-          parts.push('--served-model-name ' + sh(c.model.served_name));
-          if (r.reasoning_parser) parts.push('--reasoning-parser qwen3');
-          if (r.tool_call_parser)
-            parts.push('--enable-auto-tool-choice', '--tool-call-parser qwen3_xml');
-        }
-        if (r.scheduling.max_num_batched_tokens)
-          parts.push('--max-num-batched-tokens ' + r.scheduling.max_num_batched_tokens);
-        if (r.scheduling.max_num_seqs) parts.push('--max-num-seqs ' + r.scheduling.max_num_seqs);
-        if (r.scheduling.chunked_prefill) parts.push('--enable-chunked-prefill');
-        if (r.scheduling.enforce_eager) parts.push('--enforce-eager');
-        if (r.scheduling.dtype !== 'auto') parts.push('--dtype ' + r.scheduling.dtype);
-        if (r.scheduling.kv_cache_dtype !== 'auto')
-          parts.push('--kv-cache-dtype ' + r.scheduling.kv_cache_dtype);
-      }
-      if (r.server === 'sglang') {
-        parts = [
-          'python -m sglang.launch_server',
-          '--model-path ' + m,
-          '--host ' + host,
-          '--port ' + port,
-          '--context-length ' + ctx,
-          '--tp-size ' + tp,
-          '--mem-fraction-static ' + (r.gpu_memory_percent / 100).toFixed(2),
-        ];
-        if (!c.model.build && q !== 'Native / auto')
-          parts.push('--quantization ' + sh(q.toLowerCase()));
-        if (r.trust_model_code) parts.push('--trust-remote-code');
-        if (!r.prefix_cache) parts.push('--disable-radix-cache');
-        if (c.model.ornith_profile) {
-          parts.push('--served-model-name ' + sh(c.model.served_name));
-          if (r.reasoning_parser) parts.push('--reasoning-parser qwen3');
-          if (r.tool_call_parser) parts.push('--tool-call-parser qwen3_coder');
-        }
-      }
-      if (r.server === 'trtllm') {
-        parts = ['trtllm-serve ' + m, '--host ' + host, '--port ' + port, '--tp_size ' + tp];
-        if (r.pipeline_stages > 1) parts.push('--pp_size ' + r.pipeline_stages);
-        parts.push(
-          '--max_seq_len ' + ctx,
-          '--free_gpu_memory_fraction ' + (r.gpu_memory_percent / 100).toFixed(2),
-        );
-        if (r.trust_model_code) parts.push('--trust_remote_code');
-      }
       if (r.server === 'tgi') {
         parts = [
           'text-generation-launcher',
