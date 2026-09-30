@@ -123,6 +123,23 @@ The same database keeps your **saved setups, favorites, default model, and Huggi
 
 <br>
 
+## Themes
+
+The **Themes** button in the top bar changes the whole surface at once. The choice is remembered in your browser and applied before the page paints, so there is no flash.
+
+| | Theme | Character |
+| --- | --- | --- |
+| 🟢 | **Meadow** | The original: sage and cream |
+| 🔵 | **Midnight** | Deep blue-graphite for late nights |
+| 🟠 | **Paper** | Warm cream with a serif voice |
+| ⚫ | **Terminal** | Phosphor green on black, all monospace, with a prompt and a caret |
+| ⚪ | **macOS** | Light system chrome, blue accent, translucent toolbar, traffic lights |
+| 🔷 | **Windows** | Fluent-style flat surfaces, squared corners, Segoe type, caption buttons |
+
+Themes are built on about 35 named color roles plus radius and type variables, so adding another one is a single block of CSS. See the `css: themes` region in [index.html](index.html).
+
+<br>
+
 ## Engines
 
 | | Engine | Command shape | Notable controls in the prototype |
