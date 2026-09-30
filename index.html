@@ -1698,6 +1698,30 @@
         grid-column: 2;
       }
     }
+    /* Kind of model: sub-choice and retrieval row */
+    .arch-sub,
+    .arch-retrieval {
+      margin-top: 14px;
+    }
+    .arch-retrieval {
+      padding-top: 14px;
+      border-top: 1px solid var(--line2);
+    }
+    .arch-sub-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--soft);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .arch-hint {
+      margin: 10px 0 0;
+      color: var(--soft);
+      font-size: 11px;
+      line-height: 1.55;
+    }
     /* ▸ css: themes */
     /* Each theme redefines the role variables in :root. The first block after that adds only what a
        palette cannot: typefaces, radii, and a few pieces of chrome. */
@@ -2103,7 +2127,7 @@
         <div class="builder">
           <section class="group" aria-labelledby="model-title"><div class="group-head"><span class="number">01</span><div><h2 id="model-title">Model</h2></div></div><div class="body-indent">
             <div class="model-focus" id="modelFocus" aria-live="polite"><div class="model-focus-label">Selected</div><strong id="selectedModelName">Qwen3 8B</strong><div class="selected-ref"><span id="modelRefLabel">Hugging Face</span><code id="modelRefDisplay">Qwen/Qwen3-8B</code></div></div>
-            <div class="field" id="architectureField"><div class="field-head"><span class="label" id="architectureLabel">Architecture</span></div><div class="choice-grid" id="archChoices" role="group" aria-labelledby="architectureLabel"></div></div>
+            <div class="field" id="architectureField"><div class="field-head"><span class="label" id="architectureLabel">Kind of model</span></div><div class="choice-grid" id="archChoices" role="group" aria-labelledby="architectureLabel"></div><div class="arch-sub" id="archSub" hidden><span class="arch-sub-label" id="archSubLabel">Design</span><div class="choice-row" id="archDesign" role="group" aria-labelledby="archSubLabel"></div></div><div class="arch-retrieval"><span class="arch-sub-label" id="archRetrievalLabel">For search and RAG</span><div class="choice-row" id="archRetrieval" role="group" aria-labelledby="archRetrievalLabel"></div><p class="arch-hint">Embeddings turn text into numbers so it can be searched. Rerankers put search results in order of relevance.</p></div></div>
             <div class="model-section-title"><strong>Catalog</strong><span>15 models</span></div><div class="model-views" id="modelViews" role="group" aria-label="Model views"></div><div class="model-list" id="modelList" aria-label="Available models"></div><div class="field" id="checkpointField" hidden><div class="field-head"><span class="label" id="checkpointLabel">Checkpoint</span></div><div class="choice-row" id="checkpointChoices" role="group" aria-labelledby="checkpointLabel"></div></div><div class="default-row"><span id="defaultStatus">Default: Qwen3 8B</span><button type="button" id="setDefault" aria-pressed="false">Use selected as default</button></div>
             <details class="advanced" id="hfProfile"><summary>Hugging Face profile</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="hfNamespace">Username or profile link</label></div><div class="paste-row"><input id="hfNamespace" class="control mono" spellcheck="false" autocomplete="off" placeholder="huggingface.co/your-name"><button type="button" class="secondary" id="pasteProfile">Paste</button><button type="button" class="primary" id="loadProfile">Load</button></div><p class="setting-help" id="hfStatus" role="status">Public models only.</p></div></div></details><div id="hfModelList" class="model-list" aria-label="Models from Hugging Face profile" hidden></div>
             <input id="source" type="hidden" value="huggingface"><input id="architecture" type="hidden" value="text"><input id="modelRef" type="hidden" value="Qwen/Qwen3-8B"><details class="advanced" id="customModel"><summary>Model reference</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="modelLink">Link, tag, or path</label></div><div class="paste-row"><input id="modelLink" class="control mono" spellcheck="false" autocomplete="off" placeholder="Hugging Face link, Ollama tag, or path"><button type="button" class="secondary" id="pasteModel">Paste</button></div></div><div class="field"><div class="field-head"><span class="label" id="sourceLabel">Source</span></div><div class="choice-row" id="sourceChoices" role="group" aria-labelledby="sourceLabel"></div></div><div class="toggle-row" id="customOrnithRow" hidden><div><strong>Ornith 1.5 serving profile</strong><small>Use its reasoning and tool parsers; check your variant’s chat template</small></div><button type="button" class="toggle" id="customOrnith" role="switch" aria-label="Use Ornith 1.5 serving profile" aria-checked="false"></button></div></div></details>
@@ -2281,14 +2305,15 @@
         icon: 'S',
       },
     ];
+    // Short labels for model cards and messages. The picker groups these into the rows below.
     var archNames = {
-      text: 'Text generation',
+      text: 'Dense',
       moe: 'Mixture of experts',
       vision: 'Vision + language',
       embedding: 'Embeddings',
       reranker: 'Reranker',
       speech: 'Speech',
-      diffusion: 'Diffusion',
+      diffusion: 'Image & video',
       custom: 'Other / custom',
     };
     var servers = [
@@ -2489,7 +2514,7 @@
           ['all', 'All'],
           ['favorites', 'Favorites'],
           ['recent', 'Recent'],
-          ['text', 'Text'],
+          ['text', 'Language'],
           ['other', 'Other'],
         ],
         state.modelView,
@@ -2507,15 +2532,47 @@
         renderOutput();
       });
     }
+    // The picker shows what people look for: language models first, search models last.
+    // "Dense" and "Mixture of experts" are a sub-choice of language models and keep the stored values
+    // 'text' and 'moe', so the exported spec is unchanged.
+    var KIND_ROW = [
+      ['text', 'Language models'],
+      ['vision', 'Vision + language'],
+      ['diffusion', 'Image & video'],
+      ['speech', 'Speech'],
+      ['custom', 'Other / custom'],
+    ];
     function renderArch() {
-      var options = Object.keys(archNames).map(function (key) {
-        return [key, archNames[key]];
-      });
-      choiceButtons('archChoices', options, val('architecture'), function (next) {
+      var arch = val('architecture'),
+        isLanguage = arch === 'text' || arch === 'moe';
+      function choose(next) {
         $('architecture').value = next;
         renderArch();
         renderOutput();
+      }
+      choiceButtons('archChoices', KIND_ROW, isLanguage ? 'text' : arch, function (next) {
+        if (next === 'text' && isLanguage) return; // already a language model: keep Dense or MoE
+        choose(next);
       });
+      $('archSub').hidden = !isLanguage;
+      choiceButtons(
+        'archDesign',
+        [
+          ['text', 'Dense'],
+          ['moe', 'Mixture of experts'],
+        ],
+        arch,
+        choose,
+      );
+      choiceButtons(
+        'archRetrieval',
+        [
+          ['embedding', 'Embeddings'],
+          ['reranker', 'Reranker'],
+        ],
+        arch,
+        choose,
+      );
     }
     /* ▸ js: render — engines */
     function renderServers() {
