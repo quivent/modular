@@ -33,7 +33,9 @@
 
 Serving a model means bringing checkpoints, engines, hardware, and runtime settings into agreement. The requirements are strict, the conventions differ, and the details keep changing.
 
-Modular gives that work a calmer shape. A spacious browser interface keeps the main decisions clear, opens deeper controls where they matter, and shows the command taking shape beside you. Enough room to think. Enough detail to stay in control.
+Modular gives that work a calmer shape. Choose a model, an engine, and the hardware you have. Modular assembles a launch command, explains where every flag came from, and tells you plainly when two choices disagree. The interface is spacious, the deeper controls open only where they apply, and the finished command is always in view beside you.
+
+> **Modular is a prototype.** It is a complete, working interface that generates a *starting specification* for a server. It does not install or launch anything, and it does not yet check against versioned engine profiles. See [Honest limits](#honest-limits) and the [roadmap](ROADMAP.md).
 
 <br>
 
@@ -86,6 +88,30 @@ Modular keeps **what you want** separate from **how each engine spells it**. You
 <p align="center">
   <img src="assets/readme/engines.svg" alt="Switching from vLLM to SGLang or Ollama: translated settings are mapped, and one that cannot translate is flagged in Checks." width="900">
 </p>
+
+<br>
+
+## Principles
+
+- 🟢 **Choices, not typing.** Buttons, presets, sliders, and switches carry the main decisions. Free text appears only where the value is free text: a model link, a host, a path, an extra argument.
+- 🔵 **Nothing disappears silently.** If an engine has no equivalent for a setting, Checks says so, and the setting stays saved for when you switch back.
+- 🟡 **Every flag has a reason.** The flag map traces each part of the command to the choice that produced it.
+- 🟠 **Unknown stays unknown.** Modular never claims a model runs on an engine because both appear in a list.
+- 🔴 **Your data stays with you.** No account, no token, no server. Favorites and saved configurations live in your browser.
+
+<br>
+
+## What the checks catch
+
+| | Check | Example |
+| --- | --- | --- |
+| 🔴 | **GPU oversubscription** | Tensor GPUs × pipeline stages exceeds the GPU count you selected |
+| 🟠 | **Settings an engine omits** | A saved device count, memory target, or parser choice the current engine cannot express |
+| 🟡 | **Repeated or opposing arguments** | An extra argument duplicates a flag Modular already generated |
+| 🟡 | **Fit estimate** | A weight-only memory note for the chosen checkpoint and hardware |
+| 🔵 | **Risky combinations** | FP8 KV cache needs hardware support; eager mode disables CUDA graphs; CPU offload moves weights during inference; Docker needs the server bound to all interfaces |
+| 🟢 | **Scheduling sanity** | A token batch smaller than the sequence limit may constrain scheduling |
+| 🟢 | **Fixed KV cache** | A fixed allocation replaces the GPU memory target, and Modular says which flag it omitted |
 
 <br>
 
@@ -148,7 +174,7 @@ Modular is a working prototype that produces a **starting specification**. Its c
 | Estimate weight memory for the chosen checkpoint | Measure real memory headroom, KV cache, or activations |
 | Say “no setting conflicts detected” | Promise that message means the setup will run. It means no implemented check found a conflict |
 
-[DESIGN.md](DESIGN.md) records the intended direction, including versioned engine profiles, source links with last-checked dates, and broader compatibility rules that are not implemented yet.
+The path to a finished product is in [ROADMAP.md](ROADMAP.md). [DESIGN.md](DESIGN.md) records the intended direction, including versioned engine profiles, source links with last-checked dates, and broader compatibility rules that are not implemented yet.
 
 <br>
 
@@ -162,6 +188,7 @@ Favorites, a default model, and saved configurations live in browser local stora
 | [index.html](index.html) | Live, self-contained prototype |
 | [next.html](next.html) | Current working copy |
 | [DESIGN.md](DESIGN.md) | Product direction and iteration history |
+| [ROADMAP.md](ROADMAP.md) | Checklist to a finished release |
 | [catalog-draft.html](catalog-draft.html), [original.html](original.html) | Earlier explorations |
 | [assets/readme](assets/readme) | Artwork, actual interface captures, generated ASCII-art SVGs (`ascii.py`), and editable README compositions |
 
