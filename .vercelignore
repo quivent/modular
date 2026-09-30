@@ -1,0 +1,5 @@
+# Local-only tooling: the deployed site is index.html
+server.py
+db
+tools
+assets

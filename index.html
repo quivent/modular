@@ -1667,7 +1667,7 @@
 <body>
   <div class="page">
     <!-- ▸ html: header -->
-    <header class="top"><a class="brand" href="#top" aria-label="Modular home"><span class="brand-mark"></span><span>modular<span style="color:#86ad5e">.</span></span></a><div class="top-right"><button class="secondary" type="button" id="trackerOpen" aria-haspopup="dialog">Tracker<span class="count" id="trackerCount"></span></button></div></header>
+    <header class="top"><a class="brand" href="#top" aria-label="Modular home"><span class="brand-mark"></span><span>modular<span style="color:#86ad5e">.</span></span></a><div class="top-right"><button class="secondary" type="button" id="trackerOpen" aria-haspopup="dialog" hidden>Tracker<span class="count" id="trackerCount"></span></button></div></header>
     <!-- ▸ html: workspace -->
     <main id="top">
       <section class="intro"><h1>Build a server command.</h1></section>
@@ -3927,8 +3927,11 @@
           })
           .catch(offline);
       };
+      // The tracker only exists where server.py is running. On static hosting the button never appears.
       load().then(function () {
-        if (data) connect();
+        if (!data) return;
+        $('trackerOpen').hidden = false;
+        connect();
       });
     })();
 
