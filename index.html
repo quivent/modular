@@ -1337,23 +1337,6 @@
     .model-choice .model-option {
       flex: 1;
     }
-    .favorite {
-      border: 1px solid var(--line);
-      background: var(--white);
-      color: var(--faint);
-      border-radius: var(--r-sm);
-      width: 31px;
-      font-size: 15px;
-      line-height: 1;
-    }
-    .favorite[aria-pressed='true'] {
-      color: var(--accent-text);
-      background: var(--tint);
-      border-color: var(--accent-line-soft);
-    }
-    .favorite:hover {
-      color: var(--accent-text);
-    }
     .selected-ref {
       display: flex;
       align-items: baseline;
@@ -1443,17 +1426,6 @@
     .model-section-title span {
       font-size: 10px;
       color: var(--soft);
-    }
-    .model-views {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 0 0 12px;
-    }
-    .model-views .choice {
-      padding: 7px 10px;
-      min-height: 32px;
-      font-size: 10px;
     }
     .default-row {
       display: flex;
@@ -2218,7 +2190,7 @@
           <section class="group" aria-labelledby="model-title"><div class="group-head"><span class="number">01</span><div><h2 id="model-title">Model</h2></div></div><div class="body-indent">
             <div class="model-focus" id="modelFocus" aria-live="polite"><div class="model-focus-label">Selected</div><strong id="selectedModelName">Qwen3 8B</strong><div class="selected-ref"><span id="modelRefLabel">Hugging Face</span><code id="modelRefDisplay">Qwen/Qwen3-8B</code></div></div>
             <div class="field" id="architectureField"><div class="field-head"><span class="label" id="architectureLabel">Kind of model</span></div><div class="choice-grid" id="archChoices" role="group" aria-labelledby="architectureLabel"></div><div class="arch-sub" id="archSub" hidden><span class="arch-sub-label" id="archSubLabel">Design</span><div class="choice-row" id="archDesign" role="group" aria-labelledby="archSubLabel"></div></div></div>
-            <div class="model-section-title"><strong>Catalog</strong><span id="catalogCount">15 models</span></div><div class="model-views" id="modelViews" role="group" aria-label="Model views"></div><div class="model-list" id="modelList" aria-label="Available models"></div><div class="field" id="checkpointField" hidden><div class="field-head"><span class="label" id="checkpointLabel">Checkpoint</span></div><div class="choice-row" id="checkpointChoices" role="group" aria-labelledby="checkpointLabel"></div></div><div class="default-row"><span id="defaultStatus">Default: Qwen3 8B</span><button type="button" id="setDefault" aria-pressed="false">Use selected as default</button></div>
+            <div class="model-section-title"><strong>Catalog</strong><span id="catalogCount">15 models</span></div><div class="model-list" id="modelList" aria-label="Available models"></div><div class="field" id="checkpointField" hidden><div class="field-head"><span class="label" id="checkpointLabel">Checkpoint</span></div><div class="choice-row" id="checkpointChoices" role="group" aria-labelledby="checkpointLabel"></div></div><div class="default-row"><span id="defaultStatus">Default: Qwen3 8B</span><button type="button" id="setDefault" aria-pressed="false">Use selected as default</button></div>
             <details class="advanced" id="hfProfile"><summary>Hugging Face profile</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="hfNamespace">Username or profile link</label></div><div class="paste-row"><input id="hfNamespace" class="control mono" spellcheck="false" autocomplete="off" placeholder="huggingface.co/your-name"><button type="button" class="secondary" id="pasteProfile">Paste</button><button type="button" class="primary" id="loadProfile">Load</button></div><p class="setting-help" id="hfStatus" role="status">Public models only.</p></div></div></details><div id="hfModelList" class="model-list" aria-label="Models from Hugging Face profile" hidden></div>
             <input id="source" type="hidden" value="huggingface"><input id="architecture" type="hidden" value="text"><input id="modelRef" type="hidden" value="Qwen/Qwen3-8B"><details class="advanced" id="customModel"><summary>Model reference</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="modelLink">Link, tag, or path</label></div><div class="paste-row"><input id="modelLink" class="control mono" spellcheck="false" autocomplete="off" placeholder="Hugging Face link, Ollama tag, or path"><button type="button" class="secondary" id="pasteModel">Paste</button></div></div><div class="field"><div class="field-head"><span class="label" id="sourceLabel">Source</span></div><div class="choice-row" id="sourceChoices" role="group" aria-labelledby="sourceLabel"></div></div><div class="toggle-row" id="customOrnithRow" hidden><div><strong>Ornith 1.5 serving profile</strong><small>Use its reasoning and tool parsers; check your variant’s chat template</small></div><button type="button" class="toggle" id="customOrnith" role="switch" aria-label="Use Ornith 1.5 serving profile" aria-checked="false"></button></div></div></details>
           </div></section>
@@ -3131,7 +3103,7 @@
       favorites: [],
       recent: [],
       kind: 'language',
-      design: 'all',
+      design: [], // which of Dense / Mixture of experts / Multimodal are switched on; none on shows every model
       role: 'speech-to-text',
       kindLast: {},
       defaultModel: 4,
@@ -3273,36 +3245,10 @@
       storeSavedData();
       if (window.modularPushState) window.modularPushState();
     }
-    function modelIsFavorite(index) {
-      return state.favorites.indexOf(index) !== -1;
-    }
-    function toggleFavorite(index) {
-      var at = state.favorites.indexOf(index);
-      if (at === -1) state.favorites.push(index);
-      else state.favorites.splice(at, 1);
-      persistUserPrefs();
-      renderModelList();
-      renderOutput();
-    }
     function catalogGroup(model) {
       return model.group || model.family;
     }
     /* ▸ js: render — model views, source, architecture */
-    function renderModelViews() {
-      choiceButtons(
-        'modelViews',
-        [
-          ['all', 'All'],
-          ['favorites', 'Favorites'],
-          ['recent', 'Recent'],
-        ],
-        state.modelView,
-        function (next) {
-          state.modelView = next;
-          renderModelList();
-        },
-      );
-    }
     function renderSource() {
       choiceButtons('sourceChoices', sourceOptions, val('source'), function (next) {
         $('source').value = next;
@@ -3322,7 +3268,6 @@
       ['reranker', 'Reranker'],
     ];
     var DESIGNS = [
-      ['all', 'All'],
       ['text', 'Dense'],
       ['moe', 'Mixture of experts'],
       ['vision', 'Multimodal'],
@@ -3334,16 +3279,21 @@
     ];
     // What the exported spec calls each kind (unchanged from before).
     function archForKind(kind) {
-      if (kind === 'language') return state.design === 'all' ? 'text' : state.design;
+      if (kind === 'language') return state.design.length === 1 ? state.design[0] : 'text'; // a custom model is one design
       return { image: 'diffusion', video: 'diffusion', audio: 'speech', embedding: 'embedding', reranker: 'reranker' }[
         kind
       ];
     }
     function inCurrentKind(model) {
       if (model.retired || model.kind !== state.kind) return false;
-      if (state.kind === 'language' && state.design === 'text') return !model.moe;
-      if (state.kind === 'language' && state.design === 'moe') return !!model.moe;
-      if (state.kind === 'language' && state.design === 'vision') return !!model.multimodal;
+      if (state.kind === 'language') {
+        // Dense and Mixture of experts exclude each other, so either one matches; Multimodal is a separate property and must match too.
+        var d = state.design,
+          shape = d.filter(function (x) { return x !== 'vision'; });
+        if (shape.length === 1 && shape[0] === 'text' && model.moe) return false;
+        if (shape.length === 1 && shape[0] === 'moe' && !model.moe) return false;
+        if (d.indexOf('vision') !== -1 && !model.multimodal) return false;
+      }
       if (state.kind === 'audio') return model.role === state.role;
       return true;
     }
@@ -3379,7 +3329,9 @@
       renderOutput();
     }
     function setDesign(next) {
-      state.design = next;
+      var at = state.design.indexOf(next); // each button switches itself on or off
+      if (at === -1) state.design = state.design.concat(next);
+      else state.design = state.design.filter(function (x) { return x !== next; });
       if (state.customModel) $('architecture').value = archForKind('language');
       renderArch();
       renderModelList();
@@ -3401,7 +3353,12 @@
       $('archSub').hidden = !(kind === 'language' || kind === 'audio');
       if (kind === 'language') {
         $('archSubLabel').textContent = 'Design';
-        choiceButtons('archDesign', DESIGNS, state.design, setDesign);
+        choiceButtons('archDesign', DESIGNS, null, setDesign);
+        $('archDesign')
+          .querySelectorAll('[data-choice]')
+          .forEach(function (button) {
+            button.setAttribute('aria-pressed', String(state.design.indexOf(button.dataset.choice) !== -1));
+          });
       } else if (kind === 'audio') {
         $('archSubLabel').textContent = 'Task';
         choiceButtons('archDesign', AUDIO_ROLES, state.role, setRole);
@@ -3821,18 +3778,6 @@
       filtered = filtered.filter(function (item) {
         return inCurrentKind(item.model);
       });
-      if (state.modelView === 'favorites')
-        filtered = filtered.filter(function (item) {
-          return modelIsFavorite(item.index);
-        });
-      if (state.modelView === 'recent')
-        filtered = filtered
-          .filter(function (item) {
-            return (state.recent || []).indexOf(item.index) !== -1;
-          })
-          .sort(function (a, b) {
-            return state.recent.indexOf(a.index) - state.recent.indexOf(b.index);
-          });
       var groups = {};
       filtered.forEach(function (item) {
         var group = catalogGroup(item.model);
@@ -3867,15 +3812,7 @@
                     esc(model.label || model.ornith || model.name) +
                     '</strong><small>' +
                     esc(model.detail || archNames[model.arch] + ' · ' + model.size) +
-                    '</small></button><button type="button" class="favorite" data-favorite="' +
-                    item.index +
-                    '" aria-label="' +
-                    (modelIsFavorite(item.index) ? 'Remove from favorites' : 'Add to favorites') +
-                    '" aria-pressed="' +
-                    modelIsFavorite(item.index) +
-                    '">' +
-                    (modelIsFavorite(item.index) ? '★' : '☆') +
-                    '</button></div>'
+                    '</small></button></div>'
                   );
                 })
                 .join('') +
@@ -3893,17 +3830,6 @@
           setModel(Number(button.dataset.model));
         };
       });
-      document.querySelectorAll('[data-favorite]').forEach(function (button) {
-        button.onclick = function (event) {
-          event.stopPropagation();
-          toggleFavorite(Number(button.dataset.favorite));
-        };
-      });
-      $('modelViews')
-        .querySelectorAll('[data-choice]')
-        .forEach(function (button) {
-          button.setAttribute('aria-pressed', String(button.dataset.choice === state.modelView));
-        });
     }
     function applyModelLink() {
       var raw = val('modelLink');
@@ -4245,7 +4171,6 @@
       renderCheckpoint();
       renderQuant();
       renderOrnithServing();
-      renderModelViews();
       renderModelList();
       renderServers();
       renderHardware();
@@ -4790,6 +4715,8 @@
     }
     function flagHelpText(flag) {
       var full = (flag.help || '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+      // A closing "…the following options: some/path" is a link whose target never came with it: say nothing rather than that.
+      full = full.replace(/\s*[^.]*\bthe following\b[^.]*:\s*\S+$/, '');
       var restates = function (t) {
         return helpRestatesName({ name: flag.name, aliases: flag.aliases, help: t });
       };
@@ -5515,7 +5442,6 @@
     $('modelRef').value = models[state.model].ref;
     renderSource();
     renderArch();
-    renderModelViews();
     renderModelList();
     renderServers();
     renderQuant();
@@ -5897,7 +5823,6 @@
         syncKind();
         renderSource();
         renderArch();
-        renderModelViews();
         renderModelList();
         renderServers();
         renderQuant();

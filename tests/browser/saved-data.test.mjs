@@ -67,15 +67,15 @@ export default async function (t) {
 
     // the server holds state so a brand-new browser sees it
     await session(null, async (b) => {
-      await b.eval(() => { document.getElementById('saveConfig').click(); document.querySelector('.favorite').click(); });
+      await b.eval(() => { document.getElementById('saveConfig').click(); });
       await sleep(900);
     });
     const state = await (await fetch(server.base + '/api/state')).json();
-    t.ok(state.version === 1 && state.configs.length === 1 && state.configs[0].snapshot.v === 1 && state.favorites.length === 1, 'a setup and a favorite reached the server');
+    t.ok(state.version === 1 && state.configs.length === 1 && state.configs[0].snapshot.v === 1 , 'a saved setup reached the server');
     await session(null, async (b) => {
       await sleep(600);
-      const r = await b.eval(() => ({ count: document.getElementById('savedConfigCount').textContent, stars: document.querySelectorAll('.favorite[aria-pressed=true]').length }));
-      t.equal(r, { count: '1', stars: 1 }, 'a fresh browser with empty storage shows them');
+      const r = await b.eval(() => ({ count: document.getElementById('savedConfigCount').textContent }));
+      t.equal(r, { count: '1' }, 'a fresh browser with empty storage shows it');
     }, { keepServerState: true });
   } finally {
     await server.close();

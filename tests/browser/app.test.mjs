@@ -11,7 +11,7 @@ export default async function (t) {
 
     // ── kinds, in one row, by output ──
     t.equal(await $(() => [...document.querySelectorAll('#archChoices .choice')].map((b) => b.textContent.trim())), ['Language', 'Image', 'Video', 'Audio', 'Embeddings', 'Reranker'], 'one row of six kinds');
-    t.equal(await $(() => [...document.querySelectorAll('#archDesign .choice')].map((b) => b.textContent.trim())), ['All', 'Dense', 'Mixture of experts', 'Multimodal'], 'language has the design filter');
+    t.equal(await $(() => [...document.querySelectorAll('#archDesign .choice')].map((b) => b.textContent.trim())), ['Dense', 'Mixture of experts', 'Multimodal'], 'language has the design filters, with no All button');
     const pick = (sel, text) => $(([s, x]) => [...document.querySelectorAll(s)].find((b) => b.textContent.trim() === x).click(), [sel, text]);
     const families = () => $(() => [...document.querySelectorAll('.family-row')].map((r) => r.querySelector('.family-label strong').textContent + ': ' + [...r.querySelectorAll('.model-option strong')].map((x) => x.textContent).join(' | ')));
 
@@ -27,7 +27,12 @@ export default async function (t) {
     t.ok(/Qwen3\.8/.test(await $(() => document.getElementById('modelRefDisplay').textContent)), 'and remembers the one you had (Qwen3.8 27B)');
     await pick('#archDesign .choice', 'Mixture of experts');
     t.ok((await $(() => document.querySelectorAll('.model-option').length)) > 5 && !(await families()).join().includes('27B'), 'the mixture-of-experts filter narrows the list');
-    await pick('#archDesign .choice', 'All');
+    await pick('#archDesign .choice', 'Multimodal');
+    const both = await families();
+    t.ok(both.length > 0 && !both.join().includes('gpt-oss') && !both.join().includes('Granite'), 'Mixture of experts + Multimodal shows only models that are both');
+    await pick('#archDesign .choice', 'Mixture of experts');
+    await pick('#archDesign .choice', 'Multimodal');
+    t.equal(await $(() => document.querySelectorAll('#archDesign [aria-pressed=true]').length), 0, 'clicking a button again switches it off; none on shows every model');
 
     // ── catalog: only the current generation is on screen ──
     const visible = await $(() => [...document.querySelectorAll('.model-option')].map((b) => b.textContent).join(' '));
