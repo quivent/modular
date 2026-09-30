@@ -115,9 +115,11 @@ Modular keeps **what you want** separate from **how each engine spells it**. You
 
 <br>
 
-## Tracker
+## Tracker and saved state
 
-The **Tracker** button in the top bar opens the project checklist: progress, filters by status, and a field to add tasks. Tasks live in `db/modular.db`, created from [`db/schema.sql`](db/schema.sql) and seeded from [ROADMAP.md](ROADMAP.md) the first time the server starts. The same database has tables ready for saved configurations, favorites, and preferences.
+The **Tracker** button in the top bar opens the project checklist: progress, filters by status, and a field to add tasks. Tasks live in `db/modular.db`, created from [`db/schema.sql`](db/schema.sql) and seeded from [ROADMAP.md](ROADMAP.md) the first time the server starts.
+
+The same database keeps your **saved setups, favorites, default model, and Hugging Face profile name**, so they follow you across browsers on the same machine. The page still mirrors them to browser storage, which means it keeps working on a plain static server. The first time the server sees an empty database, it adopts what your browser already has.
 
 <br>
 

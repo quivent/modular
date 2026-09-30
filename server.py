@@ -12,6 +12,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = pathlib.Path(__file__).resolve().parent
 DB_PATH = ROOT / "db" / "modular.db"
+MAX_BODY = 1_000_000
 STATUSES = ("todo", "doing", "blocked", "done")
 PRIVATE = {"db", "archive"}  # never served as static files
 LOCAL_HOSTS = re.compile(r"^(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$")
@@ -24,9 +25,24 @@ def connect():
     return conn
 
 
+def migrate(conn, version):
+    """Upgrade a database created by an older schema. schema.sql is the newest shape."""
+    if version == 1:  # v2: the default model moved from favorite_models to preferences
+        conn.execute("DROP INDEX IF EXISTS one_default_model")
+        old_default = conn.execute("SELECT model_ref FROM favorite_models WHERE is_default = 1").fetchone()
+        conn.execute("ALTER TABLE favorite_models DROP COLUMN is_default")
+        conn.execute("ALTER TABLE favorite_models ADD COLUMN position INTEGER NOT NULL DEFAULT 0")
+        if old_default:
+            conn.execute("INSERT OR REPLACE INTO preferences (key, value) VALUES ('defaultModel', ?)",
+                         (json.dumps(old_default[0]),))
+
+
 def init_db():
     fresh = not DB_PATH.exists()
     with connect() as conn:
+        version = conn.execute("PRAGMA user_version").fetchone()[0]
+        if version == 1:
+            migrate(conn, version)
         conn.executescript((ROOT / "db" / "schema.sql").read_text())
     if fresh:
         seed = subprocess.run([sys.executable, str(ROOT / "db" / "seed_from_roadmap.py")],
@@ -47,6 +63,48 @@ def list_tasks():
             "FROM tasks t JOIN task_groups g ON g.id = t.group_id "
             "ORDER BY g.position, t.position, t.id").fetchall()
     return {"groups": [dict(g) for g in groups], "tasks": [task_row(r) for r in rows]}
+
+
+def get_state():
+    with connect() as conn:
+        favorites = [r[0] for r in conn.execute("SELECT model_ref FROM favorite_models ORDER BY position, added_at")]
+        configs = [{"id": r["id"], "name": r["name"], "snapshot": json.loads(r["settings"])}
+                   for r in conn.execute("SELECT id, name, settings FROM saved_configurations ORDER BY id")]
+        prefs = {r["key"]: json.loads(r["value"]) for r in conn.execute("SELECT key, value FROM preferences")}
+    default = prefs.pop("defaultModel", None)
+    return {"favorites": favorites, "defaultModel": default, "configs": configs, "preferences": prefs,
+            "empty": not (favorites or configs or default or prefs)}
+
+
+def put_state(data):
+    """Replace the saved state atomically. The page sends its whole state, as it did to local storage."""
+    favorites = data.get("favorites", [])
+    configs = data.get("configs", [])
+    prefs = data.get("preferences", {})
+    default = data.get("defaultModel")
+    if not (isinstance(favorites, list) and all(isinstance(f, str) for f in favorites)
+            and isinstance(configs, list) and isinstance(prefs, dict)
+            and (default is None or isinstance(default, str))):
+        raise ValueError("malformed state")
+    for c in configs:
+        if not (isinstance(c, dict) and isinstance(c.get("snapshot"), dict)):
+            raise ValueError("each config needs a snapshot object")
+    with connect() as conn:
+        conn.execute("DELETE FROM favorite_models")
+        conn.executemany("INSERT OR IGNORE INTO favorite_models (model_ref, position) VALUES (?, ?)",
+                         [(f[:300], i) for i, f in enumerate(favorites)])
+        conn.execute("DELETE FROM saved_configurations")
+        for c in configs:
+            snap = c["snapshot"]
+            conn.execute("INSERT INTO saved_configurations (name, model_ref, engine, settings) VALUES (?,?,?,?)",
+                         (str(c.get("name", ""))[:200], str(c.get("modelRef", ""))[:300],
+                          str(snap.get("server", ""))[:40], json.dumps(snap)))
+        conn.execute("DELETE FROM preferences")
+        items = dict(prefs)
+        if default:
+            items["defaultModel"] = default
+        conn.executemany("INSERT INTO preferences (key, value) VALUES (?, ?)",
+                         [(str(k)[:80], json.dumps(val)) for k, val in items.items()])
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -74,7 +132,9 @@ class Handler(BaseHTTPRequestHandler):
             return None
         try:
             length = int(self.headers.get("Content-Length", "0"))
-            data = json.loads(self.rfile.read(min(length, 65536)) or b"{}")
+            if length > MAX_BODY:
+                return None
+            data = json.loads(self.rfile.read(length) or b"{}")
         except (ValueError, json.JSONDecodeError):
             return None
         return data if isinstance(data, dict) else None
@@ -88,6 +148,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(204); self.end_headers(); return
         if path == "/api/tasks":
             return self.send_json(200, list_tasks())
+        if path == "/api/state":
+            return self.send_json(200, get_state())
         if path.startswith("/api/"):
             return self.send_json(404, {"error": "not found"})
         rel = pathlib.PurePosixPath("/" + path.lstrip("/")).relative_to("/")
@@ -111,6 +173,14 @@ class Handler(BaseHTTPRequestHandler):
         data = self.body_json() if method != "DELETE" else {}
         if data is None:
             return self.send_json(400, {"error": "expected a JSON object"})
+        if self.path.split("?", 1)[0] == "/api/state":
+            if method != "PUT":
+                return self.send_json(405, {"error": "method not allowed"})
+            try:
+                put_state(data)
+            except ValueError as e:
+                return self.send_json(400, {"error": str(e)})
+            return self.send_json(200, get_state())
         m = re.fullmatch(r"/api/tasks(?:/(\d+))?", self.path.split("?", 1)[0])
         if not m:
             return self.send_json(404, {"error": "not found"})
@@ -156,6 +226,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self): self.api_write("POST")
     def do_PATCH(self): self.api_write("PATCH")
+    def do_PUT(self): self.api_write("PUT")
     def do_DELETE(self): self.api_write("DELETE")
 
 

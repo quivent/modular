@@ -248,7 +248,7 @@
         button.onclick=function(){click(button.dataset.choice);};
       });
     }
-    function persistUserPrefs(){try{localStorage.setItem('modular.preferences',JSON.stringify({favorites:state.favorites,defaultModel:state.defaultModel}));localStorage.setItem('modular.configs',JSON.stringify(state.savedConfigs));}catch(e){}}
+    function persistUserPrefs(){try{localStorage.setItem('modular.preferences',JSON.stringify({favorites:state.favorites,defaultModel:state.defaultModel}));localStorage.setItem('modular.configs',JSON.stringify(state.savedConfigs));}catch(e){}if(window.modularPushState)window.modularPushState();}
     function modelIsFavorite(index){return state.favorites.indexOf(index)!==-1;}
     function toggleFavorite(index){var at=state.favorites.indexOf(index);if(at===-1)state.favorites.push(index);else state.favorites.splice(at,1);persistUserPrefs();renderModelList();renderOutput();}
     function catalogGroup(model){
@@ -462,7 +462,7 @@
         if(!response.ok)throw new Error('Hugging Face returned '+response.status);
         var data=await response.json();if(!Array.isArray(data))throw new Error('Unexpected response');
         state.profileModels=data.filter(function(item){return typeof (item.id||item.modelId)==='string'&&(item.id||item.modelId).startsWith(namespace+'/');});
-        try{localStorage.setItem('modular.hfNamespace',namespace);}catch(e){}
+        try{localStorage.setItem('modular.hfNamespace',namespace);}catch(e){}if(window.modularPushState)window.modularPushState();
         renderProfileModels();$('hfStatus').textContent=state.profileModels.length?state.profileModels.length+' public models found. Choose one below.':'No public models found for '+namespace+'.';
       }catch(e){state.profileModels=[];renderProfileModels();$('hfStatus').textContent='Could not load this profile. Check the name or paste the exact model link below.';}
       $('loadProfile').disabled=false;
@@ -668,6 +668,43 @@
         api('POST','',{title:title,group:$('trackerGroup').value}).then(function(t){data.tasks.push(t);$('trackerNew').value='';filter='all';render();}).catch(offline);
       };
       load();
+    })();
+
+    /* Saved state: mirrors favorites, default model, saved setups, and the profile name to the
+       server's database. Local storage stays as the offline fallback and the first-run source. */
+    (function(){
+      var ready=false,timer=null;
+      function ref(i){return models[i]?models[i].ref:null;}
+      function payload(){
+        var profile='';try{profile=localStorage.getItem('modular.hfNamespace')||'';}catch(e){}
+        return{
+          favorites:state.favorites.map(ref).filter(Boolean),
+          defaultModel:ref(state.defaultModel),
+          configs:state.savedConfigs.map(function(c){return{name:c.name,modelRef:(c.snapshot&&ref(c.snapshot.model))||'',snapshot:c.snapshot};}),
+          preferences:profile?{hfNamespace:profile}:{}
+        };
+      }
+      function push(){
+        if(!ready)return;clearTimeout(timer);
+        timer=setTimeout(function(){fetch('/api/state',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload())}).catch(function(){});},300);
+      }
+      window.modularPushState=push;
+      function index(r){for(var i=0;i<models.length;i++)if(models[i].ref===r)return i;return -1;}
+      function apply(saved){
+        state.favorites=saved.favorites.map(index).filter(function(i){return i>=0;});
+        var d=index(saved.defaultModel);if(d>=0){state.defaultModel=d;state.model=d;$('modelRef').value=models[d].ref;}
+        state.savedConfigs=saved.configs.map(function(c){return{name:c.name,snapshot:c.snapshot};});
+        var profile=saved.preferences&&saved.preferences.hfNamespace;
+        try{if(profile){localStorage.setItem('modular.hfNamespace',profile);}
+            localStorage.setItem('modular.preferences',JSON.stringify({favorites:state.favorites,defaultModel:state.defaultModel}));
+            localStorage.setItem('modular.configs',JSON.stringify(state.savedConfigs));}catch(e){}
+        renderSource();renderArch();renderModelViews();renderModelList();renderServers();renderQuant();renderCheckpoint();renderContext();renderHost();renderServerFields();renderTuning();renderSavedConfigs();renderOutput();
+        if(profile&&!$('hfNamespace').value){$('hfNamespace').value=profile;loadProfile();}
+      }
+      fetch('/api/state').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(saved){
+        if(saved.empty){ready=true;push();}   // first run with a database: adopt what this browser already has
+        else{apply(saved);ready=true;}
+      }).catch(function(){});
     })();
   </script>
 </body>

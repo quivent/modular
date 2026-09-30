@@ -2,7 +2,7 @@
 -- Timestamps are ISO-8601 UTC text. Ids are integers; slugs are stable keys.
 
 PRAGMA foreign_keys = ON;
-PRAGMA user_version = 1;          -- bump with each migration
+PRAGMA user_version = 2;          -- bump with each migration (see migrate() in server.py)
 
 -- ── Tracker ───────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS task_groups (
@@ -87,15 +87,14 @@ CREATE TABLE IF NOT EXISTS saved_configurations (
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
 
+-- Favorites are kept by model reference so they survive catalog reordering.
 CREATE TABLE IF NOT EXISTS favorite_models (
   model_ref  TEXT PRIMARY KEY,
-  is_default INTEGER NOT NULL DEFAULT 0 CHECK (is_default IN (0,1)),
+  position   INTEGER NOT NULL DEFAULT 0,
   added_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
--- At most one default model.
-CREATE UNIQUE INDEX IF NOT EXISTS one_default_model ON favorite_models(is_default) WHERE is_default = 1;
 
--- Small key/value preferences (Hugging Face profile name, last output format, ...).
+-- Small key/value preferences: defaultModel (a model ref), hfNamespace, ...
 CREATE TABLE IF NOT EXISTS preferences (
   key   TEXT PRIMARY KEY,
   value TEXT NOT NULL CHECK (json_valid(value))
