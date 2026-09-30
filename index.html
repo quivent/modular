@@ -4992,6 +4992,39 @@
           { flag: '--kv-cache-dtype', value: 'runtime.scheduling.kv_cache_dtype', when: { neq: ['runtime.scheduling.kv_cache_dtype', 'auto'] } },
         ],
       },
+      sglang: {
+        engine: 'sglang',
+        documented: '2026-09-30',
+        head: 'python -m sglang.launch_server',
+        rules: [
+          { flag: '--model-path', value: 'model.reference', format: 'sh', fallback: 'MODEL_REFERENCE' },
+          { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0' },
+          { flag: '--port', value: 'runtime.port' },
+          { flag: '--context-length', value: 'runtime.context_tokens' },
+          { flag: '--tp-size', value: 'runtime.parallel_devices' },
+          { flag: '--mem-fraction-static', value: 'runtime.gpu_memory_percent', format: 'fraction' },
+          { flag: '--quantization', value: 'runtime.quantization', format: 'lower_sh', when: { and: [{ falsy: 'model.build' }, { neq: ['runtime.quantization', 'Native / auto'] }] } },
+          { flag: '--trust-remote-code', when: { truthy: 'runtime.trust_model_code' } },
+          { flag: '--disable-radix-cache', when: { falsy: 'runtime.prefix_cache' } },
+          { flag: '--served-model-name', value: 'model.served_name', format: 'sh', when: { truthy: 'model.ornith_profile' } },
+          { flag: '--reasoning-parser', literal: 'qwen3', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.reasoning_parser' }] } },
+          { flag: '--tool-call-parser', literal: 'qwen3_coder', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] } },
+        ],
+      },
+      trtllm: {
+        engine: 'trtllm',
+        documented: '2026-09-30',
+        head: 'trtllm-serve {model}',
+        rules: [
+          { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0' },
+          { flag: '--port', value: 'runtime.port' },
+          { flag: '--tp_size', value: 'runtime.parallel_devices' },
+          { flag: '--pp_size', value: 'runtime.pipeline_stages', when: { gt: ['runtime.pipeline_stages', 1] } },
+          { flag: '--max_seq_len', value: 'runtime.context_tokens' },
+          { flag: '--free_gpu_memory_fraction', value: 'runtime.gpu_memory_percent', format: 'fraction' },
+          { flag: '--trust_remote_code', when: { truthy: 'runtime.trust_model_code' } },
+        ],
+      },
     };
     function profileGet(config, path) {
       return path.split('.').reduce(function (o, k) {
