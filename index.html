@@ -3165,15 +3165,20 @@
       { id: 'b300', name: 'B300', gb: 288, cc: 10.3 },
       { id: 'b200', name: 'B200', gb: 180, cc: 10.0 },
       { id: 'h200', name: 'H200', gb: 141, cc: 9.0 },
+      { id: 'gh200-141', name: 'GH200', gb: 141, cc: 9.0 },
+      { id: 'gh200-96', name: 'GH200', gb: 96, cc: 9.0 },
+      { id: 'rtx-pro-6000', name: 'RTX PRO 6000', gb: 96, cc: 12.0 },
       { id: 'h100', name: 'H100', gb: 80, cc: 9.0 },
       { id: 'a100-80', name: 'A100', gb: 80, cc: 8.0 },
       { id: 'a100-40', name: 'A100', gb: 40, cc: 8.0 },
-      { id: 'rtx-pro-6000', name: 'RTX PRO 6000', gb: 96, cc: 12.0 },
+      { id: 'l40s', name: 'L40S', gb: 48, cc: 8.9 },
+      { id: 'l40', name: 'L40', gb: 48, cc: 8.9 },
       { id: 'rtx-5090', name: 'RTX 5090', gb: 32, cc: 12.0 },
       { id: 'rtx-4090', name: 'RTX 4090', gb: 24, cc: 8.9 },
       { id: 'rtx-3090', name: 'RTX 3090', gb: 24, cc: 8.6 },
+      { id: 'rtx-3060', name: 'RTX 3060', gb: 12, cc: 8.6 },
     ];
-    var GPU_MEMORY = [24, 32, 40, 80, 96, 141, 180, 288];
+    var GPU_MEMORY = [12, 24, 32, 40, 48, 80, 96, 141, 180, 288];
     function currentCard() {
       for (var i = 0; i < GPU_CARDS.length; i++) if (GPU_CARDS[i].id === state.gpuCard) return GPU_CARDS[i];
       return null;
@@ -3508,7 +3513,6 @@
           ['2', '2'],
           ['4', '4'],
           ['8', '8'],
-          ['16', '16'],
         ],
         state.gpuCount,
         function (next) {
@@ -3551,7 +3555,6 @@
           ['2', '2'],
           ['4', '4'],
           ['8', '8'],
-          ['16', '16'],
         ],
         val('parallel'),
         function (next) {
@@ -3567,7 +3570,6 @@
           ['2', '2'],
           ['4', '4'],
           ['8', '8'],
-          ['16', '16'],
         ],
         state.pipeline,
         function (next) {
