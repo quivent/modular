@@ -108,7 +108,7 @@ Modular keeps **what you want** separate from **how each engine spells it**. You
 | 🔴 | **GPU oversubscription** | Tensor GPUs × pipeline stages exceeds the GPU count you selected |
 | 🟠 | **Settings an engine omits** | A saved device count, memory target, or parser choice the current engine cannot express |
 | 🟡 | **Repeated or opposing arguments** | An extra argument duplicates a flag Modular already generated |
-| 🟡 | **Fit estimate** | A weight-only memory note for the chosen checkpoint and hardware |
+| 🔴 | **Will it start?** | Weights plus KV cache against your GPUs: “Llama 3.3 70B needs about 131 GB; 20 GB is usable on 1 × 24 GB”, “the KV cache holds only 31,600 tokens, less than your 40,960-token context”, “28 attention heads cannot be split across 8 GPUs”, each with the fix |
 | 🔵 | **Risky combinations** | FP8 KV cache needs hardware support; eager mode disables CUDA graphs; CPU offload moves weights during inference; Docker needs the server bound to all interfaces |
 | 🟢 | **Scheduling sanity** | A token batch smaller than the sequence limit may constrain scheduling |
 | 🟢 | **Fixed KV cache** | A fixed allocation replaces the GPU memory target, and Modular says which flag it omitted |
@@ -207,7 +207,7 @@ Modular is a prototype, and this is the plain list of what stands between it and
 - [ ] **7. Engine version selector.** Let people pick the version they run, and show how defaults or spellings differ before export.
 - [ ] **8. Source links and last-checked dates.** Link each version-specific flag to its documentation, and label unknown compatibility as unknown.
 - [ ] **9. Automated tests.** Golden-file tests for every engine and output format, plus a test for each check (oversubscription, omitted settings, duplicate arguments).
-- [ ] **10. Better fit estimates.** Extend the weight-only note to KV cache and activation headroom for the chosen context and batch, clearly labeled as an estimate.
+- [x] **10. Better fit estimates.** Every catalog model with a published architecture now gets a real "will it start?" check: weights at the chosen precision, KV cache for a full-length request, attention heads divisible by the GPU count, CPU offload, and fixed KV memory, each with a concrete fix. Custom models and Ornith builds keep the weight-only note.
 - [ ] **11. Input validation.** Validate pasted references, hosts, ports, paths, and extra arguments, and quote them safely in every output format.
 
 ### Reach

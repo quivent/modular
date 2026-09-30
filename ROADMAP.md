@@ -16,7 +16,7 @@ Modular today is a complete, working prototype. This checklist is the path from 
 - [ ] **7. Engine version selector.** Let people pick the version they run, and show how defaults or spellings differ before export.
 - [ ] **8. Source links and last-checked dates.** Link each version-specific flag to its documentation, and label unknown compatibility as unknown.
 - [ ] **9. Automated tests.** Golden-file tests for every engine and output format, plus a test for each check (oversubscription, omitted settings, duplicate arguments).
-- [ ] **10. Better fit estimates.** Extend the weight-only note to KV cache and activation headroom for the chosen context and batch, clearly labeled as an estimate.
+- [x] **10. Better fit estimates.** Every catalog model with a published architecture now gets a real "will it start?" check: weights at the chosen precision, KV cache for a full-length request, attention heads divisible by the GPU count, CPU offload, and fixed KV memory, each with a concrete fix. Custom models and Ornith builds keep the weight-only note.
 - [ ] **11. Input validation.** Validate pasted references, hosts, ports, paths, and extra arguments, and quote them safely in every output format.
 
 ### Reach

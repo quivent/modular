@@ -3260,6 +3260,173 @@
       if (r.extra_arguments) add('Extra arguments', r.extra_arguments, 'extraArgs');
       return rows;
     }
+    /* ▸ js: memory estimate */
+    /* A "will it start?" estimate for GPU engines: weights, plus KV cache for one full-length request,
+       against the memory the engine may use. Model shapes come from each model's config.json and
+       safetensors metadata on Hugging Face (fetched 2026-09-30). It is an estimate, not a guarantee:
+       activations, CUDA graphs, and fragmentation vary by engine version. Sizes are in GiB, which is
+       how GPU "GB" figures are counted. */
+    var MEMORY_SHAPES = {
+      'Qwen/Qwen3-8B': { billions: 8.19, layers: 36, heads: 32, kvHeads: 8, headDim: 128 },
+      'Qwen/Qwen3-32B': { billions: 32.76, layers: 64, heads: 64, kvHeads: 8, headDim: 128 },
+      'deepseek-ai/DeepSeek-R1-Distill-Qwen-32B': {
+        billions: 32.76,
+        layers: 64,
+        heads: 40,
+        kvHeads: 8,
+        headDim: 128,
+      },
+      'meta-llama/Llama-3.3-70B-Instruct': {
+        billions: 70.55,
+        layers: 80,
+        heads: 64,
+        kvHeads: 8,
+        headDim: 128,
+      },
+      // Gemma 3 mixes sliding-window and full attention; treating every layer as full gives an upper bound.
+      'google/gemma-3-27b-it': {
+        billions: 27.43,
+        layers: 62,
+        heads: 32,
+        kvHeads: 16,
+        headDim: 128,
+        upperBound: true,
+      },
+      'microsoft/phi-4': { billions: 14.66, layers: 40, heads: 40, kvHeads: 10, headDim: 128 },
+      'Qwen/Qwen2.5-VL-7B-Instruct': { billions: 8.29, layers: 28, heads: 28, kvHeads: 4, headDim: 128 },
+      'mistralai/Mixtral-8x7B-Instruct-v0.1': {
+        billions: 46.7,
+        layers: 32,
+        heads: 32,
+        kvHeads: 8,
+        headDim: 128,
+      },
+    };
+    var BYTES_PER_PARAM = {
+      'Native / auto': 2,
+      FP8: 1,
+      AWQ: 0.55,
+      GPTQ: 0.55,
+      bitsandbytes: 0.55,
+      EETQ: 1,
+    };
+    var RUNTIME_OVERHEAD_GIB = 2; // per GPU: activations, CUDA graphs, framework context
+    var GIB = 1073741824;
+    function gibText(n) {
+      return (n >= 10 ? Math.round(n) : Math.round(n * 10) / 10) + ' GB';
+    }
+    function tokenText(n) {
+      return Math.floor(n / 100) * 100 > 0 ? (Math.floor(n / 100) * 100).toLocaleString('en-US') : String(Math.floor(n));
+    }
+    // o: { tp, pp, vramGb, utilPercent, contextTokens, quant, dtype, kvFp8, offloadGb, kvGb }
+    // Returns null when the inputs are not covered, else { level: 'ok' | 'fail', text }.
+    function estimateFit(shape, o) {
+      var bytes = o.dtype === 'float32' && o.quant === 'Native / auto' ? 4 : BYTES_PER_PARAM[o.quant];
+      if (!bytes) return null;
+      var gpus = o.tp * o.pp;
+      if (shape.heads % o.tp !== 0) {
+        var valid = [1, 2, 4, 8].filter(function (n) {
+          return shape.heads % n === 0;
+        });
+        return {
+          level: 'fail',
+          text:
+            shape.heads +
+            ' attention heads cannot be split across ' +
+            o.tp +
+            ' GPUs, so the engine will refuse to start. Use ' +
+            valid.join(', ') +
+            ' GPUs for tensor parallelism.',
+        };
+      }
+      var weights = (shape.billions * 1e9 * bytes) / GIB;
+      var weightsOnGpu = Math.max(0, weights - o.offloadGb * gpus);
+      var usable = (o.vramGb * o.utilPercent) / 100;
+      var room = gpus * (usable - RUNTIME_OVERHEAD_GIB); // weights + KV cache must fit in here
+      if (weightsOnGpu > room) {
+        var need = Math.ceil(weightsOnGpu / Math.max(1, usable - RUNTIME_OVERHEAD_GIB));
+        var fp8 = (shape.billions * 1e9) / GIB;
+        var alt =
+          o.quant === 'Native / auto' && bytes === 2
+            ? ' An FP8 build needs about ' +
+              gibText(fp8) +
+              ' (' +
+              Math.ceil(fp8 / Math.max(1, usable - RUNTIME_OVERHEAD_GIB)) +
+              ' of these GPUs).'
+            : '';
+        return {
+          level: 'fail',
+          text:
+            'Weights need about ' +
+            gibText(weightsOnGpu) +
+            (o.offloadGb ? ' on the GPUs (after CPU offload)' : '') +
+            ' but only about ' +
+            gibText(room) +
+            ' is usable on ' +
+            gpus +
+            ' × ' +
+            o.vramGb +
+            ' GB at ' +
+            o.utilPercent +
+            '%. It needs at least ' +
+            need +
+            ' of these GPUs.' +
+            alt,
+        };
+      }
+      var kvPool = o.kvGb > 0 ? o.kvGb * gpus : room - weightsOnGpu;
+      if (o.kvGb > 0 && weightsOnGpu / gpus + o.kvGb + RUNTIME_OVERHEAD_GIB > o.vramGb)
+        return {
+          level: 'fail',
+          text:
+            'Fixed KV cache (' +
+            o.kvGb +
+            ' GB per GPU) plus weights (about ' +
+            gibText(weightsOnGpu / gpus) +
+            ' per GPU) exceeds ' +
+            o.vramGb +
+            ' GB. Lower the KV cache or add GPUs.',
+        };
+      // Each KV head is stored once per GPU; with more GPUs than KV heads the heads are replicated.
+      var perToken =
+        2 * shape.layers * shape.kvHeads * shape.headDim * (o.kvFp8 ? 1 : 2) * Math.max(1, o.tp / shape.kvHeads);
+      var maxTokens = Math.floor((kvPool * GIB) / perToken);
+      var note = shape.upperBound
+        ? ' (an upper bound: every layer counted as full attention)'
+        : '';
+      if (maxTokens < o.contextTokens) {
+        return {
+          level: 'fail',
+          text:
+            'Weights fit (about ' +
+            gibText(weightsOnGpu) +
+            ') but the KV cache holds only about ' +
+            tokenText(maxTokens) +
+            ' tokens, less than your ' +
+            o.contextTokens.toLocaleString('en-US') +
+            '-token context, so the engine will refuse to start. Lower the context to about ' +
+            tokenText(maxTokens) +
+            (o.kvFp8 ? '' : ', switch the KV cache to FP8 (about twice the room)') +
+            ', or add a GPU.',
+        };
+      }
+      var seqs = Math.floor(maxTokens / o.contextTokens);
+      return {
+        level: 'ok',
+        text:
+          'Estimated to fit: weights about ' +
+          gibText(weightsOnGpu) +
+          ', with KV cache for about ' +
+          seqs +
+          ' full-length ' +
+          o.contextTokens.toLocaleString('en-US') +
+          '-token request' +
+          (seqs === 1 ? '' : 's') +
+          ' at once' +
+          note +
+          '.',
+      };
+    }
     /* ▸ js: flag map, checks, fit estimate */
     function renderFlagMap(c) {
       var rows = flagRows(c);
@@ -3316,11 +3483,30 @@
       return matches;
     }
     function fitAssessment(c) {
-      if (!c.model.build)
+      if (!c.model.build) {
+        var shape = MEMORY_SHAPES[c.model.reference];
+        var gpuEngine = ['vllm', 'sglang', 'tgi'].indexOf(c.runtime.server) !== -1;
+        var estimate =
+          shape && gpuEngine
+            ? estimateFit(shape, {
+                tp: c.runtime.parallel_devices,
+                pp: c.runtime.pipeline_stages,
+                vramGb: c.runtime.hardware.memory_per_device_gb,
+                utilPercent: c.runtime.gpu_memory_percent,
+                contextTokens: c.runtime.context_tokens,
+                quant: c.runtime.quantization,
+                dtype: c.runtime.scheduling.dtype,
+                kvFp8: c.runtime.scheduling.kv_cache_dtype === 'fp8',
+                offloadGb: (c.runtime.server === 'vllm' && c.runtime.cpu_offload_gb) || 0,
+                kvGb: (c.runtime.server === 'vllm' && c.runtime.kv_cache_gb) || 0,
+              })
+            : null;
+        if (estimate) return { warn: estimate.level === 'fail', text: estimate.text };
         return {
           warn: false,
           text: 'GPU memory is a reference, not a server flag. Check actual checkpoint requirements.',
         };
+      }
       var build = c.model.build,
         engine = c.runtime.server,
         capacity = state.gpuVram * c.runtime.parallel_devices * c.runtime.pipeline_stages,
