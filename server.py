@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Modular local server: serves the app and a small JSON API over SQLite.
 
-    python3 server.py            # http://127.0.0.1:8000
+    python3 server.py            # http://127.0.0.1:8420
     python3 server.py --port 9000
 
 The database (db/modular.db) is created from db/schema.sql on first run and
@@ -84,6 +84,8 @@ class Handler(BaseHTTPRequestHandler):
         if not self.host_ok():
             return self.send_json(403, {"error": "forbidden host"})
         path = self.path.split("?", 1)[0]
+        if path == "/favicon.ico":
+            self.send_response(204); self.end_headers(); return
         if path == "/api/tasks":
             return self.send_json(200, list_tasks())
         if path.startswith("/api/"):
@@ -159,10 +161,14 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--port", type=int, default=8000)
+    ap.add_argument("--port", type=int, default=8420)
     args = ap.parse_args()
     init_db()
-    srv = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
+    try:
+        srv = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
+    except OSError as e:
+        sys.exit(f"Cannot listen on 127.0.0.1:{args.port} ({e.strerror}). "
+                 f"Something else is using it; try: python3 server.py --port {args.port + 1}")
     print(f"Modular on http://127.0.0.1:{args.port}  (db: {DB_PATH.relative_to(ROOT)})")
     try:
         srv.serve_forever()

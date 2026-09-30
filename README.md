@@ -159,7 +159,7 @@ From this directory:
 python3 server.py
 ```
 
-Open [127.0.0.1:8000](http://127.0.0.1:8000). No build step or account is required. The server listens on your machine only, serves the app, and keeps the [tracker](#tracker) in a local SQLite database. To use just the configurator, any static server works: `python3 -m http.server 8000`.
+Open [127.0.0.1:8420](http://127.0.0.1:8420). No build step or account is required. The server listens on your machine only, serves the app, and keeps the [tracker](#tracker) in a local SQLite database. To use just the configurator, any static server works: `python3 -m http.server 8420`.
 
 1. Start with **Qwen3 8B** and **vLLM**.
 2. Change a choice: context, GPU count, or engine.
