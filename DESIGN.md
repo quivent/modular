@@ -76,9 +76,9 @@ forms, and dependencies/conflicts. The renderer compiles that state into a
 command; the checker reports unsupported or unverified combinations. This is
 what lets the interface stay calm while the servers keep changing.
 
-The live page is in index.html. catalog-draft.html is an unpublished
+The live page is in index.html. archive/catalog-draft.html is an unpublished
 exploration of inline catalog choices. The previous initial prototype is in
-original.html.
+archive/original.html.
 
 ## Current iteration (0.4)
 
@@ -92,8 +92,8 @@ was removed because it did not affect the command.
 
 The versioned engine profiles, comprehensive compatibility rules, and
 additional command forms above remain the product direction; they are not yet
-implemented in this prototype. `next.html` is the working copy; `index.html` is
-the deployed page.
+implemented in this prototype. `index.html` is the deployed page; work happens on branches and releases are
+git tags.
 
 ## Current iteration (0.4.1)
 
