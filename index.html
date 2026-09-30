@@ -3080,6 +3080,13 @@
         note: 'Supports a wide model set, with engine-specific support for architectures and weight formats.',
       },
       {
+        id: 'trtllm',
+        name: 'TensorRT-LLM',
+        sub: 'NVIDIA-optimized serving',
+        quant: ['Native / auto', 'FP8', 'NVFP4', 'Custom…'],
+        note: 'Serves Hugging Face checkpoints on NVIDIA GPUs. FP8 and NVFP4 checkpoints load as they were quantized.',
+      },
+      {
         id: 'tgi',
         name: 'TGI',
         sub: 'Hugging Face serving',
@@ -3106,13 +3113,6 @@
         sub: 'Apple silicon',
         quant: ['Set by checkpoint', 'MLX 4-bit', 'MLX 8-bit', 'Custom…'],
         note: 'MLX LM requires a converted MLX checkpoint; quantization is encoded in its weights.',
-      },
-      {
-        id: 'custom',
-        name: 'Other server',
-        sub: 'Use your own template',
-        quant: ['Native / auto', 'FP8', 'INT8', 'AWQ', 'GPTQ', 'GGUF', 'Custom…'],
-        note: 'Describe any server with a command template and keep the full configuration as JSON.',
       },
     ];
     var state = {
@@ -3165,7 +3165,7 @@
       llama: 8080,
       ollama: 11434,
       mlx: 8080,
-      custom: 8000,
+      trtllm: 8000,
     };
     var $ = function (id) {
       return document.getElementById(id);
@@ -3325,6 +3325,7 @@
     }
     // Keep the kind in step with the selected model (after a restore, a server sync, or first load).
     function syncKind() {
+      if (!servers.some(function (x) { return x.id === state.server; })) state.server = 'vllm';
       var m = !state.customModel && models[state.model];
       if (m) {
         state.kind = m.kind;
@@ -3474,10 +3475,10 @@
     function renderHardware() {
       $('hardware').setAttribute('aria-checked', String(state.hardware === 'multi'));
       var multi = state.hardware === 'multi',
-        parallel = state.server === 'vllm' || state.server === 'sglang' || state.server === 'tgi';
+        parallel = state.server === 'vllm' || state.server === 'sglang' || state.server === 'tgi' || state.server === 'trtllm';
       $('gpuCountField').hidden = !multi;
       $('parallelField').hidden = !multi || !parallel;
-      $('pipelineField').hidden = !multi || state.server !== 'vllm';
+      $('pipelineField').hidden = !multi || (state.server !== 'vllm' && state.server !== 'trtllm');
       $('parallel').value = multi && parallel ? state.clusterDevices : 1;
       choiceButtons(
         'gpuCountChoices',
@@ -3601,7 +3602,7 @@
     }
     function renderServerFields() {
       var isCustom = state.server === 'custom',
-        isGpu = state.server === 'vllm' || state.server === 'sglang',
+        isGpu = state.server === 'vllm' || state.server === 'sglang' || state.server === 'trtllm',
         isMlx = state.server === 'mlx';
       $('templateField').hidden = !isCustom;
       $('memoryField').hidden = !isGpu;
@@ -3611,6 +3612,7 @@
       $('customContextField').hidden = isMlx || state.contextMode !== 'custom';
       $('trust').disabled = state.server === 'ollama' || state.server === 'llama' || isCustom;
       $('prefix').disabled =
+        state.server === 'trtllm' ||
         state.server === 'ollama' ||
         isMlx ||
         state.server === 'tgi' ||
@@ -4286,7 +4288,7 @@
           port: nval('port', 8000),
           context_tokens: nval('context', 8192),
           parallel_devices: nval('parallel', 1),
-          pipeline_stages: state.server === 'vllm' && state.hardware === 'multi' ? state.pipeline : 1,
+          pipeline_stages: (state.server === 'vllm' || state.server === 'trtllm') && state.hardware === 'multi' ? state.pipeline : 1,
           cpu_offload_gb: state.offload,
           kv_cache_gb: state.kvMemory,
           request_logging: on('requestLogs'),
@@ -4369,6 +4371,15 @@
           if (r.reasoning_parser) parts.push('--reasoning-parser qwen3');
           if (r.tool_call_parser) parts.push('--tool-call-parser qwen3_coder');
         }
+      }
+      if (r.server === 'trtllm') {
+        parts = ['trtllm-serve ' + m, '--host ' + host, '--port ' + port, '--tp_size ' + tp];
+        if (r.pipeline_stages > 1) parts.push('--pp_size ' + r.pipeline_stages);
+        parts.push(
+          '--max_seq_len ' + ctx,
+          '--free_gpu_memory_fraction ' + (r.gpu_memory_percent / 100).toFixed(2),
+        );
+        if (r.trust_model_code) parts.push('--trust_remote_code');
       }
       if (r.server === 'tgi') {
         parts = [
@@ -4543,6 +4554,19 @@
           if (r.reasoning_parser) add('Reasoning', '--reasoning-parser qwen3', 'reasoning');
           if (r.tool_call_parser) add('Tool calls', '--tool-call-parser qwen3_coder', 'tools');
         }
+      } else if (id === 'trtllm') {
+        add('Model', 'trtllm-serve ' + c.model.reference, 'modelFocus');
+        add('Host', '--host ' + r.host, 'hostChoices');
+        add('Port', '--port ' + r.port, 'hostChoices');
+        add('Devices', '--tp_size ' + r.parallel_devices, 'parallelField');
+        if (r.pipeline_stages > 1) add('Pipeline', '--pp_size ' + r.pipeline_stages, 'pipelineChoices');
+        add('Context', '--max_seq_len ' + r.context_tokens, 'contextField');
+        add(
+          'GPU memory',
+          '--free_gpu_memory_fraction ' + (r.gpu_memory_percent / 100).toFixed(2),
+          'memoryField',
+        );
+        if (r.trust_model_code) add('Model code', '--trust_remote_code', 'trust');
       } else if (id === 'tgi') {
         add('Model', '--model-id ' + c.model.reference, 'modelFocus');
         add('Host', '--hostname ' + r.host, 'hostChoices');
@@ -4648,6 +4672,7 @@
       GPTQ: 0.55,
       bitsandbytes: 0.55,
       EETQ: 1,
+      NVFP4: 0.55,
     };
     var RUNTIME_OVERHEAD_GIB = 2; // per GPU: activations, CUDA graphs, framework context
     var GIB = 1073741824;
@@ -4800,15 +4825,16 @@
       var found = [],
         m;
       // Long flags (--name) and short ones (-c), in the order the command gives them.
-      var flag = /(--[A-Za-z0-9][A-Za-z0-9-]*|(?<![\w-])-[A-Za-z][A-Za-z0-9]*)(?:[ =]+(?!-)('[^']*'|"[^"]*"|[^\s\\]+))?/g;
+      var flag = /(--[A-Za-z0-9][A-Za-z0-9_-]*|(?<![\w-])-[A-Za-z][A-Za-z0-9]*)(?:[ =]+(?!-)('[^']*'|"[^"]*"|[^\s\\]+))?/g;
       while ((m = flag.exec(command))) found.push([m[1], (m[2] || '').replace(/^['"]|['"]$/g, '')]);
       var env = /(?:^|[\s&])([A-Z][A-Z0-9_]{3,})=('[^']*'|"[^"]*"|[^\s&]+)/g;
       while ((m = env.exec(command))) found.push([m[1], m[2].replace(/^['"]|['"]$/g, '')]);
       var first = command.split('\n')[0],
-        model = /^(?:vllm serve|python -m sglang\.launch_server|text-generation-launcher|llama-server|mlx_lm\.server)/.test(first)
+        model = /^(?:vllm serve|python -m sglang\.launch_server|trtllm-serve|text-generation-launcher|llama-server|mlx_lm\.server)/.test(first)
           ? first.match(/serve\s+('[^']*'|\S+)/)
           : null;
-      if (model) found.unshift([engine === 'sglang' ? '--model-path' : '--model', model[1].replace(/^['"]|['"]$/g, '')]);
+      if (model && engine !== 'trtllm')
+        found.unshift([engine === 'sglang' ? '--model-path' : '--model', model[1].replace(/^['"]|['"]$/g, '')]);
       return found;
     }
     // A description that only restates the flag's own name ("Host name." under --host) says nothing.
@@ -4951,7 +4977,7 @@
     function fitAssessment(c) {
       if (!c.model.build) {
         var shape = MEMORY_SHAPES[c.model.reference];
-        var gpuEngine = ['vllm', 'sglang', 'tgi'].indexOf(c.runtime.server) !== -1;
+        var gpuEngine = ['vllm', 'sglang', 'trtllm', 'tgi'].indexOf(c.runtime.server) !== -1;
         var estimate =
           shape && gpuEngine
             ? estimateFit(shape, {
@@ -5143,7 +5169,7 @@
           'Starting configuration. Confirm checkpoint support, memory needs, and flags for your server version.',
       );
       var checks = [];
-      if (state.hardware === 'multi' && !['vllm', 'sglang', 'tgi'].includes(state.server))
+      if (state.hardware === 'multi' && !['vllm', 'sglang', 'trtllm', 'tgi'].includes(state.server))
         checks.push(['warn', 'Selected GPU count is not represented by this engine command.']);
       if (
         config.runtime.parallel_devices * config.runtime.pipeline_stages >
@@ -5182,6 +5208,7 @@
       if (
         state.server !== 'vllm' &&
         state.server !== 'sglang' &&
+        state.server !== 'trtllm' &&
         config.runtime.gpu_memory_percent !== 90
       )
         checks.push(['warn', 'Saved GPU memory target is not used by this engine command.']);

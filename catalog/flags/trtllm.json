@@ -1,0 +1,525 @@
+{
+ "engine": "trtllm",
+ "source": "https://nvidia.github.io/TensorRT-LLM/commands/trtllm-serve/trtllm-serve.html",
+ "fetched": "2026-09-30",
+ "count": 50,
+ "sections": [
+  {
+   "title": "trtllm-serve options",
+   "flags": [
+    {
+     "name": "--tokenizer",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Path or name of the tokenizer. When using the PyTorch backend, this replaces the default HuggingFace tokenizer.",
+     "value": "<tokenizer>"
+    },
+    {
+     "name": "--custom_tokenizer",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Custom tokenizer type: alias (e.g., ‘deepseek_v32’) or Python import path (e.g., ‘tensorrt_llm.tokenizer.deepseek_v32.DeepseekV32Tokenizer’).",
+     "value": "<custom_tokenizer>"
+    },
+    {
+     "name": "--post_processor_hook",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Python import path of a user post-processing hook applied after detokenization and before the per-endpoint response formatter (e.g. ‘my_pkg.guardrail.MyPostProcessorHook’). The class must be importable and picklable, take no constructor arguments, and be callable as ‘__call__(chunk) -> verdict’ (see tensorrt_llm.executor.postprocessor_hook). It runs once per output, per streaming chunk, and may rewrite, suppress, or terminate the output; it owns its own per-request state.",
+     "value": "<post_processor_hook>"
+    },
+    {
+     "name": "--host",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Hostname of the server.",
+     "value": "<host>"
+    },
+    {
+     "name": "--port",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Port of the server.",
+     "value": "<port>"
+    },
+    {
+     "name": "--backend",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "pytorch backend",
+     "help": "The backend to use to serve the model. Default is pytorch backend. Options: pytorch",
+     "value": "<backend>"
+    },
+    {
+     "name": "--generation-config",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "auto",
+      "trtllm"
+     ],
+     "default": null,
+     "help": "Sampling defaults source. ‘auto’ loads supported values from the model’s generation_config.json; ‘trtllm’ uses TRT-LLM defaults. Options: auto | trtllm",
+     "value": "<generation_config>"
+    },
+    {
+     "name": "--custom_module_dirs",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Paths to custom module directories to import.",
+     "value": "<custom_module_dirs>"
+    },
+    {
+     "name": "--log_level",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "internal_error",
+      "error",
+      "warning",
+      "info",
+      "verbose",
+      "debug",
+      "trace"
+     ],
+     "default": null,
+     "help": "The logging level. Options: internal_error | error | warning | info | verbose | debug | trace",
+     "value": "<log_level>"
+    },
+    {
+     "name": "--max_beam_width",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Maximum number of beams for beam search decoding.",
+     "value": "<max_beam_width>"
+    },
+    {
+     "name": "--max_batch_size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Maximum number of requests that the engine can schedule.",
+     "value": "<max_batch_size>"
+    },
+    {
+     "name": "--max_num_tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Maximum number of batched input tokens after padding is removed in each batch.",
+     "value": "<max_num_tokens>"
+    },
+    {
+     "name": "--max_seq_len",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Maximum total length of one request, including prompt and outputs. If unspecified, the value is deduced from the model config.",
+     "value": "<max_seq_len>"
+    },
+    {
+     "name": "--tensor_parallel_size",
+     "aliases": [
+      "--tp_size"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Tensor parallelism size.",
+     "value": "<tensor_parallel_size>"
+    },
+    {
+     "name": "--pipeline_parallel_size",
+     "aliases": [
+      "--pp_size"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Pipeline parallelism size.",
+     "value": "<pipeline_parallel_size>"
+    },
+    {
+     "name": "--context_parallel_size",
+     "aliases": [
+      "--cp_size"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Context parallelism size.",
+     "value": "<context_parallel_size>"
+    },
+    {
+     "name": "--moe_expert_parallel_size",
+     "aliases": [
+      "--ep_size"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "expert parallelism size",
+     "value": "<moe_expert_parallel_size>"
+    },
+    {
+     "name": "--moe_cluster_parallel_size",
+     "aliases": [
+      "--cluster_size"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "[Deprecated] Expert cluster parallelism size. This option is no longer supported and will be removed in a future release.",
+     "value": "<moe_cluster_parallel_size>"
+    },
+    {
+     "name": "--gpus_per_node",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "None, and it will be detected automatically",
+     "help": "Number of GPUs per node. Default to None, and it will be detected automatically.",
+     "value": "<gpus_per_node>"
+    },
+    {
+     "name": "--free_gpu_memory_fraction",
+     "aliases": [
+      "--kv_cache_free_gpu_memory_fraction"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Free GPU memory fraction reserved for KV Cache, after allocating model weights and buffers.",
+     "value": "<free_gpu_memory_fraction>"
+    },
+    {
+     "name": "--kv_cache_dtype",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "auto",
+      "fp8",
+      "nvfp4"
+     ],
+     "default": null,
+     "help": "KV cache quantization dtype for PyTorch backend. ‘auto’ uses checkpoint/model metadata; explicit values force override. Options: auto | fp8 | nvfp4",
+     "value": "<kv_cache_dtype>"
+    },
+    {
+     "name": "--num_postprocess_workers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Number of workers to postprocess raw responses to comply with OpenAI protocol.",
+     "value": "<num_postprocess_workers>"
+    },
+    {
+     "name": "--num_serve_frontends",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Number of HTTP frontend processes serving one executor; values > 1 share the serving port via SO_REUSEPORT (classic IPC executor path only).",
+     "value": "<num_serve_frontends>"
+    },
+    {
+     "name": "--num_input_processor_workers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Size of the dedicated thread pool that runs the HF input processor (multimodal preprocess) on the chat and completion endpoints.",
+     "value": "<num_input_processor_workers>"
+    },
+    {
+     "name": "--num_media_load_workers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Size of the dedicated thread pool that decodes media payloads (image / video / audio) for multimodal requests.",
+     "value": "<num_media_load_workers>"
+    },
+    {
+     "name": "--trust_remote_code",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Flag for HF transformers."
+    },
+    {
+     "name": "--hf_revision",
+     "aliases": [
+      "--revision"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The revision to use for the HuggingFace model (branch name, tag name, or commit id). Prefer –hf_revision over –revision.",
+     "value": "<revision>"
+    },
+    {
+     "name": "--config",
+     "aliases": [
+      "--extra_llm_api_options"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Path to a YAML configuration file. Explicit CLI flags take precedence over values in this file. Can be specified as either –config or –extra_llm_api_options.",
+     "value": "<extra_llm_api_options>"
+    },
+    {
+     "name": "--reasoning_parser",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "auto",
+      "minimax_m2_append_think",
+      "minimax_m2",
+      "qwen3_5",
+      "qwen3",
+      "deepseek-r1",
+      "deepseek_v4",
+      "poolside_v1",
+      "laguna",
+      "minimax_m3",
+      "nano-v3",
+      "nemotron-v3",
+      "gemma4",
+      "kimi_k25",
+      "kimi_k2",
+      "kimi_k3"
+     ],
+     "default": null,
+     "help": "Specify the parser for reasoning models. Use ‘auto’ to automatically select based on the model. Options: auto | minimax_m2_append_think | minimax_m2 | qwen3_5 | qwen3 | deepseek-r1 | deepseek_v4 | poolside_v1 | laguna | minimax_m3 | nano-v3 | nemotron-v3 | gemma4 | kimi_k25 | kimi_k2 | kimi_k3",
+     "value": "<reasoning_parser>"
+    },
+    {
+     "name": "--tool_parser",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "auto",
+      "qwen3",
+      "qwen3_coder",
+      "kimi_k2",
+      "kimi_k3",
+      "deepseek_v3",
+      "deepseek_v31",
+      "deepseek_v32",
+      "deepseek_v4",
+      "gemma4",
+      "glm4",
+      "glm47",
+      "minimax_m2",
+      "minimax_m3",
+      "poolside_v1"
+     ],
+     "default": null,
+     "help": "Specify the parser for tool models. Use ‘auto’ to automatically select based on the model. Options: auto | qwen3 | qwen3_coder | kimi_k2 | kimi_k3 | deepseek_v3 | deepseek_v31 | deepseek_v32 | deepseek_v4 | gemma4 | glm4 | glm47 | minimax_m2 | minimax_m3 | poolside_v1",
+     "value": "<tool_parser>"
+    },
+    {
+     "name": "--metadata_server_config_file",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Path to metadata server config file",
+     "value": "<metadata_server_config_file>"
+    },
+    {
+     "name": "--server_role",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Server role for disaggregated serving. CONTEXT=prefill (prompt processing), GENERATION=decode (token generation), MM_ENCODER=multimodal encoder, VISUAL_GEN=visual generation. Required when using service registry.",
+     "value": "<server_role>"
+    },
+    {
+     "name": "--otlp_traces_endpoint",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Target URL to which OpenTelemetry traces will be sent.",
+     "value": "<otlp_traces_endpoint>"
+    },
+    {
+     "name": "--telemetry",
+     "aliases": [
+      "--no-telemetry"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable or disable anonymous usage telemetry collection."
+    },
+    {
+     "name": "--disagg_cluster_uri",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "URI of the disaggregated cluster.",
+     "value": "<disagg_cluster_uri>"
+    },
+    {
+     "name": "--enable_chunked_prefill",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable chunked prefill"
+    },
+    {
+     "name": "--enable_attention_dp",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable attention data parallel."
+    },
+    {
+     "name": "--media_io_kwargs",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Keyword arguments for media I/O as a JSON string. Keys are modality names (“video”, “image”, “audio”) whose values are dicts of keyword arguments forwarded to the corresponding loader. Example: ‘{“video”: {“extract_audio”: true, “num_frames”: 16}}’ to enable audio extraction from video files.",
+     "value": "<media_io_kwargs>"
+    },
+    {
+     "name": "--video_pruning_rate",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Pruning rate for video frames in multimodal models. Applied by Efficient Video Sampling (EVS). None disables EVS, values in [0, 1) enable pruning.",
+     "value": "<video_pruning_rate>"
+    },
+    {
+     "name": "--chat_template",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Specify a custom chat template. Can be a file path or one-liner template string",
+     "value": "<chat_template>"
+    },
+    {
+     "name": "--allow_request_chat_template",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Allow clients to supply per-request chat_template values. Only enable this for trusted clients."
+    },
+    {
+     "name": "--middleware",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "FastAPI middleware import path to add to the server app. Can be specified multiple times. Each value must point to either a middleware class or an async HTTP middleware function.",
+     "value": "<middleware>"
+    },
+    {
+     "name": "--grpc",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Run the selected gRPC protocol instead of the OpenAI HTTP server."
+    },
+    {
+     "name": "--grpc-protocol",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "smg",
+      "openengine"
+     ],
+     "default": null,
+     "help": "Protocol used when –grpc is enabled. Options: smg | openengine",
+     "value": "<grpc_protocol>"
+    },
+    {
+     "name": "--served_model_name",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The model name used in the API. If not specified, the model path is used as the model name. This is useful when the model path is long or when you want to expose a custom name to clients.",
+     "value": "<served_model_name>"
+    },
+    {
+     "name": "--enable_visual_gen",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable VisualGen runtime for model checkpoints that support both LLM and Visual Generation. Not required if –visual_gen_args specified or the model supports Visual Generation only."
+    },
+    {
+     "name": "--visual_gen_args",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Path to a YAML file with VisualGen engine args.",
+     "value": "<visual_gen_args>"
+    },
+    {
+     "name": "--agent_percentage",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The percentage of agent requests to schedule. Defaults to 0.0. Should be between 0.0 and 1.0.",
+     "value": "<agent_percentage>"
+    },
+    {
+     "name": "--agent_types",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Types of agents to schedule. Now Only Support Open Deep Research agent.",
+     "value": "<agent_types>"
+    },
+    {
+     "name": "--report_addr",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Write the host:port this server actually bound to this file, atomically, once the socket is bound. Lets –port 0 be used and have the launcher read the kernel-assigned port back instead of reserving one up front.",
+     "value": "<report_addr>"
+    }
+   ]
+  }
+ ]
+}

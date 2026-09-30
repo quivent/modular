@@ -216,7 +216,36 @@ def mlx():
     return write("mlx", url, [{"title": "mlx_lm.server options", "flags": flags}])
 
 
-ENGINES = {"vllm": vllm, "sglang": sglang, "llama": llamacpp, "tgi": tgi, "ollama": ollama, "mlx": mlx}
+# ── TensorRT-LLM: sphinx-click reference for `trtllm-serve serve` ─────────────────────────
+def trtllm():
+    url = "https://nvidia.github.io/TensorRT-LLM/commands/trtllm-serve/trtllm-serve.html"
+    page = fetch(url)
+    seg = page[page.find('id="syntax"') :]
+    start = next(m.start() for m in re.finditer(r"<pre>.*?</pre>", seg, re.S)
+                 if text(m.group(0)).startswith("trtllm-serve serve [OPTIONS] MODEL"))
+    opt = next(m.start() for m in re.finditer(r'<p class="rubric">Options</p>', seg) if m.start() > start)
+    end = next(m.start() for m in re.finditer(r'<p class="rubric">Arguments</p>', seg) if m.start() > opt)
+    flags = []
+    for dt, dd in re.findall(r"<dt[^>]*>(.*?)</dt>\s*<dd[^>]*>(.*?)</dd>", seg[opt:end], re.S):
+        head = text(dt).rstrip("#").strip()
+        names_part, _, meta = head.partition(" <")
+        names = [n.strip() for n in names_part.split(",")]
+        longs = [n for n in names if n.startswith("--")]
+        if not longs:
+            continue
+        body = text(dd)
+        body = re.sub(r"^(?:beta|prototype|deprecated|stable)\s+", "", body)
+        choices = re.search(r"Options?: ([^.]*?)(?:\.|$)", body)
+        default = re.search(r"Defaults? (?:to|is) ([^.]+?)\.(?:\s|$)", body)
+        flags.append({"name": longs[0], "aliases": longs[1:] + [n for n in names if not n.startswith("--")],
+                      "negation": None,
+                      "choices": [c.strip() for c in choices.group(1).split("|")] if choices and "|" in choices.group(1) else None,
+                      "default": default.group(1).strip() if default else None, "help": body,
+                      **({"value": "<" + meta.rstrip(">") + ">"} if meta else {})})
+    return write("trtllm", url, [{"title": "trtllm-serve options", "flags": flags}])
+
+
+ENGINES = {"vllm": vllm, "trtllm": trtllm, "sglang": sglang, "llama": llamacpp, "tgi": tgi, "ollama": ollama, "mlx": mlx}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ENGINES:
