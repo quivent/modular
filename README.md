@@ -223,6 +223,8 @@ Favorites, a default model, and saved configurations live in browser local stora
 | [server.py](server.py) | Local server: the app, a small JSON API over SQLite, and live task events |
 | [db](db) | SQLite schema and roadmap seeding script |
 | [ROADMAP.md](ROADMAP.md) | Checklist to a finished release |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to run, test, and extend Modular |
+| [tests](tests) | Node test runner: unit, browser, and server tests |
 | [LICENSE](LICENSE) | MIT license |
 | [assets/readme](assets/readme) | Artwork, actual interface captures, generated ASCII-art SVGs (`ascii.py`), and editable README compositions |
 
@@ -240,14 +242,14 @@ Modular is a prototype, and this is the plain list of what stands between it and
 - [x] **2. Organize the single file.** `index.html` stays one self-contained file, formatted with one statement per line and split into 30 named regions marked `▸ name`. `python3 tools/map.py` prints the map of regions; `python3 tools/map.py checks` prints one region. Splitting into modules is deferred until tests or parallel work need it.
 - [x] **3. Reconcile the docs with the app.** Resolved by deleting `DESIGN.md`, which had drifted from the app. It remains in git history.
 - [x] **4. Version the saved data.** Saved setups, local-storage envelopes, and the server's `/api/state` now carry version numbers. Older data is upgraded when read (v0 setups gain a catalog reference and stop carrying favorites), and data written by a newer Modular is preserved and never overwritten.
-- [ ] **5. Contributing guide.** The MIT license is in place (`LICENSE`). Still to write: short instructions for running, testing, and adding a model or engine.
+- [x] **5. Contributing guide.** [CONTRIBUTING.md](CONTRIBUTING.md) says how to run the app and the tests and how to add a model, refresh the flag lists, add an engine or a theme. Every command in it was run in a fresh clone.
 
 ### Trust
 
 - [ ] **6. Versioned engine profiles.** Describe each engine's flags, defaults, accepted values, and conflicts as data per version, then generate the renderer and checks from it.
 - [ ] **7. Engine version selector.** Let people pick the version they run, and show how defaults or spellings differ before export.
 - [ ] **8. Source links and last-checked dates.** Link each version-specific flag to its documentation, and label unknown compatibility as unknown.
-- [ ] **9. Automated tests.** Golden-file tests for every engine and output format, plus a test for each check (oversubscription, omitted settings, duplicate arguments).
+- [x] **9. Automated tests.** `node tests/run.mjs` runs 190+ checks: the memory estimate, the catalog, the flag data, browser flows in headless Chrome, the server and its WebSocket, saved-data upgrades, themes, and the docs. Five injected regressions were each caught.
 - [x] **10. Better fit estimates.** Every catalog model with a published architecture now gets a real "will it start?" check: weights at the chosen precision, KV cache for a full-length request, attention heads divisible by the GPU count, CPU offload, and fixed KV memory, each with a concrete fix. Custom models and Ornith builds keep the weight-only note.
 - [ ] **11. Input validation.** Validate pasted references, hosts, ports, paths, and extra arguments, and quote them safely in every output format.
 

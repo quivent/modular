@@ -41,6 +41,14 @@
       "action": "followed the add-a-model and refresh-flags recipes in a clone; made the duplicate-reference failure name the duplicate; stated tested versions and that the tracker db is local",
       "observation": "recipe 1: 190 green; done badly: clear failure; recipe 2: reproducible, no diff",
       "gates": "PASS"
+    },
+    {
+      "n": 6,
+      "task": "#5 Contributing guide",
+      "action": "docs test (links, named paths, regions, removed features); ticked #5 and #9 in README and ROADMAP; linked the guide",
+      "observation": "the docs test failed on real drift (roadmap still listed tests as undone), then passed; 204 green",
+      "gates": "PASS",
+      "result": "#5 done after 3 iterations"
     }
   ]
 }

@@ -40,8 +40,8 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
   `DESIGN.md` still cites 12 models in earlier sections; the app has 15. Keep one current-state summary at the top and move history below it.
 - [x] **#4 Version the saved data**
   Setups, storage envelopes and /api/state carry versions; older data upgrades on read, newer data is preserved.
-- [ ] **#5 Contributing guide**
-  MIT license added. Still to write: short instructions for running, testing, and adding a model or engine.
+- [x] **#5 Contributing guide**
+  CONTRIBUTING.md: run, test, extend (model, flag lists, engine, theme). Every command was run in a fresh clone on Python 3.9 and 3.14; a docs test keeps the links and named paths true.
   Depends on: #9
   Blocks: #22
 
@@ -109,11 +109,10 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
   Blocks: #22
 - [ ] **#22 Release**
   Refresh screenshots with `assets/readme/render.py`, tag a version, deploy, and remove the "prototype" label from this README.
-  Depends on: #5 to #21 (all)  (waiting on 15)
+  Depends on: #5 to #21 (all)  (waiting on 14)
 
 ## Ready now (highest priority first)
 
-1. #5 Contributing guide
 1. #6 Versioned engine profiles
 1. #11 Input validation
 1. #12 More command forms
