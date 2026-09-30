@@ -1,0 +1,31 @@
+{
+  "_comment": "Labs the scanner watches for new releases. Names are Hugging Face organizations; an author that returns nothing is reported so the list can be pruned. Edit freely.",
+  "authors": [
+    "Qwen",
+    "meta-llama",
+    "google",
+    "mistralai",
+    "deepseek-ai",
+    "microsoft",
+    "openai",
+    "nvidia",
+    "moonshotai",
+    "zai-org",
+    "MiniMaxAI",
+    "XiaomiMiMo",
+    "ornith-ai",
+    "allenai",
+    "ibm-granite",
+    "CohereLabs",
+    "tencent",
+    "baidu",
+    "ByteDance-Seed",
+    "stepfun-ai",
+    "BAAI",
+    "stabilityai",
+    "black-forest-labs"
+  ],
+  "window_days": 120,
+  "trending": { "limit": 60, "min_downloads_30d": 20000, "min_params_billions": 1 },
+  "supersede": { "min_age_months": 9, "min_download_ratio": 0.2, "size_band": [0.4, 2.5] }
+}

@@ -1,0 +1,50 @@
+{
+  "_comment": "Human decisions about each catalog model. tools/scan.py suggests statuses from live Hugging Face data; it never edits this file.",
+  "models": {
+    "ornith-ai/Ornith-1.5-9B": {
+      "status": "unreviewed"
+    },
+    "ornith-ai/Ornith-1.5-35B-A3B": {
+      "status": "unreviewed"
+    },
+    "ornith-ai/Ornith-1.5-397B": {
+      "status": "unreviewed"
+    },
+    "Qwen/Qwen3-32B": {
+      "status": "unreviewed"
+    },
+    "Qwen/Qwen3-8B": {
+      "status": "unreviewed"
+    },
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B": {
+      "status": "unreviewed"
+    },
+    "meta-llama/Llama-3.3-70B-Instruct": {
+      "status": "unreviewed"
+    },
+    "google/gemma-3-27b-it": {
+      "status": "unreviewed"
+    },
+    "Qwen/Qwen2.5-VL-7B-Instruct": {
+      "status": "unreviewed"
+    },
+    "mistralai/Mixtral-8x7B-Instruct-v0.1": {
+      "status": "unreviewed"
+    },
+    "microsoft/phi-4": {
+      "status": "unreviewed"
+    },
+    "BAAI/bge-m3": {
+      "status": "unreviewed"
+    },
+    "BAAI/bge-reranker-v2-m3": {
+      "status": "unreviewed"
+    },
+    "openai/whisper-large-v3": {
+      "status": "unreviewed"
+    },
+    "stabilityai/stable-diffusion-xl-base-1.0": {
+      "status": "unreviewed"
+    }
+  }
+}
