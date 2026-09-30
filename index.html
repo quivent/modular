@@ -705,6 +705,23 @@
       padding: 20px 0;
     }
     /* ▸ css: responsive (first pass) */
+    /* On a phone the command sits at the bottom of a long page: keep Copy in reach until it is on screen. */
+    .copybar { display: none; }
+    @media (max-width: 1000px) {
+      .copybar:not([hidden]) {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 20;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        background: var(--paper);
+        border-top: 1px solid var(--line);
+      }
+      .copybar .primary { width: 100%; min-height: 44px; }
+      .choice { min-height: 42px; }
+    }
     @media (max-width: 1000px) {
       .workspace {
         grid-template-columns: minmax(0, 1fr) minmax(300px, 0.85fr);
@@ -2229,6 +2246,7 @@
         <aside class="preview" aria-label="Configuration preview"><div class="preview-top"><div><h2>Your configuration</h2><p>Updates as you make decisions.</p></div><button class="primary copy-main" type="button" id="copy">Copy command</button></div><div class="output-mode" id="outputModes" role="group" aria-label="Output format"></div><div class="preview-content"><div class="flags-all" id="allFlags" aria-label="Every flag of this engine"></div><pre class="code" id="output" aria-live="polite"></pre><p class="setting-help" id="outputHint" hidden></p><div class="preview-actions"><button class="secondary" type="button" id="download">Export file</button></div><details class="advanced saved-configs" id="savedConfigs"><summary>Saved configurations <span id="savedConfigCount">0</span></summary><div class="advanced-body"><button class="secondary" type="button" id="saveConfig">Save current</button><div id="savedConfigList"></div></div></details><details class="flag-details" id="flagDetails"><summary>Where each choice goes <span id="flagCount"></span></summary><div class="flag-map" id="flagMap"></div></details></div><div class="preview-bottom"><p class="mini-heading">At a glance</p><div class="summary" id="summary"></div><p class="mini-heading">Checks</p><ul class="checks" id="checks"></ul><p class="status" id="status"></p></div></aside>
       </div>
     </main>
+    <div class="copybar" id="copyBar" hidden><button class="primary" type="button" id="copyFloat">Copy command</button></div>
     <footer class="foot"><span>Modular builds a starting specification. Check model, weight, and server compatibility before deployment.</span><span>Server docs: <a href="https://docs.vllm.ai/en/latest/cli/serve/" target="_blank" rel="noopener">vLLM</a> · <a href="https://docs.sglang.ai/" target="_blank" rel="noopener">SGLang</a> · <a href="https://huggingface.co/docs/text-generation-inference/basic_tutorials/launcher" target="_blank" rel="noopener">TGI</a> · <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md" target="_blank" rel="noopener">llama.cpp</a> · <a href="https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md" target="_blank" rel="noopener">MLX</a></span></footer>
   </div>
   <!-- ▸ html: themes dialog -->
@@ -5413,6 +5431,17 @@
       renderOutput();
     };
     $('saveConfig').onclick = saveCurrentConfig;
+    // The floating Copy mirrors the real one and steps aside when the real one is visible.
+    $('copyFloat').onclick = function () {
+      $('copy').onclick();
+    };
+    new MutationObserver(function () {
+      $('copyFloat').textContent = $('copy').textContent;
+    }).observe($('copy'), { childList: true, characterData: true, subtree: true });
+    if (window.IntersectionObserver)
+      new IntersectionObserver(function (entries) {
+        $('copyBar').hidden = entries[0].isIntersecting;
+      }).observe($('copy'));
     $('memorySlider').oninput = function () {
       $('memory').value = this.value;
       $('memoryDisplay').textContent = this.value + '%';
