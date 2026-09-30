@@ -1035,27 +1035,6 @@
       margin-left: 5px;
     }
 
-    .hardware-switch {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--ink-2);
-      margin-bottom: 19px;
-    }
-    .hardware-switch .toggle {
-      width: 38px;
-      height: 23px;
-    }
-    .hardware-switch .toggle:after {
-      width: 17px;
-      height: 17px;
-    }
-    .hardware-switch .toggle[aria-checked='true']:after {
-      transform: translateX(15px);
-    }
     .hardware-cluster {
       margin-top: 7px;
     }
@@ -2236,7 +2215,7 @@
           <section class="group" aria-labelledby="settings-title"><div class="group-head"><span class="number">03</span><div><h2 id="settings-title">Configuration</h2><p>Set capacity first. Open a group when the workload asks for it.</p></div></div><div class="body-indent">
             <div class="field" id="contextField"><div class="field-head"><span class="label" id="contextLabel">Context window</span></div><div class="choice-row" id="contextChoices" role="group" aria-labelledby="contextLabel"></div><input id="context" type="hidden" value="8192"></div>
             <div class="field" id="customContextField" hidden><div class="field-head"><label for="customContext">Custom context window</label><output id="contextDisplay">8,192 tokens</output></div><input id="customContext" class="range" type="range" min="512" max="262144" step="512" value="8192"><div class="range-ends"><span>512</span><span>262K</span></div></div>
-            <div class="setting-cluster hardware-cluster"><div class="cluster-head"><h3>Hardware</h3></div><div class="field"><div class="field-head"><span class="label" id="gpuCardLabel">GPU</span></div><div class="choice-row" id="gpuCardChoices" role="group" aria-labelledby="gpuCardLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="gpuVramLabel">Memory per GPU</span></div><div class="choice-row" id="gpuVramChoices" role="group" aria-labelledby="gpuVramLabel"></div></div><div class="hardware-switch"><span>Single GPU</span><button type="button" class="toggle" id="hardware" role="switch" aria-label="Use multiple GPUs" aria-checked="false"></button><span>Multiple GPUs</span></div><div class="field" id="gpuCountField" hidden><div class="field-head"><span class="label" id="gpuCountLabel">GPUs available</span></div><div class="choice-row" id="gpuCountChoices" role="group" aria-labelledby="gpuCountLabel"></div></div><div class="field" id="parallelField" hidden><div class="field-head"><span class="label" id="parallelLabel">Tensor parallel</span></div><div class="choice-row" id="parallelChoices" role="group" aria-labelledby="parallelLabel"></div></div><input id="parallel" type="hidden" value="1"><div class="field" id="pipelineField" hidden><div class="field-head"><span class="label" id="pipelineLabel">Pipeline stages</span></div><div class="choice-row" id="pipelineChoices" role="group" aria-labelledby="pipelineLabel"></div></div><p class="fit-note" id="fitNote"></p></div>
+            <div class="setting-cluster hardware-cluster"><div class="cluster-head"><h3>Hardware</h3></div><div class="field"><div class="field-head"><span class="label" id="gpuCardLabel">GPU</span></div><div class="choice-row" id="gpuCardChoices" role="group" aria-labelledby="gpuCardLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="gpuVramLabel">Memory per GPU</span></div><div class="choice-row" id="gpuVramChoices" role="group" aria-labelledby="gpuVramLabel"></div></div><div class="field" id="gpuCountField"><div class="field-head"><span class="label" id="gpuCountLabel">GPUs</span></div><div class="choice-row" id="gpuCountChoices" role="group" aria-labelledby="gpuCountLabel"></div></div><div class="field" id="parallelField" hidden><div class="field-head"><span class="label" id="parallelLabel">Tensor parallel</span></div><div class="choice-row" id="parallelChoices" role="group" aria-labelledby="parallelLabel"></div></div><input id="parallel" type="hidden" value="1"><div class="field" id="pipelineField" hidden><div class="field-head"><span class="label" id="pipelineLabel">Pipeline stages</span></div><div class="choice-row" id="pipelineChoices" role="group" aria-labelledby="pipelineLabel"></div></div><p class="fit-note" id="fitNote"></p></div>
             <div class="setting-cluster" id="ornithServing" hidden><div class="cluster-head"><h3>Model behavior</h3><span>Ornith 1.5</span></div><div class="toggle-row"><div><strong>Reasoning parser</strong><small>Separate reasoning from the final answer</small></div><button type="button" class="toggle" id="reasoning" role="switch" aria-label="Reasoning parser" aria-checked="true"></button></div><div class="toggle-row"><div><strong>Tool-call parser</strong><small>Expose model tool calls in the API</small></div><button type="button" class="toggle" id="tools" role="switch" aria-label="Tool-call parser" aria-checked="true"></button></div><p class="setting-help" id="parserNote"></p></div><div class="setting-cluster" id="vllmControls"><div class="cluster-head"><h3>Scheduling</h3><span>vLLM · tuning</span></div>
               <div class="field"><div class="field-head"><span class="label" id="batchLabel">Tokens per batch</span><span class="hint">Auto leaves the server default</span></div><div class="choice-row" id="batchChoices" role="group" aria-labelledby="batchLabel"></div></div>
               <div class="field"><div class="field-head"><span class="label" id="seqLabel">Sequences per step</span><span class="hint">Auto leaves the server default</span></div><div class="choice-row" id="seqChoices" role="group" aria-labelledby="seqLabel"></div></div>
@@ -3500,23 +3479,24 @@
     }
     /* ▸ js: render — hardware, context, host, port, tuning */
     function renderHardware() {
-      $('hardware').setAttribute('aria-checked', String(state.hardware === 'multi'));
       var multi = state.hardware === 'multi',
         parallel = state.server === 'vllm' || state.server === 'sglang' || state.server === 'tgi' || state.server === 'trtllm';
-      $('gpuCountField').hidden = !multi;
       $('parallelField').hidden = !multi || !parallel;
       $('pipelineField').hidden = !multi || (state.server !== 'vllm' && state.server !== 'trtllm');
       $('parallel').value = multi && parallel ? state.clusterDevices : 1;
       choiceButtons(
         'gpuCountChoices',
         [
+          ['1', '1'],
           ['2', '2'],
           ['4', '4'],
           ['8', '8'],
         ],
-        state.gpuCount,
+        multi ? state.gpuCount : 1,
         function (next) {
           state.gpuCount = Number(next);
+          state.hardware = state.gpuCount === 1 ? 'single' : 'multi';
+          state.clusterDevices = state.gpuCount; // use every GPU you said you have; lower it below if you want
           renderHardware();
           renderOutput();
         },
@@ -5420,12 +5400,6 @@
       renderOutput();
     };
     $('saveConfig').onclick = saveCurrentConfig;
-    $('hardware').onclick = function () {
-      state.hardware = state.hardware === 'single' ? 'multi' : 'single';
-      if (state.hardware === 'multi' && state.gpuCount === 1) state.gpuCount = 2;
-      renderHardware();
-      renderOutput();
-    };
     $('memorySlider').oninput = function () {
       $('memory').value = this.value;
       $('memoryDisplay').textContent = this.value + '%';
