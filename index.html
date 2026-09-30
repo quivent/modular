@@ -2236,7 +2236,7 @@
           <section class="group" aria-labelledby="settings-title"><div class="group-head"><span class="number">03</span><div><h2 id="settings-title">Configuration</h2><p>Set capacity first. Open a group when the workload asks for it.</p></div></div><div class="body-indent">
             <div class="field" id="contextField"><div class="field-head"><span class="label" id="contextLabel">Context window</span></div><div class="choice-row" id="contextChoices" role="group" aria-labelledby="contextLabel"></div><input id="context" type="hidden" value="8192"></div>
             <div class="field" id="customContextField" hidden><div class="field-head"><label for="customContext">Custom context window</label><output id="contextDisplay">8,192 tokens</output></div><input id="customContext" class="range" type="range" min="512" max="262144" step="512" value="8192"><div class="range-ends"><span>512</span><span>262K</span></div></div>
-            <div class="setting-cluster hardware-cluster"><div class="cluster-head"><h3>Hardware</h3></div><div class="hardware-switch"><span>Single GPU</span><button type="button" class="toggle" id="hardware" role="switch" aria-label="Use multiple GPUs" aria-checked="false"></button><span>Multiple GPUs</span></div><div class="field" id="gpuCountField" hidden><div class="field-head"><span class="label" id="gpuCountLabel">GPUs available</span></div><div class="choice-row" id="gpuCountChoices" role="group" aria-labelledby="gpuCountLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="gpuVramLabel">Memory per GPU</span></div><div class="choice-row" id="gpuVramChoices" role="group" aria-labelledby="gpuVramLabel"></div></div><div class="field" id="parallelField" hidden><div class="field-head"><span class="label" id="parallelLabel">Tensor parallel</span></div><div class="choice-row" id="parallelChoices" role="group" aria-labelledby="parallelLabel"></div></div><input id="parallel" type="hidden" value="1"><div class="field" id="pipelineField" hidden><div class="field-head"><span class="label" id="pipelineLabel">Pipeline stages</span></div><div class="choice-row" id="pipelineChoices" role="group" aria-labelledby="pipelineLabel"></div></div><p class="fit-note" id="fitNote"></p></div>
+            <div class="setting-cluster hardware-cluster"><div class="cluster-head"><h3>Hardware</h3></div><div class="field"><div class="field-head"><span class="label" id="gpuCardLabel">GPU</span></div><div class="choice-row" id="gpuCardChoices" role="group" aria-labelledby="gpuCardLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="gpuVramLabel">Memory per GPU</span></div><div class="choice-row" id="gpuVramChoices" role="group" aria-labelledby="gpuVramLabel"></div></div><div class="hardware-switch"><span>Single GPU</span><button type="button" class="toggle" id="hardware" role="switch" aria-label="Use multiple GPUs" aria-checked="false"></button><span>Multiple GPUs</span></div><div class="field" id="gpuCountField" hidden><div class="field-head"><span class="label" id="gpuCountLabel">GPUs available</span></div><div class="choice-row" id="gpuCountChoices" role="group" aria-labelledby="gpuCountLabel"></div></div><div class="field" id="parallelField" hidden><div class="field-head"><span class="label" id="parallelLabel">Tensor parallel</span></div><div class="choice-row" id="parallelChoices" role="group" aria-labelledby="parallelLabel"></div></div><input id="parallel" type="hidden" value="1"><div class="field" id="pipelineField" hidden><div class="field-head"><span class="label" id="pipelineLabel">Pipeline stages</span></div><div class="choice-row" id="pipelineChoices" role="group" aria-labelledby="pipelineLabel"></div></div><p class="fit-note" id="fitNote"></p></div>
             <div class="setting-cluster" id="ornithServing" hidden><div class="cluster-head"><h3>Model behavior</h3><span>Ornith 1.5</span></div><div class="toggle-row"><div><strong>Reasoning parser</strong><small>Separate reasoning from the final answer</small></div><button type="button" class="toggle" id="reasoning" role="switch" aria-label="Reasoning parser" aria-checked="true"></button></div><div class="toggle-row"><div><strong>Tool-call parser</strong><small>Expose model tool calls in the API</small></div><button type="button" class="toggle" id="tools" role="switch" aria-label="Tool-call parser" aria-checked="true"></button></div><p class="setting-help" id="parserNote"></p></div><div class="setting-cluster" id="vllmControls"><div class="cluster-head"><h3>Scheduling</h3><span>vLLM · tuning</span></div>
               <div class="field"><div class="field-head"><span class="label" id="batchLabel">Tokens per batch</span><span class="hint">Auto leaves the server default</span></div><div class="choice-row" id="batchChoices" role="group" aria-labelledby="batchLabel"></div></div>
               <div class="field"><div class="field-head"><span class="label" id="seqLabel">Sequences per step</span><span class="hint">Auto leaves the server default</span></div><div class="choice-row" id="seqChoices" role="group" aria-labelledby="seqLabel"></div></div>
@@ -3124,7 +3124,8 @@
       hardware: 'single',
       gpuCount: 1,
       clusterDevices: 1,
-      gpuVram: 24,
+      gpuVram: 80,
+      gpuCard: 'h100',
       pipeline: 1,
       offload: 0,
       kvMemory: 0,
@@ -3158,6 +3159,25 @@
       ['path', 'Path'],
       ['custom', 'Other'],
     ];
+    // Cards people actually rent and run (Modal, Lambda, RunPod, Hugging Face Endpoints), NVIDIA figures.
+    // cc is the CUDA compute capability: native FP8 needs 8.9 or higher, NVFP4 needs Blackwell (10.0 or higher).
+    var GPU_CARDS = [
+      { id: 'b300', name: 'B300', gb: 288, cc: 10.3 },
+      { id: 'b200', name: 'B200', gb: 180, cc: 10.0 },
+      { id: 'h200', name: 'H200', gb: 141, cc: 9.0 },
+      { id: 'h100', name: 'H100', gb: 80, cc: 9.0 },
+      { id: 'a100-80', name: 'A100', gb: 80, cc: 8.0 },
+      { id: 'a100-40', name: 'A100', gb: 40, cc: 8.0 },
+      { id: 'rtx-pro-6000', name: 'RTX PRO 6000', gb: 96, cc: 12.0 },
+      { id: 'rtx-5090', name: 'RTX 5090', gb: 32, cc: 12.0 },
+      { id: 'rtx-4090', name: 'RTX 4090', gb: 24, cc: 8.9 },
+      { id: 'rtx-3090', name: 'RTX 3090', gb: 24, cc: 8.6 },
+    ];
+    var GPU_MEMORY = [24, 32, 40, 80, 96, 141, 180, 288];
+    function currentCard() {
+      for (var i = 0; i < GPU_CARDS.length; i++) if (GPU_CARDS[i].id === state.gpuCard) return GPU_CARDS[i];
+      return null;
+    }
     var portDefaults = {
       vllm: 8000,
       sglang: 30000,
@@ -3496,19 +3516,28 @@
         },
       );
       choiceButtons(
+        'gpuCardChoices',
+        GPU_CARDS.map(function (c) {
+          return [c.id, c.name + ' · ' + c.gb + ' GB'];
+        }),
+        state.gpuCard,
+        function (next) {
+          state.gpuCard = next;
+          state.gpuVram = currentCard().gb;
+          renderHardware();
+          renderOutput();
+        },
+      );
+      choiceButtons(
         'gpuVramChoices',
-        [
-          ['16', '16 GB'],
-          ['24', '24 GB'],
-          ['32', '32 GB'],
-          ['48', '48 GB'],
-          ['80', '80 GB'],
-          ['96', '96 GB'],
-          ['192', '192 GB'],
-        ],
+        GPU_MEMORY.map(function (gb) {
+          return [String(gb), gb + ' GB'];
+        }),
         state.gpuVram,
         function (next) {
           state.gpuVram = Number(next);
+          var card = currentCard();
+          if (!card || card.gb !== state.gpuVram) state.gpuCard = null; // a memory size of your own: no card
           renderHardware();
           renderOutput();
         },
@@ -4185,6 +4214,7 @@
     }
     function restoreSnapshot(copy) {
       if (!copy) return;
+      if (copy.gpuCard === undefined) copy = Object.assign({}, copy, { gpuCard: null });
       Object.keys(copy).forEach(function (key) {
         if (['values', 'toggles', 'v', 'catalogRef'].indexOf(key) === -1) state[key] = copy[key];
       });
@@ -4280,6 +4310,7 @@
             type: 'GPU',
             available_devices: state.hardware === 'single' ? 1 : state.gpuCount,
             memory_per_device_gb: state.gpuVram,
+            name: currentCard() ? currentCard().name + ' ' + currentCard().gb + ' GB' : null,
           },
           reasoning_parser: ornithProfileActive() && on('reasoning'),
           tool_call_parser: ornithProfileActive() && on('tools'),
@@ -4659,10 +4690,10 @@
       'nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16': { billions: 31.58, gib: 61.3, heads: 32, noKv: true },
       'ibm-granite/granite-4.2-30b': { billions: 29.28, gib: 54.5, heads: 32, layers: 64, kvHeads: 8, headDim: 128 },
       'ibm-granite/granite-4.2-8b': { billions: 8.79, gib: 16.4, heads: 32, layers: 40, kvHeads: 8, headDim: 128 },
-      'mistralai/Mistral-Medium-3.5-128B': { billions: 127.7, gib: 248.9, heads: 96, layers: 88, kvHeads: 8, headDim: 128 },
-      'mistralai/Mistral-Small-4-119B-2603': { billions: 119.4, gib: 225.2, heads: 32, noKv: true },
-      'mistralai/Ministral-3-14B-Instruct-2512': { billions: 13.95, gib: 29.3, heads: 32, layers: 40, kvHeads: 8, headDim: 128 },
-      'mistralai/Ministral-3-8B-Instruct-2512': { billions: 8.92, gib: 19.4, heads: 32, layers: 34, kvHeads: 8, headDim: 128 },
+      'mistralai/Mistral-Medium-3.5-128B': { billions: 127.7, gib: 124.4, heads: 96, layers: 88, kvHeads: 8, headDim: 128 },
+      'mistralai/Mistral-Small-4-119B-2603': { billions: 119.4, gib: 112.6, heads: 32, noKv: true },
+      'mistralai/Ministral-3-14B-Instruct-2512': { billions: 13.95, gib: 14.6, heads: 32, layers: 40, kvHeads: 8, headDim: 128 },
+      'mistralai/Ministral-3-8B-Instruct-2512': { billions: 8.92, gib: 9.7, heads: 32, layers: 34, kvHeads: 8, headDim: 128 },
       'meta-llama/Llama-4-Scout-17B-16E-Instruct': { billions: 108.64, gib: 202.4, heads: 40, noKv: true },
     };
     var BYTES_PER_PARAM = {
@@ -5018,11 +5049,23 @@
         };
       if (engine === 'llama' || engine === 'ollama')
         return { warn: true, text: 'This engine expects GGUF weights. Select the GGUF build above.' };
-      if (build === 'NVFP4')
+      if (build === 'NVFP4') {
+        var fp4Card = currentCard();
+        if (fp4Card)
+          return fp4Card.cc >= 10
+            ? { warn: false, text: 'NVFP4 runs natively on Blackwell GPUs such as the ' + fp4Card.name + '.' }
+            : {
+                warn: true,
+                text:
+                  'NVFP4 needs a Blackwell GPU (B200, B300, RTX PRO 6000, RTX 5090). The ' +
+                  fp4Card.name +
+                  ' is not one.',
+              };
         return {
           warn: true,
           text: 'NVFP4 requires a compatible GPU and kernel path; verify support before launch.',
         };
+      }
       if (meta.gb > capacity * 0.9)
         return {
           warn: true,
@@ -5192,6 +5235,11 @@
           'CPU offload uses system RAM and transfers weights during inference; verify the host memory and link speed.',
         ]);
       if (fit.warn) checks.push(['warn', fit.text]);
+      if (currentCard() && currentCard().cc < 8.9 && config.runtime.quantization === 'FP8')
+        checks.push([
+          'warn',
+          'The ' + currentCard().name + ' has no native FP8 compute; FP8 weights run weight-only there.',
+        ]);
       if (
         config.model.ornith_profile &&
         state.server !== 'vllm' &&
@@ -5224,7 +5272,12 @@
         ]);
       if (state.server === 'vllm') {
         if (state.kv === 'fp8')
-          checks.push(['warn', 'FP8 KV cache needs hardware support and a quality check.']);
+          checks.push([
+            'warn',
+            currentCard() && currentCard().cc < 8.9
+              ? 'The ' + currentCard().name + ' has no native FP8 compute; an FP8 KV cache may not be supported on it.'
+              : 'FP8 KV cache needs hardware support and a quality check.',
+          ]);
         if (state.batch !== 'auto' && state.seq !== 'auto' && Number(state.batch) < Number(state.seq))
           checks.push([
             'warn',
