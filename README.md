@@ -6,8 +6,24 @@
 <br>
 
 <p align="center">
-  <a href="#quick-start">Quick start</a> &nbsp; · &nbsp;
-  <a href="#inside-modular">Workspace</a> &nbsp; · &nbsp;
+  <img src="assets/readme/banner.svg" alt="MODULAR in green block letters above a vllm serve command" width="820">
+</p>
+
+<p align="center">
+  <img alt="status: working prototype" src="https://img.shields.io/badge/status-working_prototype-def5b6?style=flat-square&labelColor=233327">
+  <img alt="build: none" src="https://img.shields.io/badge/build-none-a9d6a0?style=flat-square&labelColor=233327">
+  <img alt="engines: 6 + custom" src="https://img.shields.io/badge/engines-6_%2B_custom-8ec5e6?style=flat-square&labelColor=233327">
+  <img alt="models: 15 curated" src="https://img.shields.io/badge/models-15_curated-f2c879?style=flat-square&labelColor=233327">
+  <img alt="output: CLI, JSON, Docker" src="https://img.shields.io/badge/output-CLI_·_JSON_·_Docker-ee8b7d?style=flat-square&labelColor=233327">
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick start</a> &nbsp;·&nbsp;
+  <a href="#what-you-can-do-with-it">Use cases</a> &nbsp;·&nbsp;
+  <a href="#how-it-works">How it works</a> &nbsp;·&nbsp;
+  <a href="#inside-modular">Workspace</a> &nbsp;·&nbsp;
+  <a href="#engines">Engines</a> &nbsp;·&nbsp;
+  <a href="#honest-limits">Limits</a> &nbsp;·&nbsp;
   <a href="DESIGN.md">Design notes</a>
 </p>
 
@@ -28,6 +44,29 @@ Modular gives that work a calmer shape. A spacious browser interface keeps the m
 
 <br>
 
+## What you can do with it
+
+| If you are… | Modular helps you… | Where to look |
+| --- | --- | --- |
+| 🟢 **Standing up a model for the first time** | Pick a model and an engine, answer a few plain questions, and get a starting command without reading every flag reference. | Quick start |
+| 🔵 **Moving between engines** | Switch from vLLM to SGLang or Ollama and keep your intent. Settings that do not translate are named instead of dropped. | Switch engines |
+| 🟡 **Sizing for a GPU box** | Set GPU count and memory, tensor and pipeline parallelism, CPU offload, and KV cache. Get a weight-memory note and a warning on oversubscription. | Hardware, Checks |
+| 🟠 **Comparing configurations** | Save setups in the browser and restore model, engine, hardware, and settings together. | Save current |
+| 🔴 **Handing a setup to someone else** | Copy readable CLI, a one-liner, JSON, or a vLLM Docker command. The flag map explains where each part came from. | Output |
+| 🟣 **Trying your own fine-tunes** | Load up to 100 public repositories from a Hugging Face profile, or paste a reference, URL, or path. | Models |
+
+<br>
+
+## How it works
+
+<p align="center">
+  <img src="assets/readme/pipeline.svg" alt="Four boxes joined by arrows: model, engine, hardware, output. Checks run beneath them." width="900">
+</p>
+
+Modular keeps **what you want** separate from **how each engine spells it**. You choose a model, an engine, and hardware; those choices form one configuration. The renderer turns that configuration into a command, and the checker reads the same configuration to report conflicts. Model, engine, hardware, and runtime settings stay independent dimensions, so changing one does not quietly rewrite another.
+
+<br>
+
 ## Inside Modular
 
 **01 &nbsp; Choose your starting point.** Browse models by family, bring a reference or path, or load public repositories from a Hugging Face profile. Keep favorites and a default close at hand.
@@ -36,13 +75,40 @@ Modular gives that work a calmer shape. A spacious browser interface keeps the m
 
 **03 &nbsp; See what your choices mean.** The live command, flag map, and checks keep the result inspectable. Copy an export or save a configuration in the browser for another session.
 
+### Every part of the command is traceable
+
+<p align="center">
+  <img src="assets/readme/flagmap.svg" alt="Flag map: Model, Context, Devices, Memory, and Caching each connected to the vLLM flag they produce." width="760">
+</p>
+
+### Switch engines without losing your intent
+
+<p align="center">
+  <img src="assets/readme/engines.svg" alt="Switching from vLLM to SGLang or Ollama: translated settings are mapped, and one that cannot translate is flagged in Checks." width="900">
+</p>
+
+<br>
+
+## Engines
+
+| | Engine | Command shape | Notable controls in the prototype |
+| --- | --- | --- | --- |
+| 🟢 | **vLLM** | `vllm serve …` | Tensor and pipeline parallelism, CPU offload, fixed KV cache, priority scheduling, prefix caching, chunked prefill, dtype, request logging, Docker output |
+| 🔵 | **SGLang** | `python -m sglang.launch_server …` | Tensor parallelism, static memory fraction, radix cache toggle, reasoning and tool-call parsers |
+| 🟡 | **TGI** | text-generation-inference | Shared context, GPU, and quantization choices |
+| 🟠 | **llama.cpp** | llama.cpp server | Shared context, GPU, and quantization choices |
+| 🔴 | **Ollama** | `ollama pull` + `ollama serve` with environment settings | Host, context length, parallel requests, GGUF references |
+| 🟣 | **MLX LM** | MLX LM server | Shared context and quantization choices |
+| ⚪ | **Custom** | your own template | Extra arguments checked for repeats and opposing flags |
+
 <details>
 <summary>Models, engines, and output formats</summary>
 
 | Dimension | Available in the prototype |
 | --- | --- |
-| Models | 15 curated starting points; custom references, tags, URLs, and paths; up to 100 public repositories from a Hugging Face profile |
-| Model-specific controls | Ornith 1.5 checkpoint choices and conditional reasoning and tool-call parsers |
+| Models | 15 curated starting points across Ornith, Qwen, Reasoning, Vision, and Other groupings, including Llama 3.3 70B, Gemma 3 27B, Phi-4, Mixtral 8x7B, DeepSeek R1 Distill 32B, Qwen2.5 VL 7B, Whisper large v3, Stable Diffusion XL, and BGE embedding and reranking models; custom references, tags, URLs, and paths; up to 100 public repositories from a Hugging Face profile |
+| Views | All, Favorites, Recent, Text, and Other |
+| Model-specific controls | Ornith 1.5 checkpoint choices (BF16, FP8, NVFP4, GGUF where published) and conditional reasoning and tool-call parsers |
 | Engines | vLLM, SGLang, TGI, llama.cpp, Ollama, MLX LM, and a custom command template |
 | Tuning | Context, GPU count and memory, quantization, plus applicable scheduling, precision, cache, offload, network, and extra-argument controls |
 | Output | Readable CLI, one-line CLI, and JSON; Docker for vLLM |
@@ -61,20 +127,30 @@ From this directory:
 python3 -m http.server 8000
 ```
 
-Open [localhost:8000](http://localhost:8000). No build step or account is required. Start with Qwen3 8B and vLLM, change a choice, and open **Where each choice goes** beneath the output.
+Open [localhost:8000](http://localhost:8000). No build step or account is required.
+
+1. Start with **Qwen3 8B** and **vLLM**.
+2. Change a choice: context, GPU count, or engine.
+3. Open **Where each choice goes** beneath the output to see the flag it produced.
+4. **Save current** to keep the setup, or copy the command.
+
+<br>
+
+## Honest limits
 
 Modular is a working prototype that produces a **starting specification**. Its checks cover selected conflicts; confirm the output against the engine version, checkpoint, and hardware you intend to use.
 
-<details>
-<summary>What the prototype checks</summary>
+| ✅ It does | ⚠️ It does not |
+| --- | --- |
+| Catch GPU oversubscription | Install or launch a server |
+| Flag settings an engine omits | Verify engine versions or architecture support |
+| Warn when extra arguments repeat or oppose generated flags | Inspect checkpoint contents |
+| Estimate weight memory for the chosen checkpoint | Measure real memory headroom, KV cache, or activations |
+| Say “no setting conflicts detected” | Promise that message means the setup will run. It means no implemented check found a conflict |
 
-Checks catch cases such as GPU oversubscription, settings omitted by an engine, and extra arguments that repeat generated flags. The checkpoint fit note estimates weight memory only.
+[DESIGN.md](DESIGN.md) records the intended direction, including versioned engine profiles, source links with last-checked dates, and broader compatibility rules that are not implemented yet.
 
-The page does not install or launch a server. It does not verify engine versions, architecture support, checkpoint contents, actual memory headroom, or arbitrary extra arguments. “No setting conflicts detected” means no implemented check found one.
-
-[DESIGN.md](DESIGN.md) records the intended direction, including versioned engine profiles and broader compatibility rules that are not implemented yet.
-
-</details>
+<br>
 
 <details>
 <summary>Local data and project files</summary>
@@ -87,6 +163,6 @@ Favorites, a default model, and saved configurations live in browser local stora
 | [next.html](next.html) | Current working copy |
 | [DESIGN.md](DESIGN.md) | Product direction and iteration history |
 | [catalog-draft.html](catalog-draft.html), [original.html](original.html) | Earlier explorations |
-| [assets/readme](assets/readme) | Artwork, actual interface captures, and editable README compositions |
+| [assets/readme](assets/readme) | Artwork, actual interface captures, generated ASCII-art SVGs (`ascii.py`), and editable README compositions |
 
 </details>
