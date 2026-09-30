@@ -19,6 +19,14 @@
       "action": "unit tests: memory estimate (17), catalog invariants (21), flag data (43)",
       "observation": "three injected regressions each turned exactly the right tests red; restored run green (82)",
       "gates": "PASS"
+    },
+    {
+      "n": 3,
+      "task": "#9 Automated tests",
+      "action": "browser flows, server API and WebSocket, migration, saved data, themes",
+      "observation": "five injected regressions each failed the right test; the suite found three real defects; full run 190 green, no leaked processes",
+      "gates": "PASS",
+      "result": "#9 done after 3 iterations"
     }
   ]
 }

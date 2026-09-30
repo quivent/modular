@@ -42,14 +42,14 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
   Setups, storage envelopes and /api/state carry versions; older data upgrades on read, newer data is preserved.
 - [ ] **#5 Contributing guide**
   MIT license added. Still to write: short instructions for running, testing, and adding a model or engine.
-  Depends on: #9  (waiting on 1)
+  Depends on: #9
   Blocks: #22
 
 ## Trust
 
 - [ ] **#6 Versioned engine profiles**
   Describe each engine's flags, defaults, accepted values, and conflicts as data per version, then generate the renderer and checks from it.
-  Depends on: #9  (waiting on 1)
+  Depends on: #9
   Blocks: #7, #8, #13, #22
 - [ ] **#7 Engine version selector**
   Let people pick the version they run, and show how defaults or spellings differ before export.
@@ -59,8 +59,8 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
   Link each version-specific flag to its documentation, and label unknown compatibility as unknown.
   Depends on: #6  (waiting on 1)
   Blocks: #22
-- [~] **#9 Automated tests**
-  Golden-file tests for every engine and output format, plus a test for each check (oversubscription, omitted settings, duplicate arguments).
+- [x] **#9 Automated tests**
+  Node test runner with a harness that starts a throwaway server and headless Chrome on free ports. 190 checks: estimate, catalog, flag data, browser flows, server API and WebSocket, saved data, themes. Five injected regressions were each caught.
   Blocks: #5, #6, #19, #21, #22
 - [x] **#10 Better fit estimates**
   Extend the weight-only note to KV cache and activation headroom for the chosen context and batch, clearly labeled as an estimate.
@@ -98,21 +98,23 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
   Blocks: #22
 - [ ] **#19 Browser support matrix**
   Test current Chrome, Safari, and Firefox, including clipboard fallbacks and local storage being unavailable.
-  Depends on: #9  (waiting on 1)
+  Depends on: #9
   Blocks: #22
 - [ ] **#20 Self-hosted fonts and offline mode**
   Remove the Google Fonts request so the page works fully offline.
   Blocks: #22
 - [ ] **#21 Continuous checks**
   Run the tests and a link and asset check on every change.
-  Depends on: #9  (waiting on 1)
+  Depends on: #9
   Blocks: #22
 - [ ] **#22 Release**
   Refresh screenshots with `assets/readme/render.py`, tag a version, deploy, and remove the "prototype" label from this README.
-  Depends on: #5 to #21 (all)  (waiting on 16)
+  Depends on: #5 to #21 (all)  (waiting on 15)
 
 ## Ready now (highest priority first)
 
+1. #5 Contributing guide
+1. #6 Versioned engine profiles
 1. #11 Input validation
 1. #12 More command forms
 1. #14 Share and import
@@ -120,4 +122,6 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
 1. #16 Private repositories
 1. #17 Accessibility pass
 1. #18 Phone and tablet audit
+1. #19 Browser support matrix
 1. #20 Self-hosted fonts and offline mode
+1. #21 Continuous checks
