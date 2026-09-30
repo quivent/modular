@@ -12,8 +12,8 @@
 <p align="center">
   <img alt="status: working prototype" src="https://img.shields.io/badge/status-working_prototype-def5b6?style=flat-square&labelColor=233327">
   <img alt="build: none" src="https://img.shields.io/badge/build-none-a9d6a0?style=flat-square&labelColor=233327">
-  <img alt="engines: 6 + custom" src="https://img.shields.io/badge/engines-6_%2B_custom-8ec5e6?style=flat-square&labelColor=233327">
-  <img alt="models: 15 curated" src="https://img.shields.io/badge/models-15_curated-f2c879?style=flat-square&labelColor=233327">
+  <img alt="engines: 7" src="https://img.shields.io/badge/engines-7-8ec5e6?style=flat-square&labelColor=233327">
+  <img alt="models: 54 current" src="https://img.shields.io/badge/models-54_current-f2c879?style=flat-square&labelColor=233327">
   <img alt="license: MIT" src="https://img.shields.io/badge/license-MIT-b7c9a8?style=flat-square&labelColor=233327">
   <img alt="output: CLI, JSON, Docker" src="https://img.shields.io/badge/output-CLI_·_JSON_·_Docker-ee8b7d?style=flat-square&labelColor=233327">
 </p>
@@ -40,8 +40,8 @@ Modular gives that work a calmer shape. Choose a model, an engine, and the hardw
 <br>
 
 <picture>
-  <source media="(max-width: 600px)" srcset="assets/readme/output-mobile.png">
-  <img src="assets/readme/workspace.png" alt="Actual Modular interface: six engines and a custom path beside the generated vLLM command, saved configurations, flag map, and checks. On narrow screens, the live output panel is shown in detail." width="100%">
+  <source media="(max-width: 600px)" srcset="assets/readme/interface-mobile.png">
+  <img src="assets/readme/interface.png" alt="Actual Modular interface: kinds of model, design filter and catalog on the left; on the right the configuration panel listing every vLLM flag, with the ones this setup sets highlighted." width="100%">
 </picture>
 
 <br>
@@ -52,7 +52,7 @@ Modular gives that work a calmer shape. Choose a model, an engine, and the hardw
 | --- | --- | --- |
 | 🟢 **Standing up a model for the first time** | Pick a model and an engine, answer a few plain questions, and get a starting command without reading every flag reference. | Quick start |
 | 🔵 **Moving between engines** | Switch from vLLM to SGLang or Ollama and keep your intent. Settings that do not translate are named instead of dropped. | Switch engines |
-| 🟡 **Sizing for a GPU box** | Set GPU count and memory, tensor and pipeline parallelism, CPU offload, and KV cache. Get a weight-memory note and a warning on oversubscription. | Hardware, Checks |
+| 🟡 **Sizing for a GPU box** | Pick your card (B300 to RTX 3090), GPU count, tensor and pipeline parallelism, CPU offload, and KV cache. Get a real “will it start?” check against the card’s memory. | Hardware, Checks |
 | 🟠 **Comparing configurations** | Save setups in the browser and restore model, engine, hardware, and settings together. | Save current |
 | 🔴 **Handing a setup to someone else** | Copy readable CLI, a one-liner, JSON, or a vLLM Docker command. The flag map explains where each part came from. | Output |
 | 🟣 **Trying your own fine-tunes** | Load up to 100 public repositories from a Hugging Face profile, or paste a reference, URL, or path. | Models |
@@ -71,11 +71,11 @@ Modular keeps **what you want** separate from **how each engine spells it**. You
 
 ## Inside Modular
 
-**01 &nbsp; Choose your starting point.** Browse models by family, bring a reference or path, or load public repositories from a Hugging Face profile. Keep favorites and a default close at hand.
+**01 &nbsp; Choose your starting point.** Start from what the model produces: language, image, video, audio, embeddings, or rerankers. Video shows Wan, click in for its variants. Or bring a reference or path, or load public repositories from a Hugging Face profile. Keep favorites and a default close at hand.
 
-**02 &nbsp; Give the workload what it needs.** Choose an engine, context, weight format, and hardware. Scheduling, cache, offload, and network controls appear where relevant. Engine changes preserve choices and call out selected settings that do not translate.
+**02 &nbsp; Give the workload what it needs.** Choose an engine, your GPU card, context, and weight format. Scheduling, cache, offload, and network controls appear where relevant. Engine changes preserve choices and call out selected settings that do not translate.
 
-**03 &nbsp; See what your choices mean.** The live command, flag map, and checks keep the result inspectable. Copy an export or save a configuration in the browser for another session.
+**03 &nbsp; See what your choices mean.** Every flag the engine has, with the ones your setup sets highlighted, plus the flag map and checks. Copy an export or save a configuration in the browser for another session.
 
 ### Every part of the command is traceable
 
@@ -108,7 +108,7 @@ Modular keeps **what you want** separate from **how each engine spells it**. You
 | 🔴 | **GPU oversubscription** | Tensor GPUs × pipeline stages exceeds the GPU count you selected |
 | 🟠 | **Settings an engine omits** | A saved device count, memory target, or parser choice the current engine cannot express |
 | 🟡 | **Repeated or opposing arguments** | An extra argument duplicates a flag Modular already generated |
-| 🔴 | **Will it start?** | Weights plus KV cache against your GPUs: “Llama 3.3 70B needs about 131 GB; 20 GB is usable on 1 × 24 GB”, “the KV cache holds only 31,600 tokens, less than your 40,960-token context”, “28 attention heads cannot be split across 8 GPUs”, each with the fix |
+| 🔴 | **Will it start?** | Weights plus KV cache against your card: “Qwen3.8 27B needs about 52 GB; 20 GB is usable on 1 × RTX 4090”, “the KV cache holds only 32,700 tokens, less than your 131,072-token context”, “NVFP4 needs a Blackwell GPU; the H100 is not one”, each with the fix. Weights use each checkpoint’s real file size |
 | 🔵 | **Risky combinations** | FP8 KV cache needs hardware support; eager mode disables CUDA graphs; CPU offload moves weights during inference; Docker needs the server bound to all interfaces |
 | 🟢 | **Scheduling sanity** | A token batch smaller than the sequence limit may constrain scheduling |
 | 🟢 | **Fixed KV cache** | A fixed allocation replaces the GPU memory target, and Modular says which flag it omitted |
@@ -146,19 +146,19 @@ The first screen is a working, cautious starting point. Every default is a decis
 
 | Setting | Default | Why |
 | --- | --- | --- |
-| Model | Qwen3 8B | Fits a 24 GB GPU with room left for context |
+| Model | Qwen3.8 27B | A current-generation dense multimodal model; fits one 80 GB card with room for context |
 | Engine | vLLM | The most widely deployed server for this job |
-| Hardware | 1 GPU × 24 GB | The common single-card case; change it and the memory check follows |
+| Hardware | 1 × H100 80 GB | The most common data-center card; pick another and the memory check follows |
 | Context | 8K tokens | Comfortable on small cards; raise it on purpose |
 | Listens on | This machine (`127.0.0.1`) | An inference endpoint with no API key should not be reachable from the network by accident |
 | Trust remote code | Off, except for Ornith | The flag runs Python from the model's repository on your server |
 | GPU memory | 90% | Just under vLLM's own default (0.92), for headroom against spikes |
 | Prefix caching | On | A free win when prompts share a beginning |
-| Output | Readable CLI | Shows every flag on its own line |
+| Output | All flags | Shows every flag the engine has, so nothing is hidden behind a door |
 
 Docker output listens inside the container and publishes only on your loopback, so the safe default works there too.
 
-Beneath the command, a **More you can set** list names other flags people commonly reach for, with what each is for. They are comments, so the command you copy runs exactly as shown.
+**All flags** lists every flag of the selected engine, straight from that engine’s own documentation (vLLM 311, SGLang 423, llama.cpp 255, TGI 56, TensorRT-LLM 50, Ollama 30, MLX LM 26). The flags your configuration sets are highlighted with their values; the rest show the documented default. Copy command copies the runnable command. `python3 tools/flags.py` re-reads the docs.
 
 <br>
 
@@ -168,23 +168,25 @@ Beneath the command, a **More you can set** list names other flags people common
 | --- | --- | --- | --- |
 | 🟢 | **vLLM** | `vllm serve …` | Tensor and pipeline parallelism, CPU offload, fixed KV cache, priority scheduling, prefix caching, chunked prefill, dtype, request logging, Docker output |
 | 🔵 | **SGLang** | `python -m sglang.launch_server …` | Tensor parallelism, static memory fraction, radix cache toggle, reasoning and tool-call parsers |
+| 🟣 | **TensorRT-LLM** | `trtllm-serve …` | Tensor and pipeline parallelism, KV-cache memory fraction, sequence length; FP8 and NVFP4 checkpoints load as shipped |
 | 🟡 | **TGI** | text-generation-inference | Shared context, GPU, and quantization choices |
 | 🟠 | **llama.cpp** | llama.cpp server | Shared context, GPU, and quantization choices |
 | 🔴 | **Ollama** | `ollama pull` + `ollama serve` with environment settings | Host, context length, parallel requests, GGUF references |
-| 🟣 | **MLX LM** | MLX LM server | Shared context and quantization choices |
-| ⚪ | **Custom** | your own template | Extra arguments checked for repeats and opposing flags |
+| ⚪ | **MLX LM** | MLX LM server | Shared context and quantization choices |
 
 <details>
 <summary>Models, engines, and output formats</summary>
 
 | Dimension | Available in the prototype |
 | --- | --- |
-| Models | 15 curated starting points across Ornith, Qwen, Reasoning, Vision, and Other groupings, including Llama 3.3 70B, Gemma 3 27B, Phi-4, Mixtral 8x7B, DeepSeek R1 Distill 32B, Qwen2.5 VL 7B, Whisper large v3, Stable Diffusion XL, and BGE embedding and reranking models; custom references, tags, URLs, and paths; up to 100 public repositories from a Hugging Face profile |
-| Views | All, Favorites, Recent, Text, and Other |
+| Models | The current generation only, chosen from Hugging Face data: Qwen3.8, Gemma 4, DeepSeek V4, GLM-5.3, Kimi K3, gpt-oss, Nemotron 3, Granite 4.2, Mistral, Llama 4, FLUX.2, Wan 2.2, LTX-2.5, MiniMax-H3, current speech, music, embedding and reranker models, and Ornith. Older versions are left out unless there is a reason (Wan 2.2 and FLUX.1 dev are still what people run). Custom references, tags, URLs, and paths; up to 100 public repositories from a Hugging Face profile |
+| Kinds | Language (Dense, Mixture of experts, Multimodal), Image, Video, Audio (speech to text, text to speech, music), Embeddings, Reranker |
+| Views | All, Favorites, Recent |
 | Model-specific controls | Ornith 1.5 checkpoint choices (BF16, FP8, NVFP4, GGUF where published) and conditional reasoning and tool-call parsers |
-| Engines | vLLM, SGLang, TGI, llama.cpp, Ollama, MLX LM, and a custom command template |
+| Engines | vLLM, SGLang, TensorRT-LLM, TGI, llama.cpp, Ollama, MLX LM |
+| Hardware | B300, B200, H200, H100, A100 80 GB and 40 GB, RTX PRO 6000, RTX 5090, 4090, 3090; or a memory size of your own |
 | Tuning | Context, GPU count and memory, quantization, plus applicable scheduling, precision, cache, offload, network, and extra-argument controls |
-| Output | Readable CLI, one-line CLI, and JSON; Docker for vLLM |
+| Output | All flags, readable CLI, one-line CLI, and JSON; Docker for vLLM. Image, video and speech/music generation have no launch command yet |
 
 Catalog inclusion does not establish engine compatibility. Model, engine, hardware, and runtime choices remain separate dimensions.
 
@@ -202,7 +204,7 @@ python3 server.py
 
 Open [127.0.0.1:8420](http://127.0.0.1:8420). No build step or account is required. The server listens on your machine only, serves the app, and keeps the [tracker](#tracker) in a local SQLite database. To use just the configurator, any static server works: `python3 -m http.server 8420`.
 
-1. Start with **Qwen3 8B** and **vLLM**.
+1. Start with **Qwen3.8 27B**, **vLLM**, and an **H100**.
 2. Change a choice: context, GPU count, or engine.
 3. Open **Where each choice goes** beneath the output to see the flag it produced.
 4. **Save current** to keep the setup, or copy the command.

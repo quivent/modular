@@ -60,7 +60,7 @@ for i, l in enumerate(logo):
 rows.append(L(("", DIM)))
 rows.append(L(("  ", DIM), ("░▒▓", SAGE), (" model serving, with room to breathe ", INK), ("▓▒░", SAGE)))
 rows.append(L(("", DIM)))
-rows.append(L(("  $ ", DIM), ("vllm serve ", INK), ("Qwen/Qwen3-8B", LIME), (" --max-model-len ", SKY), ("32768", AMBER),
+rows.append(L(("  $ ", DIM), ("vllm serve ", INK), ("Qwen/Qwen3.8-27B", LIME), (" --max-model-len ", SKY), ("32768", AMBER),
               (" --tensor-parallel-size ", SKY), ("1", AMBER), (" █", CELADON)))
 rows.append(L(("", DIM)))
 svg("banner.svg", rows, title="MODULAR — model serving, with room to breathe")
@@ -74,9 +74,9 @@ def box(col, title, lines, w=22):
     return col, [top] + body + [bot]
 
 boxes = [
-    box(C1, "01 MODEL", ["15 curated picks", "custom ref / path", "HF profile (≤100)", "★ favorites"]),
-    box(C2, "02 ENGINE", ["vLLM  · SGLang", "TGI   · llama.cpp", "Ollama· MLX LM", "custom template"]),
-    box(C3, "03 HARDWARE", ["GPU count", "memory per GPU", "context length", "quantization"]),
+    box(C1, "01 MODEL", ["language · image", "video · audio", "embeddings · rerank", "★ favorites"]),
+    box(C2, "02 ENGINE", ["vLLM  · SGLang", "TensorRT-LLM", "TGI   · llama.cpp", "Ollama· MLX LM"]),
+    box(C3, "03 HARDWARE", ["GPU card", "GPU count", "context length", "quantization"]),
     box(C4, "04 OUTPUT", ["readable CLI", "one-line CLI", "JSON", "Docker (vLLM)"]),
 ]
 h = len(boxes[0][1])
@@ -98,7 +98,7 @@ svg("pipeline.svg", rows, title="Model to engine to hardware to output pipeline"
 # ── 3. flag map ────────────────────────────────────────────────────────
 rows = [
     L(("", DIM)),
-    L(("  where each choice goes", INK), ("   (vLLM · Qwen3 8B · 1 GPU)", DIM)),
+    L(("  where each choice goes", INK), ("   (vLLM · Qwen3.8 27B · 1 × H100)", DIM)),
     L(("", DIM)),
     L(("  Model     ", LIME), ("●━━━━━━━━━━━━━━", SAGE), ("▶ ", SAGE), ("vllm serve ", INK), ("Qwen/Qwen3-8B", LIME)),
     L(("  Context   ", SKY), ("●━━━━━━━━━━━━━━", SAGE), ("▶ ", SAGE), ("--max-model-len ", INK), ("32768", AMBER)),
