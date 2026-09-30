@@ -4390,7 +4390,7 @@
           '--host ' + host,
           '--port ' + port,
           '--context-length ' + ctx,
-          '--tp ' + tp,
+          '--tp-size ' + tp,
           '--mem-fraction-static ' + (r.gpu_memory_percent / 100).toFixed(2),
         ];
         if (!c.model.build && q !== 'Native / auto')
@@ -4566,7 +4566,7 @@
         add('Host', '--host ' + r.host, 'hostChoices');
         add('Port', '--port ' + r.port, 'hostChoices');
         add('Context', '--context-length ' + r.context_tokens, 'contextField');
-        add('Devices', '--tp ' + r.parallel_devices, 'parallelField');
+        add('Devices', '--tp-size ' + r.parallel_devices, 'parallelField');
         add(
           'GPU memory',
           '--mem-fraction-static ' + (r.gpu_memory_percent / 100).toFixed(2),
@@ -4856,6 +4856,7 @@
       var found = [],
         m;
       // Long flags (--name) and short ones (-c), in the order the command gives them.
+      command = command.replace(/^python -m [\w.]+/, ''); // `-m` belongs to python, not to the engine
       var flag = /(--[A-Za-z0-9][A-Za-z0-9_-]*|(?<![\w-])-[A-Za-z][A-Za-z0-9]*)(?:[ =]+(?!-)('[^']*'|"[^"]*"|[^\s\\]+))?/g;
       while ((m = flag.exec(command))) found.push([m[1], (m[2] || '').replace(/^['"]|['"]$/g, '')]);
       var env = /(?:^|[\s&])([A-Z][A-Z0-9_]{3,})=('[^']*'|"[^"]*"|[^\s&]+)/g;
@@ -4869,14 +4870,17 @@
       return found;
     }
     // A description that only restates the flag's own name ("Host name." under --host) says nothing.
-    var HELP_FILLER = /^(the|a|an|of|to|for|and|or|in|on|is|be|use|used|using|whether|enable|enables|set|specify|specifies|number|size|count|groups|name|names|path|value|id|hugging|face|huggingface|hf)$/;
+    var HELP_FILLER = /^(the|a|an|of|to|for|and|or|in|on|is|be|use|used|using|whether|enable|enables|set|specify|specifies|number|size|count|groups|name|names|path|value|id|hugging|face|huggingface|hf|http|https|server|listen|listens|ip|address|addresses|interface|bind|default)$/;
     function helpWords(t) {
       return t
         .toLowerCase()
         .split(/[^a-z0-9]+/)
         .filter(Boolean)
+        .filter(function (w) {
+          return w && !/^\d+$/.test(w) && !HELP_FILLER.test(w); // filler is judged on the word as written
+        })
         .map(function (w) {
-          return w.replace(/(ing|es|s)$/, '');
+          return w === 'hostname' ? 'host' : w.replace(/(ing|es|s)$/, '');
         })
         .filter(function (w) {
           return w && !HELP_FILLER.test(w);
