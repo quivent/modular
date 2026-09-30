@@ -1,0 +1,585 @@
+{
+ "engine": "tgi",
+ "source": "https://raw.githubusercontent.com/huggingface/text-generation-inference/main/docs/source/reference/launcher.md",
+ "fetched": "2026-09-30",
+ "count": 56,
+ "sections": [
+  {
+   "title": "text-generation-launcher options",
+   "flags": [
+    {
+     "name": "--model-id",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "bigscience/bloom-560m",
+     "help": "The name of the model to load. Can be a MODEL_ID as listed on <https://hf.co/models> like `gpt2` or `OpenAssistant/oasst-sft-1-pythia-12b`. Or it can be a local directory containing the necessary files as saved by `save_pretrained(...)` methods of transformers",
+     "value": "<MODEL_ID>",
+     "env": "MODEL_ID"
+    },
+    {
+     "name": "--revision",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The actual revision of the model if you're referring to a model on the hub. You can use a specific commit id or a branch like `refs/pr/2`",
+     "value": "<REVISION>",
+     "env": "REVISION"
+    },
+    {
+     "name": "--validation-workers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "2",
+     "help": "The number of tokenizer workers used for payload validation and truncation inside the router",
+     "value": "<VALIDATION_WORKERS>",
+     "env": "VALIDATION_WORKERS"
+    },
+    {
+     "name": "--sharded",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "true",
+      "false"
+     ],
+     "default": null,
+     "help": "Whether to shard the model across multiple GPUs By default text-generation-inference will use all available GPUs to run the model. Setting it to `false` deactivates `num_shard`",
+     "value": "<SHARDED>",
+     "env": "SHARDED"
+    },
+    {
+     "name": "--num-shard",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The number of shards to use if you don't want to use all GPUs on a given machine. You can use `CUDA_VISIBLE_DEVICES=0,1 text-generation-launcher... --num_shard 2` and `CUDA_VISIBLE_DEVICES=2,3 text-generation-launcher... --num_shard 2` to launch 2 copies with 2 shard each on a given machine with 4 GPUs for instance",
+     "value": "<NUM_SHARD>",
+     "env": "NUM_SHARD"
+    },
+    {
+     "name": "--quantize",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Quantization method to use for the model. It is not necessary to specify this option for pre-quantized models, since the quantization method is read from the model configuration. Marlin kernels will be used automatically for GPTQ/AWQ models. Possible values: - awq:                4 bit quantization. Requires a specific AWQ quantized model: <https://hf.co/models?search=awq>. Should replace GPTQ models wherever possible because of the better latency - compressed-tensors: Compressed tensors, which can be a mixture of different quantization methods - eetq:               8 bit quantization, doesn't require specific model. Should be a drop-in replacement to bitsandbytes with much better performance. Kernels are from <https://github.com/NetEase-FuXi/EETQ.git> - exl2:               Variable bit quantization. Requires a specific EXL2 quantized model: <https://hf.co/models?search=exl2>. Requires exllama2 kernels and does not support tensor parallelism (num_shard > 1) - gptq:               4 bit quantization. Requires a specific GTPQ quantized model: <https://hf.co/models?search=gptq>. text-generation-inference will use exllama (faster) kernels wherever possible, and use triton kernel (wider support) when it's not. AWQ has faster kernels - marlin:             4 bit quantization. Requires a specific Marlin quantized model: <https://hf.co/models?search=marlin> - bitsandbytes:       Bitsandbytes 8bit. Can be applied on any model, will cut the memory requirement in half, but it is known that the model will be much slower to run than the native f16 - bitsandbytes-nf4:   Bitsandbytes 4bit. Can be applied on any model, will cut the memory requirement by 4x, but it is known that the model will be much slower to run than the native f16 - bitsandbytes-fp4:   Bitsandbytes 4bit. nf4 should be preferred in most cases but maybe this one has better perplexity performance for you model - fp8:                [FP8](https://developer.nvidia.com/blog/nvidia-arm-and-intel-publish-fp8-specification-for-standardization-as-an-interchange-format-for-ai/) (e4m3) works on H100 and above This dtype has native ops should be the fastest if available. This is currently not the fastest because of local unpacking + padding to satisfy matrix multiplication limitations",
+     "value": "<QUANTIZE>",
+     "env": "QUANTIZE"
+    },
+    {
+     "name": "--speculate",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The number of input_ids to speculate on If using a medusa model, the heads will be picked up automatically Other wise, it will use n-gram speculation which is relatively free in terms of compute, but the speedup heavily depends on the task",
+     "value": "<SPECULATE>",
+     "env": "SPECULATE"
+    },
+    {
+     "name": "--dtype",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "float16",
+      "bfloat16"
+     ],
+     "default": null,
+     "help": "The dtype to be forced upon the model. This option cannot be used with `--quantize`",
+     "value": "<DTYPE>",
+     "env": "DTYPE"
+    },
+    {
+     "name": "--kv-cache-dtype",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "fp8_e4m3fn",
+      "fp8_e5m2"
+     ],
+     "default": null,
+     "help": "Specify the dtype for the key-value cache. When this option is not provided, the dtype of the model is used (typically `float16` or `bfloat16`). Currently the only supported value are `fp8_e4m3fn` and `fp8_e5m2` on CUDA",
+     "value": "<KV_CACHE_DTYPE>",
+     "env": "KV_CACHE_DTYPE"
+    },
+    {
+     "name": "--trust-remote-code",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Whether you want to execute hub modelling code. Explicitly passing a `revision` is encouraged when loading a model with custom code to ensure no malicious code has been contributed in a newer revision",
+     "env": "TRUST_REMOTE_CODE"
+    },
+    {
+     "name": "--max-concurrent-requests",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "128",
+     "help": "The maximum amount of concurrent requests for this particular deployment. Having a low limit will refuse clients requests instead of having them wait for too long and is usually good to handle backpressure correctly",
+     "value": "<MAX_CONCURRENT_REQUESTS>",
+     "env": "MAX_CONCURRENT_REQUESTS"
+    },
+    {
+     "name": "--max-best-of",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "2",
+     "help": "This is the maximum allowed value for clients to set `best_of`. Best of makes `n` generations at the same time, and return the best in terms of overall log probability over the entire generated sequence",
+     "value": "<MAX_BEST_OF>",
+     "env": "MAX_BEST_OF"
+    },
+    {
+     "name": "--max-stop-sequences",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "4",
+     "help": "This is the maximum allowed value for clients to set `stop_sequences`. Stop sequences are used to allow the model to stop on more than just the EOS token, and enable more complex \"prompting\" where users can preprompt the model in a specific way and define their \"own\" stop token aligned with their prompt",
+     "value": "<MAX_STOP_SEQUENCES>",
+     "env": "MAX_STOP_SEQUENCES"
+    },
+    {
+     "name": "--max-top-n-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "5",
+     "help": "This is the maximum allowed value for clients to set `top_n_tokens`. `top_n_tokens` is used to return information about the the `n` most likely tokens at each generation step, instead of just the sampled token. This information can be used for downstream tasks like for classification or ranking",
+     "value": "<MAX_TOP_N_TOKENS>",
+     "env": "MAX_TOP_N_TOKENS"
+    },
+    {
+     "name": "--max-input-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "This is the maximum allowed input length (expressed in number of tokens) for users. The larger this value, the longer prompt users can send which can impact the overall memory required to handle the load. Please note that some models have a finite range of sequence they can handle. Default to min(max_allocatable, max_position_embeddings) - 1",
+     "value": "<MAX_INPUT_TOKENS>",
+     "env": "MAX_INPUT_TOKENS"
+    },
+    {
+     "name": "--max-input-length",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Legacy version of [`Args::max_input_tokens`]",
+     "value": "<MAX_INPUT_LENGTH>",
+     "env": "MAX_INPUT_LENGTH"
+    },
+    {
+     "name": "--max-total-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "This is the most important value to set as it defines the \"memory budget\" of running clients requests. Clients will send input sequences and ask to generate `max_new_tokens` on top. with a value of `1512` users can send either a prompt of `1000` and ask for `512` new tokens, or send a prompt of `1` and ask for `1511` max_new_tokens. The larger this value, the larger amount each request will be in your RAM and the less effective batching can be. Default to min(max_allocatable, max_position_embeddings)",
+     "value": "<MAX_TOTAL_TOKENS>",
+     "env": "MAX_TOTAL_TOKENS"
+    },
+    {
+     "name": "--waiting-served-ratio",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.3",
+     "help": "This represents the ratio of waiting queries vs running queries where you want to start considering pausing the running queries to include the waiting ones into the same batch. `waiting_served_ratio=1.2` Means when 12 queries are waiting and there's only 10 queries left in the current batch we check if we can fit those 12 waiting queries into the batching strategy, and if yes, then batching happens delaying the 10 running queries by a `prefill` run. This setting is only applied if there is room in the batch as defined by `max_batch_total_tokens`.",
+     "value": "<WAITING_SERVED_RATIO>",
+     "env": "WAITING_SERVED_RATIO"
+    },
+    {
+     "name": "--max-batch-prefill-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Limits the number of tokens for the prefill operation. Since this operation take the most memory and is compute bound, it is interesting to limit the number of requests that can be sent. Default to `max_input_tokens + 50` to give a bit of room",
+     "value": "<MAX_BATCH_PREFILL_TOKENS>",
+     "env": "MAX_BATCH_PREFILL_TOKENS"
+    },
+    {
+     "name": "--max-batch-total-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "**IMPORTANT** This is one critical control to allow maximum usage of the available hardware. This represents the total amount of potential tokens within a batch. When using padding (not recommended) this would be equivalent of `batch_size` * `max_total_tokens`. However in the non-padded (flash attention) version this can be much finer. For `max_batch_total_tokens=1000`, you could fit `10` queries of `total_tokens=100` or a single query of `1000` tokens. Overall this number should be the largest possible amount that fits the remaining memory (after the model is loaded). Since the actual memory overhead depends on other parameters like if you're using quantization, flash attention or the model implementation, text-generation-inference infers this number automatically if not provided ensuring that the value is as large as possible.",
+     "value": "<MAX_BATCH_TOTAL_TOKENS>",
+     "env": "MAX_BATCH_TOTAL_TOKENS"
+    },
+    {
+     "name": "--max-waiting-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "20",
+     "help": "This setting defines how many tokens can be passed before forcing the waiting queries to be put on the batch (if the size of the batch allows for it). New queries require 1 `prefill` forward, which is different from `decode` and therefore you need to pause the running batch in order to run `prefill` to create the correct values for the waiting queries to be able to join the batch. With a value too small, queries will always \"steal\" the compute to run `prefill` and running queries will be delayed by a lot. With a value too big, waiting queries could wait for a very long time before being allowed a slot in the running batch. If your server is busy that means that requests that could run in ~2s on an empty server could end up running in ~20s because the query had to wait for 18s. This number is expressed in number of tokens to make it a bit more \"model\" agnostic, but what should really matter is the overall latency for end users.",
+     "value": "<MAX_WAITING_TOKENS>",
+     "env": "MAX_WAITING_TOKENS"
+    },
+    {
+     "name": "--max-batch-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enforce a maximum number of requests per batch Specific flag for hardware targets that do not support unpadded inference",
+     "value": "<MAX_BATCH_SIZE>",
+     "env": "MAX_BATCH_SIZE"
+    },
+    {
+     "name": "--cuda-graphs",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Specify the batch sizes to compute cuda graphs for. Use \"0\" to disable. Default = \"1,2,4,8,16,32\"",
+     "value": "<CUDA_GRAPHS>",
+     "env": "CUDA_GRAPHS"
+    },
+    {
+     "name": "--hostname",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.0.0.0",
+     "help": "The IP address to listen on",
+     "value": "<HOSTNAME>",
+     "env": "HOSTNAME"
+    },
+    {
+     "name": "--port",
+     "aliases": [
+      "-p"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "3000",
+     "help": "The port to listen on",
+     "value": "<PORT>",
+     "env": "PORT"
+    },
+    {
+     "name": "--prometheus-port",
+     "aliases": [
+      "-p"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "9000",
+     "help": "The Prometheus port to listen on",
+     "value": "<PROMETHEUS_PORT>",
+     "env": "PROMETHEUS_PORT"
+    },
+    {
+     "name": "--shard-uds-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "/tmp/text-generation-server",
+     "help": "The name of the socket for gRPC communication between the webserver and the shards",
+     "value": "<SHARD_UDS_PATH>",
+     "env": "SHARD_UDS_PATH"
+    },
+    {
+     "name": "--master-addr",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "localhost",
+     "help": "The address the master shard will listen on. (setting used by torch distributed)",
+     "value": "<MASTER_ADDR>",
+     "env": "MASTER_ADDR"
+    },
+    {
+     "name": "--master-port",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "29500",
+     "help": "The address the master port will listen on. (setting used by torch distributed)",
+     "value": "<MASTER_PORT>",
+     "env": "MASTER_PORT"
+    },
+    {
+     "name": "--huggingface-hub-cache",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The location of the huggingface hub cache. Used to override the location if you want to provide a mounted disk for instance",
+     "value": "<HUGGINGFACE_HUB_CACHE>",
+     "env": "HUGGINGFACE_HUB_CACHE"
+    },
+    {
+     "name": "--weights-cache-override",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The location of the huggingface hub cache. Used to override the location if you want to provide a mounted disk for instance",
+     "value": "<WEIGHTS_CACHE_OVERRIDE>",
+     "env": "WEIGHTS_CACHE_OVERRIDE"
+    },
+    {
+     "name": "--disable-custom-kernels",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "For some models (like bloom), text-generation-inference implemented custom cuda kernels to speed up inference. Those kernels were only tested on A100. Use this flag to disable them if you're running on different hardware and encounter issues",
+     "env": "DISABLE_CUSTOM_KERNELS"
+    },
+    {
+     "name": "--cuda-memory-fraction",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "1.0",
+     "help": "Limit the CUDA available memory. The allowed value equals the total visible memory multiplied by cuda-memory-fraction",
+     "value": "<CUDA_MEMORY_FRACTION>",
+     "env": "CUDA_MEMORY_FRACTION"
+    },
+    {
+     "name": "--rope-scaling",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "linear",
+      "dynamic"
+     ],
+     "default": null,
+     "help": "Rope scaling will only be used for RoPE models and allow rescaling the position rotary to accomodate for larger prompts. Goes together with `rope_factor`. `--rope-factor 2.0` gives linear scaling with a factor of 2.0 `--rope-scaling dynamic` gives dynamic scaling with a factor of 1.0 `--rope-scaling linear` gives linear scaling with a factor of 1.0 (Nothing will be changed basically) `--rope-scaling linear --rope-factor` fully describes the scaling you want",
+     "value": "<ROPE_SCALING>",
+     "env": "ROPE_SCALING"
+    },
+    {
+     "name": "--rope-factor",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Rope scaling will only be used for RoPE models See `rope_scaling`",
+     "value": "<ROPE_FACTOR>",
+     "env": "ROPE_FACTOR"
+    },
+    {
+     "name": "--json-output",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Outputs the logs in JSON format (useful for telemetry)",
+     "env": "JSON_OUTPUT"
+    },
+    {
+     "name": "--otlp-endpoint",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<OTLP_ENDPOINT>",
+     "env": "OTLP_ENDPOINT"
+    },
+    {
+     "name": "--otlp-service-name",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "text-generation-inference.router",
+     "help": "",
+     "value": "<OTLP_SERVICE_NAME>",
+     "env": "OTLP_SERVICE_NAME"
+    },
+    {
+     "name": "--cors-allow-origin",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<CORS_ALLOW_ORIGIN>",
+     "env": "CORS_ALLOW_ORIGIN"
+    },
+    {
+     "name": "--api-key",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<API_KEY>",
+     "env": "API_KEY"
+    },
+    {
+     "name": "--watermark-gamma",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<WATERMARK_GAMMA>",
+     "env": "WATERMARK_GAMMA"
+    },
+    {
+     "name": "--watermark-delta",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<WATERMARK_DELTA>",
+     "env": "WATERMARK_DELTA"
+    },
+    {
+     "name": "--ngrok",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable ngrok tunneling",
+     "env": "NGROK"
+    },
+    {
+     "name": "--ngrok-authtoken",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "ngrok authentication token",
+     "value": "<NGROK_AUTHTOKEN>",
+     "env": "NGROK_AUTHTOKEN"
+    },
+    {
+     "name": "--ngrok-edge",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "ngrok edge",
+     "value": "<NGROK_EDGE>",
+     "env": "NGROK_EDGE"
+    },
+    {
+     "name": "--tokenizer-config-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The path to the tokenizer config file. This path is used to load the tokenizer configuration which may include a `chat_template`. If not provided, the default config will be used from the model hub",
+     "value": "<TOKENIZER_CONFIG_PATH>",
+     "env": "TOKENIZER_CONFIG_PATH"
+    },
+    {
+     "name": "--disable-grammar-support",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Disable outlines grammar constrained generation. This is a feature that allows you to generate text that follows a specific grammar",
+     "env": "DISABLE_GRAMMAR_SUPPORT"
+    },
+    {
+     "name": "--env",
+     "aliases": [
+      "-e"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Display a lot of information about your runtime environment"
+    },
+    {
+     "name": "--max-client-batch-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "4",
+     "help": "Control the maximum number of inputs that a client can send in a single request",
+     "value": "<MAX_CLIENT_BATCH_SIZE>",
+     "env": "MAX_CLIENT_BATCH_SIZE"
+    },
+    {
+     "name": "--lora-adapters",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Lora Adapters a list of adapter ids i.e. `repo/adapter1,repo/adapter2` to load during startup that will be available to callers via the `adapter_id` field in a request",
+     "value": "<LORA_ADAPTERS>",
+     "env": "LORA_ADAPTERS"
+    },
+    {
+     "name": "--usage-stats",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "on",
+     "help": "Control if anonymous usage stats are collected. Options are \"on\", \"off\" and \"no-stack\" Defaul is on Possible values: - on:       Default option, usage statistics are collected anonymously - off:      Disables all collection of usage statistics - no-stack: Doesn't send the error stack trace or error type, but allows sending a crash event",
+     "value": "<USAGE_STATS>",
+     "env": "USAGE_STATS"
+    },
+    {
+     "name": "--payload-limit",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "2000000",
+     "help": "Payload size limit in bytes Default is 2MB",
+     "value": "<PAYLOAD_LIMIT>",
+     "env": "PAYLOAD_LIMIT"
+    },
+    {
+     "name": "--enable-prefill-logprobs",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enables prefill logprobs Logprobs in the prompt are deactivated by default because they consume a large amount of VRAM (especially for long prompts). Using this flag reallows users to ask for them.",
+     "env": "ENABLE_PREFILL_LOGPROBS"
+    },
+    {
+     "name": "--graceful-termination-timeout",
+     "aliases": [
+      "-g"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "90",
+     "help": "Change timeout of graceful termination of the TGI server",
+     "value": "<GRACEFUL_TERMINATION_TIMEOUT>",
+     "env": "GRACEFUL_TERMINATION_TIMEOUT"
+    },
+    {
+     "name": "--help",
+     "aliases": [
+      "-h"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Print help (see a summary with '-h')"
+    },
+    {
+     "name": "--version",
+     "aliases": [
+      "-V"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Print version"
+    }
+   ]
+  }
+ ]
+}

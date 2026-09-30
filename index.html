@@ -1699,13 +1699,26 @@
       }
     }
     /* Kind of model: sub-choice and retrieval row */
-    .arch-sub,
-    .arch-retrieval {
-      margin-top: 14px;
+    /* one row of six kinds; wraps to three per line on a phone */
+    #archChoices {
+      flex-wrap: nowrap;
     }
-    .arch-retrieval {
-      padding-top: 14px;
-      border-top: 1px solid var(--line2);
+    #archChoices .choice {
+      flex: 1 1 0;
+      min-width: 0;
+      padding-left: 6px;
+      padding-right: 6px;
+    }
+    @media (max-width: 520px) {
+      #archChoices {
+        flex-wrap: wrap;
+      }
+      #archChoices .choice {
+        flex: 1 1 30%;
+      }
+    }
+    .arch-sub {
+      margin-top: 14px;
     }
     .arch-sub-label {
       display: block;
@@ -1716,11 +1729,92 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
-    .arch-hint {
-      margin: 10px 0 0;
+    /* Kinds without a launch command: hide everything that would describe one */
+    body[data-launch='none'] [aria-labelledby='runtime-title'],
+    body[data-launch='none'] [aria-labelledby='settings-title'],
+    body[data-launch='none'] .preview-bottom,
+    body[data-launch='none'] #outputModes,
+    body[data-launch='none'] #flagDetails,
+    body[data-launch='none'] #download {
+      display: none;
+    }
+    /* All flags */
+    .flags-all {
+      display: none;
+      max-height: min(70vh, 720px);
+      overflow: auto;
+      margin: 18px 24px 0;
+      padding: 4px 16px 16px;
+      background: var(--tint);
+      border: 1px solid var(--line2);
+      border-radius: var(--r-md);
+      font-family: var(--mono);
+    }
+    body[data-view='all'][data-launch='yes'] .flags-all {
+      display: block;
+    }
+    body[data-view='all'][data-launch='yes'] #output {
+      display: none;
+    }
+    .flag-section h4 {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      margin: 14px -16px 4px;
+      padding: 8px 16px;
+      background: var(--tint);
+      border-bottom: 1px solid var(--line);
+      color: var(--accent-text);
+      font: 700 10px var(--mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .flag-line {
+      padding: 7px 0;
+      border-bottom: 1px solid var(--line2);
+    }
+    .flag-line.set {
+      margin: 0 -10px;
+      padding: 8px 10px;
+      background: var(--tint-strong);
+      border-radius: var(--r-sm);
+      border-bottom-color: transparent;
+    }
+    .flag-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 4px 12px;
+    }
+    .flag-name {
+      color: var(--ink-2);
+      font: 700 12px var(--mono);
+      overflow-wrap: anywhere;
+    }
+    .flag-line.set .flag-name {
+      color: var(--green-ink);
+    }
+    .flag-value {
+      color: var(--accent-text);
+      font: 500 12px var(--mono);
+      overflow-wrap: anywhere;
+    }
+    .flag-value.is-default {
+      color: var(--faint);
+    }
+    .flag-alias {
       color: var(--soft);
-      font-size: 11px;
-      line-height: 1.55;
+      font-size: 10px;
+    }
+    .flag-help,
+    .flag-choices {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font: 400 11px/1.55 var(--font-body);
+    }
+    .flag-choices {
+      color: var(--soft);
+      font: 400 10px/1.6 var(--mono);
     }
     /* ▸ css: themes */
     /* Each theme redefines the role variables in :root. The first block after that adds only what a
@@ -2127,8 +2221,8 @@
         <div class="builder">
           <section class="group" aria-labelledby="model-title"><div class="group-head"><span class="number">01</span><div><h2 id="model-title">Model</h2></div></div><div class="body-indent">
             <div class="model-focus" id="modelFocus" aria-live="polite"><div class="model-focus-label">Selected</div><strong id="selectedModelName">Qwen3 8B</strong><div class="selected-ref"><span id="modelRefLabel">Hugging Face</span><code id="modelRefDisplay">Qwen/Qwen3-8B</code></div></div>
-            <div class="field" id="architectureField"><div class="field-head"><span class="label" id="architectureLabel">Kind of model</span></div><div class="choice-grid" id="archChoices" role="group" aria-labelledby="architectureLabel"></div><div class="arch-sub" id="archSub" hidden><span class="arch-sub-label" id="archSubLabel">Design</span><div class="choice-row" id="archDesign" role="group" aria-labelledby="archSubLabel"></div></div><div class="arch-retrieval"><span class="arch-sub-label" id="archRetrievalLabel">For search and RAG</span><div class="choice-row" id="archRetrieval" role="group" aria-labelledby="archRetrievalLabel"></div><p class="arch-hint">Embeddings turn text into numbers so it can be searched. Rerankers put search results in order of relevance.</p></div></div>
-            <div class="model-section-title"><strong>Catalog</strong><span>15 models</span></div><div class="model-views" id="modelViews" role="group" aria-label="Model views"></div><div class="model-list" id="modelList" aria-label="Available models"></div><div class="field" id="checkpointField" hidden><div class="field-head"><span class="label" id="checkpointLabel">Checkpoint</span></div><div class="choice-row" id="checkpointChoices" role="group" aria-labelledby="checkpointLabel"></div></div><div class="default-row"><span id="defaultStatus">Default: Qwen3 8B</span><button type="button" id="setDefault" aria-pressed="false">Use selected as default</button></div>
+            <div class="field" id="architectureField"><div class="field-head"><span class="label" id="architectureLabel">Kind of model</span></div><div class="choice-grid" id="archChoices" role="group" aria-labelledby="architectureLabel"></div><div class="arch-sub" id="archSub" hidden><span class="arch-sub-label" id="archSubLabel">Design</span><div class="choice-row" id="archDesign" role="group" aria-labelledby="archSubLabel"></div></div></div>
+            <div class="model-section-title"><strong>Catalog</strong><span id="catalogCount">15 models</span></div><div class="model-views" id="modelViews" role="group" aria-label="Model views"></div><div class="model-list" id="modelList" aria-label="Available models"></div><div class="field" id="checkpointField" hidden><div class="field-head"><span class="label" id="checkpointLabel">Checkpoint</span></div><div class="choice-row" id="checkpointChoices" role="group" aria-labelledby="checkpointLabel"></div></div><div class="default-row"><span id="defaultStatus">Default: Qwen3 8B</span><button type="button" id="setDefault" aria-pressed="false">Use selected as default</button></div>
             <details class="advanced" id="hfProfile"><summary>Hugging Face profile</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="hfNamespace">Username or profile link</label></div><div class="paste-row"><input id="hfNamespace" class="control mono" spellcheck="false" autocomplete="off" placeholder="huggingface.co/your-name"><button type="button" class="secondary" id="pasteProfile">Paste</button><button type="button" class="primary" id="loadProfile">Load</button></div><p class="setting-help" id="hfStatus" role="status">Public models only.</p></div></div></details><div id="hfModelList" class="model-list" aria-label="Models from Hugging Face profile" hidden></div>
             <input id="source" type="hidden" value="huggingface"><input id="architecture" type="hidden" value="text"><input id="modelRef" type="hidden" value="Qwen/Qwen3-8B"><details class="advanced" id="customModel"><summary>Model reference</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="modelLink">Link, tag, or path</label></div><div class="paste-row"><input id="modelLink" class="control mono" spellcheck="false" autocomplete="off" placeholder="Hugging Face link, Ollama tag, or path"><button type="button" class="secondary" id="pasteModel">Paste</button></div></div><div class="field"><div class="field-head"><span class="label" id="sourceLabel">Source</span></div><div class="choice-row" id="sourceChoices" role="group" aria-labelledby="sourceLabel"></div></div><div class="toggle-row" id="customOrnithRow" hidden><div><strong>Ornith 1.5 serving profile</strong><small>Use its reasoning and tool parsers; check your variant’s chat template</small></div><button type="button" class="toggle" id="customOrnith" role="switch" aria-label="Use Ornith 1.5 serving profile" aria-checked="false"></button></div></div></details>
           </div></section>
@@ -2150,10 +2244,10 @@
               <div class="toggle-row"><div><strong>Eager execution</strong><small>Useful when debugging; may reduce throughput</small></div><button type="button" class="toggle" id="eager" role="switch" aria-label="Eager execution" aria-checked="false"></button></div>
               <details class="advanced" id="memoryDetails"><summary>Memory and precision <span>Cache, offload, dtype</span></summary><div class="advanced-body"><div class="field"><div class="field-head"><span class="label" id="offloadLabel">CPU weight offload per GPU</span></div><div class="choice-row" id="offloadChoices" role="group" aria-labelledby="offloadLabel"></div><p class="setting-help">Moves some weights through system RAM each step; speed depends on the CPU–GPU link.</p></div><div class="field"><div class="field-head"><span class="label" id="kvMemoryLabel">KV cache allocation</span></div><div class="choice-row" id="kvMemoryChoices" role="group" aria-labelledby="kvMemoryLabel"></div><p class="setting-help">A fixed cache allocation replaces the GPU memory target below.</p></div><div class="field"><div class="field-head"><span class="label" id="dtypeLabel">Compute dtype</span></div><div class="choice-row" id="dtypeChoices" role="group" aria-labelledby="dtypeLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="kvLabel">KV cache dtype</span></div><div class="choice-row" id="kvChoices" role="group" aria-labelledby="kvLabel"></div><p class="setting-help">FP8 cache needs hardware and checkpoint support; verify quality for your workload.</p></div></div></details><details class="advanced" id="requestDetails"><summary>Request behavior <span>Priority and logs</span></summary><div class="advanced-body"><div class="toggle-row"><div><strong>Priority scheduling</strong><small>Serve requests by priority instead of arrival order</small></div><button type="button" class="toggle" id="priority" role="switch" aria-label="Priority scheduling" aria-checked="false"></button></div><div class="toggle-row"><div><strong>Request logging</strong><small>Log request information at the server's log level</small></div><button type="button" class="toggle" id="requestLogs" role="switch" aria-label="Request logging" aria-checked="false"></button></div></div></details>
             </div><p class="capability-note" id="capabilityNote" hidden></p>
-            <details class="advanced" id="advanced"><summary>Advanced settings <span>Network, memory, and flags</span></summary><div class="advanced-body"><div class="field"><div class="field-head"><span class="label" id="hostLabel">Host</span></div><div class="choice-row" id="hostChoices" role="group" aria-labelledby="hostLabel"></div><input id="host" type="hidden" value="127.0.0.1"></div><div class="field" id="customHostField" hidden><div class="field-head"><label for="customHost">Custom host</label></div><input id="customHost" class="control mono" value="0.0.0.0" spellcheck="false"></div><div class="field"><div class="field-head"><span class="label" id="portLabel">Port</span></div><div id="portChoices" class="choice-row" role="group" aria-labelledby="portLabel"></div><input id="port" type="hidden" value="8000"></div><div class="field" id="customPortField" hidden><div class="field-head"><label for="portSlider">Custom port</label><output id="portDisplay">8000</output></div><input id="portSlider" class="range" type="range" min="1024" max="65535" step="1" value="8000"><div class="range-ends"><span>1024</span><span>65535</span></div></div><div class="field" id="memoryField"><div class="field-head"><label for="memorySlider">GPU memory target</label><output id="memoryDisplay">90%</output></div><input id="memorySlider" class="range" type="range" min="50" max="99" step="1" value="90"><div class="range-ends"><span>50%</span><span>99%</span></div><input id="memory" type="hidden" value="90"></div><input id="revision" type="hidden" value=""><div class="field"><div class="field-head"><label for="extraArgs">Extra server arguments</label><span class="hint">Optional</span></div><input id="extraArgs" class="control mono" spellcheck="false" placeholder="--your-server-flag value"></div><div class="toggle-list"><div class="toggle-row"><div><strong>Trust model code</strong><small>Allow model repository code where the server supports it</small></div><button type="button" class="toggle" id="trust" role="switch" aria-label="Trust model code" aria-checked="false"></button></div><div class="toggle-row"><div><strong>Prefix cache</strong><small>Reuse computation for shared prompt prefixes</small></div><button type="button" class="toggle" id="prefix" role="switch" aria-label="Prefix cache" aria-checked="false"></button></div></div></div></details>
+            <details class="advanced" id="advanced"><summary>Advanced settings <span>Network, memory, and flags</span></summary><div class="advanced-body"><div class="field"><div class="field-head"><span class="label" id="hostLabel">Host</span></div><div class="choice-row" id="hostChoices" role="group" aria-labelledby="hostLabel"></div><input id="host" type="hidden" value="127.0.0.1"></div><div class="field" id="customHostField" hidden><div class="field-head"><label for="customHost">Custom host</label></div><input id="customHost" class="control mono" value="0.0.0.0" spellcheck="false"></div><input id="port" type="hidden" value="8000"><div class="field" id="memoryField"><div class="field-head"><label for="memorySlider">GPU memory target</label><output id="memoryDisplay">90%</output></div><input id="memorySlider" class="range" type="range" min="50" max="99" step="1" value="90"><div class="range-ends"><span>50%</span><span>99%</span></div><input id="memory" type="hidden" value="90"></div><input id="revision" type="hidden" value=""><div class="field"><div class="field-head"><label for="extraArgs">Extra server arguments</label><span class="hint">Optional</span></div><input id="extraArgs" class="control mono" spellcheck="false" placeholder="--your-server-flag value"></div><div class="toggle-list"><div class="toggle-row"><div><strong>Trust model code</strong><small>Allow model repository code where the server supports it</small></div><button type="button" class="toggle" id="trust" role="switch" aria-label="Trust model code" aria-checked="false"></button></div><div class="toggle-row"><div><strong>Prefix cache</strong><small>Reuse computation for shared prompt prefixes</small></div><button type="button" class="toggle" id="prefix" role="switch" aria-label="Prefix cache" aria-checked="false"></button></div></div></div></details>
           </div></section>
         </div>
-        <aside class="preview" aria-label="Configuration preview"><div class="preview-top"><div><h2>Your configuration</h2><p>Updates as you make decisions.</p></div><button class="primary copy-main" type="button" id="copy">Copy command</button></div><div class="output-mode" id="outputModes" role="group" aria-label="Output format"></div><div class="preview-content"><pre class="code" id="output" aria-live="polite"></pre><p class="setting-help" id="outputHint" hidden></p><div class="preview-actions"><button class="secondary" type="button" id="download">Export file</button></div><details class="advanced saved-configs" id="savedConfigs"><summary>Saved configurations <span id="savedConfigCount">0</span></summary><div class="advanced-body"><button class="secondary" type="button" id="saveConfig">Save current</button><div id="savedConfigList"></div></div></details><details class="flag-details" id="flagDetails"><summary>Where each choice goes <span id="flagCount"></span></summary><div class="flag-map" id="flagMap"></div></details></div><div class="preview-bottom"><p class="mini-heading">At a glance</p><div class="summary" id="summary"></div><p class="mini-heading">Checks</p><ul class="checks" id="checks"></ul><p class="status" id="status"></p></div></aside>
+        <aside class="preview" aria-label="Configuration preview"><div class="preview-top"><div><h2>Your configuration</h2><p>Updates as you make decisions.</p></div><button class="primary copy-main" type="button" id="copy">Copy command</button></div><div class="output-mode" id="outputModes" role="group" aria-label="Output format"></div><div class="preview-content"><div class="flags-all" id="allFlags" aria-label="Every flag of this engine"></div><pre class="code" id="output" aria-live="polite"></pre><p class="setting-help" id="outputHint" hidden></p><div class="preview-actions"><button class="secondary" type="button" id="download">Export file</button></div><details class="advanced saved-configs" id="savedConfigs"><summary>Saved configurations <span id="savedConfigCount">0</span></summary><div class="advanced-body"><button class="secondary" type="button" id="saveConfig">Save current</button><div id="savedConfigList"></div></div></details><details class="flag-details" id="flagDetails"><summary>Where each choice goes <span id="flagCount"></span></summary><div class="flag-map" id="flagMap"></div></details></div><div class="preview-bottom"><p class="mini-heading">At a glance</p><div class="summary" id="summary"></div><p class="mini-heading">Checks</p><ul class="checks" id="checks"></ul><p class="status" id="status"></p></div></aside>
       </div>
     </main>
     <footer class="foot"><span>Modular builds a starting specification. Check model, weight, and server compatibility before deployment.</span><span>Server docs: <a href="https://docs.vllm.ai/en/latest/cli/serve/" target="_blank" rel="noopener">vLLM</a> · <a href="https://docs.sglang.ai/" target="_blank" rel="noopener">SGLang</a> · <a href="https://huggingface.co/docs/text-generation-inference/basic_tutorials/launcher" target="_blank" rel="noopener">TGI</a> · <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md" target="_blank" rel="noopener">llama.cpp</a> · <a href="https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md" target="_blank" rel="noopener">MLX</a></span></footer>
@@ -2202,17 +2296,17 @@
       {
         name: 'Ornith 1.5 · 9B',
         ref: 'ornith-ai/Ornith-1.5-9B',
-        family: 'Ornith 1.5',
+        kind: 'language', group: 'Ornith', family: 'Ornith 1.5',
         arch: 'vision',
         size: '9B',
-        detail: 'Dense · 9B',
+        detail: 'Multimodal · 9B',
         ornith: '9B',
         served: 'Ornith-1.5-9B',
       },
       {
         name: 'Ornith 1.5 · 35B-A3B',
         ref: 'ornith-ai/Ornith-1.5-35B-A3B',
-        family: 'Ornith 1.5',
+        kind: 'language', group: 'Ornith', family: 'Ornith 1.5',
         arch: 'moe',
         size: '35B',
         detail: 'MoE · 3B active',
@@ -2222,7 +2316,7 @@
       {
         name: 'Ornith 1.5 · 397B',
         ref: 'ornith-ai/Ornith-1.5-397B',
-        family: 'Ornith 1.5',
+        kind: 'language', group: 'Ornith', family: 'Ornith 1.5',
         arch: 'moe',
         size: '397B',
         detail: 'MoE · 397B',
@@ -2232,16 +2326,16 @@
       {
         name: 'Qwen3 32B',
         ref: 'Qwen/Qwen3-32B',
-        family: 'Qwen',
+        kind: 'language', group: 'Qwen', family: 'Qwen',
         arch: 'text',
         size: '32B',
         icon: 'Q',
       },
-      { name: 'Qwen3 8B', ref: 'Qwen/Qwen3-8B', family: 'Qwen', arch: 'text', size: '8B', icon: 'Q' },
+      { name: 'Qwen3 8B', ref: 'Qwen/Qwen3-8B', kind: 'language', group: 'Qwen', family: 'Qwen', arch: 'text', size: '8B', icon: 'Q' },
       {
         name: 'DeepSeek R1 Distill 32B',
         ref: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-32B',
-        family: 'DeepSeek',
+        kind: 'language', group: 'DeepSeek', family: 'DeepSeek',
         arch: 'text',
         size: '32B',
         icon: 'D',
@@ -2249,7 +2343,7 @@
       {
         name: 'Llama 3.3 70B Instruct',
         ref: 'meta-llama/Llama-3.3-70B-Instruct',
-        family: 'Llama',
+        kind: 'language', group: 'Llama', family: 'Llama',
         arch: 'text',
         size: '70B',
         icon: 'L',
@@ -2257,7 +2351,7 @@
       {
         name: 'Gemma 3 27B',
         ref: 'google/gemma-3-27b-it',
-        family: 'Gemma',
+        kind: 'language', group: 'Gemma', family: 'Gemma',
         arch: 'vision',
         size: '27B',
         icon: 'G',
@@ -2265,7 +2359,7 @@
       {
         name: 'Qwen2.5 VL 7B',
         ref: 'Qwen/Qwen2.5-VL-7B-Instruct',
-        family: 'Qwen',
+        kind: 'language', group: 'Qwen', family: 'Qwen',
         arch: 'vision',
         size: '7B',
         icon: 'Q',
@@ -2273,43 +2367,184 @@
       {
         name: 'Mixtral 8x7B',
         ref: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
-        family: 'Mixtral',
+        kind: 'language', group: 'Mistral', family: 'Mixtral',
         arch: 'moe',
         size: '8x7B',
         icon: 'M',
       },
-      { name: 'Phi-4', ref: 'microsoft/phi-4', family: 'Phi', arch: 'text', size: '14B', icon: 'Φ' },
-      { name: 'BGE M3', ref: 'BAAI/bge-m3', family: 'BGE', arch: 'embedding', size: '568M', icon: 'B' },
+      { name: 'Phi-4', ref: 'microsoft/phi-4', kind: 'language', group: 'Phi', family: 'Phi', arch: 'text', size: '14B', icon: 'Φ' },
+      { name: 'BGE M3', ref: 'BAAI/bge-m3', kind: 'embedding', group: 'BGE', family: 'BGE', arch: 'embedding', size: '568M', icon: 'B' },
       {
         name: 'BGE Reranker v2 M3',
         ref: 'BAAI/bge-reranker-v2-m3',
-        family: 'BGE',
+        kind: 'reranker', group: 'BGE', family: 'BGE',
         arch: 'reranker',
         size: '568M',
         icon: 'B',
       },
       {
         name: 'Whisper large v3',
+        detail: 'Speech to text · 1.5B',
         ref: 'openai/whisper-large-v3',
-        family: 'Whisper',
+        kind: 'audio', group: 'Whisper', role: 'speech-to-text', family: 'Whisper',
         arch: 'speech',
         size: '1.5B',
         icon: 'W',
       },
       {
         name: 'Stable Diffusion XL',
+        detail: 'Text to image · 2.6B',
         ref: 'stabilityai/stable-diffusion-xl-base-1.0',
-        family: 'Stable Diffusion',
+        kind: 'image', group: 'Stable Diffusion', family: 'Stable Diffusion',
         arch: 'diffusion',
         size: 'XL',
         icon: 'S',
+      },
+      {
+        name: 'Wan 2.2 · Text to video',
+        label: 'Text to video',
+        ref: 'Wan-AI/Wan2.2-T2V-A14B-Diffusers',
+        family: 'Wan',
+        kind: 'video',
+        group: 'Wan 2.2',
+        arch: 'diffusion',
+        size: '14B',
+        detail: '14B',
+        icon: 'W',
+      },
+      {
+        name: 'Wan 2.2 · Image to video',
+        label: 'Image to video',
+        ref: 'Wan-AI/Wan2.2-I2V-A14B-Diffusers',
+        family: 'Wan',
+        kind: 'video',
+        group: 'Wan 2.2',
+        arch: 'diffusion',
+        size: '14B',
+        detail: '14B',
+        icon: 'W',
+      },
+      {
+        name: 'Wan 2.2 · Text + image to video',
+        label: 'Text + image to video',
+        ref: 'Wan-AI/Wan2.2-TI2V-5B-Diffusers',
+        family: 'Wan',
+        kind: 'video',
+        group: 'Wan 2.2',
+        arch: 'diffusion',
+        size: '5B',
+        detail: '5B',
+        icon: 'W',
+      },
+      {
+        name: 'FLUX.1 schnell',
+        ref: 'black-forest-labs/FLUX.1-schnell',
+        family: 'FLUX',
+        kind: 'image',
+        group: 'FLUX',
+        arch: 'diffusion',
+        size: '12B',
+        detail: 'Fast text to image · 12B',
+        icon: 'F',
+      },
+      {
+        name: 'FLUX.1 dev',
+        ref: 'black-forest-labs/FLUX.1-dev',
+        family: 'FLUX',
+        kind: 'image',
+        group: 'FLUX',
+        arch: 'diffusion',
+        size: '12B',
+        detail: 'Text to image · 12B',
+        icon: 'F',
+      },
+      {
+        name: 'FLUX.2 klein 4B',
+        ref: 'black-forest-labs/FLUX.2-klein-4b',
+        family: 'FLUX',
+        kind: 'image',
+        group: 'FLUX',
+        arch: 'diffusion',
+        size: '4B',
+        detail: 'Image generation and editing · 4B',
+        icon: 'F',
+      },
+      {
+        name: 'FLUX.2 dev',
+        ref: 'black-forest-labs/FLUX.2-dev',
+        family: 'FLUX',
+        kind: 'image',
+        group: 'FLUX',
+        arch: 'diffusion',
+        size: '32B',
+        detail: 'Image generation and editing · 32B',
+        icon: 'F',
+      },
+      {
+        name: 'Qwen-Image 2.1',
+        ref: 'Qwen/Qwen-Image-2.1',
+        family: 'Qwen',
+        kind: 'image',
+        group: 'Qwen-Image',
+        arch: 'diffusion',
+        size: '7B',
+        detail: 'Text to image · 7B',
+        icon: 'Q',
+      },
+      {
+        name: 'Whisper large v3 turbo',
+        ref: 'openai/whisper-large-v3-turbo',
+        family: 'Whisper',
+        kind: 'audio',
+        group: 'Whisper',
+        role: 'speech-to-text',
+        arch: 'speech',
+        size: '0.8B',
+        detail: 'Speech to text · 0.8B',
+        icon: 'W',
+      },
+      {
+        name: 'Kokoro 82M',
+        ref: 'hexgrad/Kokoro-82M',
+        family: 'Kokoro',
+        kind: 'audio',
+        group: 'Kokoro',
+        role: 'text-to-speech',
+        arch: 'speech',
+        size: '82M',
+        detail: 'Text to speech · 82M',
+        icon: 'K',
+      },
+      {
+        name: 'Qwen3-TTS 1.7B',
+        ref: 'Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice',
+        family: 'Qwen',
+        kind: 'audio',
+        group: 'Qwen3-TTS',
+        role: 'text-to-speech',
+        arch: 'speech',
+        size: '1.7B',
+        detail: 'Text to speech · 1.7B',
+        icon: 'Q',
+      },
+      {
+        name: 'MusicGen medium',
+        ref: 'facebook/musicgen-medium',
+        family: 'MusicGen',
+        kind: 'audio',
+        group: 'MusicGen',
+        role: 'music',
+        arch: 'speech',
+        size: '',
+        detail: 'Music generation',
+        icon: 'M',
       },
     ];
     // Short labels for model cards and messages. The picker groups these into the rows below.
     var archNames = {
       text: 'Dense',
       moe: 'Mixture of experts',
-      vision: 'Vision + language',
+      vision: 'Multimodal',
       embedding: 'Embeddings',
       reranker: 'Reranker',
       speech: 'Speech',
@@ -2384,9 +2619,13 @@
       modelView: 'all',
       favorites: [],
       recent: [],
+      kind: 'language',
+      design: 'all',
+      role: 'speech-to-text',
+      kindLast: {},
       defaultModel: 4,
       savedConfigs: [],
-      tab: 'readable',
+      tab: 'all',
       contextMode: 'preset',
       portMode: 'default',
       hostMode: 'local',
@@ -2500,11 +2739,7 @@
       renderOutput();
     }
     function catalogGroup(model) {
-      if (model.family === 'Ornith 1.5') return 'Ornith';
-      if (model.family === 'Qwen') return 'Qwen';
-      if (['DeepSeek', 'Llama', 'Mixtral', 'Phi'].indexOf(model.family) !== -1) return 'Reasoning';
-      if (['Gemma', 'Stable Diffusion'].indexOf(model.family) !== -1) return 'Vision';
-      return 'Other';
+      return model.group || model.family;
     }
     /* ▸ js: render — model views, source, architecture */
     function renderModelViews() {
@@ -2514,8 +2749,6 @@
           ['all', 'All'],
           ['favorites', 'Favorites'],
           ['recent', 'Recent'],
-          ['text', 'Language'],
-          ['other', 'Other'],
         ],
         state.modelView,
         function (next) {
@@ -2532,47 +2765,98 @@
         renderOutput();
       });
     }
-    // The picker shows what people look for: language models first, search models last.
-    // "Dense" and "Mixture of experts" are a sub-choice of language models and keep the stored values
-    // 'text' and 'moe', so the exported spec is unchanged.
-    var KIND_ROW = [
-      ['text', 'Language models'],
-      ['vision', 'Vision + language'],
-      ['diffusion', 'Image & video'],
-      ['speech', 'Speech'],
-      ['custom', 'Other / custom'],
+    // Kinds are defined by what a model produces. Input variants (text to video, image to video) are
+    // options inside a family, not kinds of their own. Embeddings and rerankers sit in a row of their own.
+    var MAIN_KINDS = [
+      ['language', 'Language'],
+      ['image', 'Image'],
+      ['video', 'Video'],
+      ['audio', 'Audio'],
+      ['embedding', 'Embeddings'],
+      ['reranker', 'Reranker'],
     ];
-    function renderArch() {
-      var arch = val('architecture'),
-        isLanguage = arch === 'text' || arch === 'moe';
-      function choose(next) {
-        $('architecture').value = next;
-        renderArch();
-        renderOutput();
+    var DESIGNS = [
+      ['all', 'All'],
+      ['text', 'Dense'],
+      ['moe', 'Mixture of experts'],
+      ['vision', 'Multimodal'],
+    ];
+    var AUDIO_ROLES = [
+      ['speech-to-text', 'Speech to text'],
+      ['text-to-speech', 'Text to speech'],
+      ['music', 'Music'],
+    ];
+    // What the exported spec calls each kind (unchanged from before).
+    function archForKind(kind) {
+      if (kind === 'language') return state.design === 'all' ? 'text' : state.design;
+      return { image: 'diffusion', video: 'diffusion', audio: 'speech', embedding: 'embedding', reranker: 'reranker' }[
+        kind
+      ];
+    }
+    function inCurrentKind(model) {
+      if (model.kind !== state.kind) return false;
+      if (state.kind === 'language' && state.design !== 'all') return model.arch === state.design;
+      if (state.kind === 'audio') return model.role === state.role;
+      return true;
+    }
+    function pickModel(kind) {
+      var last = state.kindLast[kind];
+      if (models[last] && models[last].kind === kind && (kind !== 'audio' || models[last].role === state.role))
+        return last;
+      for (var i = 0; i < models.length; i++)
+        if (models[i].kind === kind && (kind !== 'audio' || models[i].role === state.role)) return i;
+      return state.model;
+    }
+    // Keep the kind in step with the selected model (after a restore, a server sync, or first load).
+    function syncKind() {
+      var m = !state.customModel && models[state.model];
+      if (m) {
+        state.kind = m.kind;
+        if (m.role) state.role = m.role;
+      } else if (['language', 'image', 'video', 'audio', 'embedding', 'reranker'].indexOf(state.kind) === -1)
+        state.kind = 'language';
+    }
+    function setKind(next) {
+      if (!state.customModel && models[state.model]) state.kindLast[state.kind] = state.model;
+      state.kind = next;
+      if (state.customModel) {
+        $('architecture').value = archForKind(next);
+      } else if (models[state.model].kind !== next) {
+        setModel(pickModel(next)); // the summary and command always describe what is highlighted
+        return;
       }
-      choiceButtons('archChoices', KIND_ROW, isLanguage ? 'text' : arch, function (next) {
-        if (next === 'text' && isLanguage) return; // already a language model: keep Dense or MoE
-        choose(next);
-      });
-      $('archSub').hidden = !isLanguage;
-      choiceButtons(
-        'archDesign',
-        [
-          ['text', 'Dense'],
-          ['moe', 'Mixture of experts'],
-        ],
-        arch,
-        choose,
-      );
-      choiceButtons(
-        'archRetrieval',
-        [
-          ['embedding', 'Embeddings'],
-          ['reranker', 'Reranker'],
-        ],
-        arch,
-        choose,
-      );
+      renderArch();
+      renderModelList();
+      renderOutput();
+    }
+    function setDesign(next) {
+      state.design = next;
+      if (state.customModel) $('architecture').value = archForKind('language');
+      renderArch();
+      renderModelList();
+      renderOutput();
+    }
+    function setRole(next) {
+      state.role = next;
+      if (!state.customModel && models[state.model].role !== next) {
+        setModel(pickModel('audio'));
+        return;
+      }
+      renderArch();
+      renderModelList();
+      renderOutput();
+    }
+    function renderArch() {
+      var kind = state.kind;
+      choiceButtons('archChoices', MAIN_KINDS, kind, setKind);
+      $('archSub').hidden = !(kind === 'language' || kind === 'audio');
+      if (kind === 'language') {
+        $('archSubLabel').textContent = 'Design';
+        choiceButtons('archDesign', DESIGNS, state.design, setDesign);
+      } else if (kind === 'audio') {
+        $('archSubLabel').textContent = 'Task';
+        choiceButtons('archDesign', AUDIO_ROLES, state.role, setRole);
+      }
     }
     /* ▸ js: render — engines */
     function renderServers() {
@@ -2795,27 +3079,9 @@
       );
       $('customHostField').hidden = state.hostMode !== 'custom';
     }
+    // There is no port selector for now: each engine uses its own default port.
     function renderPort() {
-      var defaultPort = portDefaults[state.server];
-      var options = [
-        ['default', 'Default · ' + defaultPort],
-        ['8000', '8000'],
-        ['8080', '8080'],
-        ['30000', '30000'],
-        ['custom', 'Custom'],
-      ];
-      options = options.filter(function (item) {
-        return item[0] === 'default' || item[0] === 'custom' || Number(item[0]) !== defaultPort;
-      });
-      choiceButtons('portChoices', options, state.portMode, function (next) {
-        state.portMode = next;
-        $('port').value =
-          next === 'default' ? defaultPort : next === 'custom' ? val('portSlider') : next;
-        renderPort();
-        renderOutput();
-      });
-      $('customPortField').hidden = state.portMode !== 'custom';
-      $('portDisplay').textContent = val('portSlider');
+      $('port').value = portDefaults[state.server];
     }
     function renderServerFields() {
       var isCustom = state.server === 'custom',
@@ -2927,6 +3193,7 @@
     }
     /* ▸ js: output modes */
     function copyLabel() {
+      if (unsupportedNote()) return 'No command yet';
       return state.tab === 'json'
         ? 'Copy JSON'
         : state.tab === 'docker'
@@ -2935,6 +3202,7 @@
     }
     function renderOutputModes() {
       var modes = [
+        ['all', 'All flags'],
         ['readable', 'CLI'],
         ['single', 'One line'],
       ];
@@ -2948,6 +3216,9 @@
     /* ▸ js: model selection, links & Hugging Face profile */
     function setModel(index) {
       state.model = index;
+      state.kind = models[index].kind;
+      if (models[index].role) state.role = models[index].role;
+      state.kindLast[state.kind] = index;
       state.customModel = false;
       state.customOrnith = false;
       $('customOrnithRow').hidden = true;
@@ -2985,6 +3256,9 @@
       var filtered = models.map(function (model, index) {
         return { model: model, index: index };
       });
+      filtered = filtered.filter(function (item) {
+        return inCurrentKind(item.model);
+      });
       if (state.modelView === 'favorites')
         filtered = filtered.filter(function (item) {
           return modelIsFavorite(item.index);
@@ -2997,14 +3271,6 @@
           .sort(function (a, b) {
             return state.recent.indexOf(a.index) - state.recent.indexOf(b.index);
           });
-      if (state.modelView === 'text')
-        filtered = filtered.filter(function (item) {
-          return item.model.arch === 'text' || item.model.arch === 'moe';
-        });
-      if (state.modelView === 'other')
-        filtered = filtered.filter(function (item) {
-          return item.model.arch !== 'text' && item.model.arch !== 'moe';
-        });
       var groups = {};
       filtered.forEach(function (item) {
         var group = catalogGroup(item.model);
@@ -3036,7 +3302,7 @@
                     '" aria-pressed="' +
                     selected +
                     '"><strong>' +
-                    esc(model.ornith || model.name) +
+                    esc(model.label || model.ornith || model.name) +
                     '</strong><small>' +
                     esc(model.detail || archNames[model.arch] + ' · ' + model.size) +
                     '</small></button><button type="button" class="favorite" data-favorite="' +
@@ -3056,7 +3322,10 @@
           })
           .join('');
       }
-      $('modelList').innerHTML = familyRows(Object.keys(groups));
+      $('modelList').innerHTML = filtered.length
+        ? familyRows(Object.keys(groups))
+        : '<p class="empty">No models here yet.</p>';
+      $('catalogCount').textContent = filtered.length + (filtered.length === 1 ? ' model' : ' models');
       document.querySelectorAll('[data-model]').forEach(function (button) {
         button.onclick = function () {
           setModel(Number(button.dataset.model));
@@ -3176,13 +3445,36 @@
               'text-to-speech': 'speech',
               'text-to-image': 'diffusion',
               'image-to-image': 'diffusion',
+              'text-to-video': 'diffusion',
+              'image-to-video': 'diffusion',
+              'text-to-audio': 'speech',
+            };
+            var kindByTask = {
+              'text-to-image': 'image',
+              'image-to-image': 'image',
+              'text-to-video': 'video',
+              'image-to-video': 'video',
+              'automatic-speech-recognition': 'audio',
+              'text-to-speech': 'audio',
+              'text-to-audio': 'audio',
+              'feature-extraction': 'embedding',
+              'sentence-similarity': 'embedding',
+              'text-classification': 'reranker',
+            };
+            var roleByTask = {
+              'automatic-speech-recognition': 'speech-to-text',
+              'text-to-speech': 'text-to-speech',
+              'text-to-audio': 'music',
             };
             $('modelLink').value = ref;
             applyModelLink();
             $('architecture').value = state.customOrnith
               ? 'vision'
               : taskTypes[item.pipeline_tag] || val('architecture');
+            state.kind = state.customOrnith ? 'language' : kindByTask[item.pipeline_tag] || 'language';
+            if (roleByTask[item.pipeline_tag]) state.role = roleByTask[item.pipeline_tag];
             renderArch();
+            renderModelList();
             renderOutput();
           };
         });
@@ -3193,7 +3485,7 @@
     var SNAPSHOT_VERSION = 1; // one saved configuration
     var STORAGE_VERSION = 1; // the local-storage and server envelopes
     var storageLocked = {}; // keys a newer version wrote: read-only here
-    var NOT_PART_OF_A_SETUP = ['favorites', 'recent', 'defaultModel']; // dropped from snapshots in v1
+    var NOT_PART_OF_A_SETUP = ['favorites', 'recent', 'defaultModel', 'kindLast', 'design']; // dropped from snapshots in v1
     function catalogIndex(ref) {
       for (var i = 0; i < models.length; i++) if (models[i].ref === ref) return i;
       return -1;
@@ -3375,6 +3667,7 @@
       Object.keys(copy.toggles || {}).forEach(function (id) {
         if ($(id)) $(id).setAttribute('aria-checked', String(copy.toggles[id]));
       });
+      syncKind();
       renderSource();
       renderArch();
       renderCheckpoint();
@@ -3655,7 +3948,7 @@
         if (state.tab === 'docker') add('Container', 'vllm/vllm-openai:v0.30.0', 'outputModes');
         add('Model', 'vllm serve ' + c.model.reference, 'modelFocus');
         add('Host', '--host ' + r.host, 'hostChoices');
-        add('Port', '--port ' + r.port, 'portChoices');
+        add('Port', '--port ' + r.port, 'hostChoices');
         add('Context', '--max-model-len ' + r.context_tokens, 'contextField');
         add('Devices', '--tensor-parallel-size ' + r.parallel_devices, 'parallelField');
         if (r.kv_cache_gb)
@@ -3704,7 +3997,7 @@
       } else if (id === 'sglang') {
         add('Model', '--model-path ' + c.model.reference, 'modelFocus');
         add('Host', '--host ' + r.host, 'hostChoices');
-        add('Port', '--port ' + r.port, 'portChoices');
+        add('Port', '--port ' + r.port, 'hostChoices');
         add('Context', '--context-length ' + r.context_tokens, 'contextField');
         add('Devices', '--tp ' + r.parallel_devices, 'parallelField');
         add(
@@ -3728,7 +4021,7 @@
       } else if (id === 'tgi') {
         add('Model', '--model-id ' + c.model.reference, 'modelFocus');
         add('Host', '--hostname ' + r.host, 'hostChoices');
-        add('Port', '--port ' + r.port, 'portChoices');
+        add('Port', '--port ' + r.port, 'hostChoices');
         add('Context', '--max-total-tokens ' + r.context_tokens, 'contextField');
         add('Devices', '--num-shard ' + r.parallel_devices, 'parallelField');
         if (!c.model.build && qIsSpecial(r.quantization))
@@ -3741,12 +4034,12 @@
           'modelFocus',
         );
         add('Host', '--host ' + r.host, 'hostChoices');
-        add('Port', '--port ' + r.port, 'portChoices');
+        add('Port', '--port ' + r.port, 'hostChoices');
         add('Context', '-c ' + r.context_tokens, 'contextField');
       } else if (id === 'mlx') {
         add('Model', '--model ' + c.model.reference, 'modelFocus');
         add('Host', '--host ' + r.host, 'hostChoices');
-        add('Port', '--port ' + r.port, 'portChoices');
+        add('Port', '--port ' + r.port, 'hostChoices');
       } else if (id === 'ollama') {
         add('Model', 'ollama pull ' + c.model.reference, 'modelFocus');
         add('Host', 'OLLAMA_HOST=' + r.host + ':' + r.port, 'hostChoices');
@@ -3923,81 +4216,120 @@
           '.',
       };
     }
-    /* ▸ js: more options */
-    /* Below the command, list other flags people commonly reach for, with what each one is for. They are
-       comments, so the copied command runs exactly as shown. Flag names can change between engine
-       versions, which the note says. A flag already in the command is not listed again. */
-    var MORE_OPTIONS = {
-      vllm: [
-        ['--max-num-seqs N', 'most requests decoded at once'],
-        ['--max-num-batched-tokens N', 'tokens per step: throughput against latency'],
-        ['--kv-cache-dtype fp8', 'halve KV-cache memory (needs hardware support)'],
-        ['--enable-chunked-prefill', 'stop long prompts stalling short ones'],
-        ['--api-key KEY', 'require a key on every request'],
-        ['--dtype bfloat16', 'compute precision (or float16)'],
-        ['--quantization fp8', 'weight format of a pre-quantized checkpoint'],
-        ['--served-model-name NAME', 'the model name clients send'],
-        ['--cpu-offload-gb GB', 'spill weights to CPU memory'],
-        ['--pipeline-parallel-size N', 'split layers across GPUs or nodes'],
-        ['--enforce-eager', 'skip CUDA graphs: less memory, easier debugging'],
-      ],
-      sglang: [
-        ['--max-running-requests N', 'most requests running at once'],
-        ['--chunked-prefill-size N', 'prompt tokens processed per step'],
-        ['--api-key KEY', 'require a key on every request'],
-        ['--kv-cache-dtype fp8_e5m2', 'halve KV-cache memory'],
-        ['--dp-size N', 'data-parallel replicas for more throughput'],
-        ['--schedule-policy lpm', 'reuse cached prefixes first (or fcfs)'],
-        ['--dtype bfloat16', 'compute precision (or float16)'],
-        ['--quantization fp8', 'weight format of a pre-quantized checkpoint'],
-        ['--served-model-name NAME', 'the model name clients send'],
-      ],
-      tgi: [
-        ['--max-total-tokens N', 'prompt plus generated tokens per request'],
-        ['--max-input-tokens N', 'longest prompt accepted'],
-        ['--max-batch-prefill-tokens N', 'tokens prefilled per batch'],
-        ['--num-shard N', 'GPUs to shard the model across'],
-        ['--quantize bitsandbytes', 'quantize on load (or gptq, awq, fp8)'],
-        ['--dtype bfloat16', 'compute precision (or float16)'],
-      ],
-      llama: [
-        ['--n-gpu-layers N', 'layers to keep on the GPU'],
-        ['--parallel N', 'requests served at once'],
-        ['--flash-attn', 'faster attention with less memory'],
-        ['--cache-type-k q8_0', 'compress the KV cache'],
-        ['--batch-size N', 'prompt tokens processed per step'],
-        ['--api-key KEY', 'require a key on every request'],
-      ],
-      ollama: [
-        ['OLLAMA_KEEP_ALIVE=30m', 'how long a model stays loaded when idle'],
-        ['OLLAMA_MAX_LOADED_MODELS=2', 'models kept in memory together'],
-        ['OLLAMA_FLASH_ATTENTION=1', 'faster attention with less memory'],
-        ['OLLAMA_KV_CACHE_TYPE=q8_0', 'compress the KV cache'],
-        ['OLLAMA_MAX_QUEUE=512', 'requests waiting before rejecting new ones'],
-      ],
-    };
-    function optionsNote(server, command) {
-      var shown = (MORE_OPTIONS[server] || [])
-        .filter(function (o) {
-          return command.indexOf(o[0].split(/[ =]/)[0]) === -1;
+    /* ▸ js: all flags */
+    /* Every documented flag of the selected engine, from catalog/flags/<engine>.json (built by
+       tools/flags.py from the engine's own documentation). Flags your configuration sets are highlighted
+       with their value; every other flag shows the documented default. Nothing is filtered or hidden. */
+    var flagCache = {};
+    function loadFlags(engine) {
+      if (flagCache[engine]) return Promise.resolve(flagCache[engine]);
+      return fetch('catalog/flags/' + engine + '.json')
+        .then(function (r) {
+          if (!r.ok) throw new Error(r.status);
+          return r.json();
         })
-        .slice(0, 8);
-      if (!shown.length) return '';
-      var width =
-        Math.max.apply(
-          null,
-          shown.map(function (o) {
-            return o[0].length;
-          }),
-        ) + 3;
+        .then(function (d) {
+          flagCache[engine] = d;
+          return d;
+        });
+    }
+    // Pull the flags a generated command sets: `--name value`, `--name` alone, or NAME=value (Ollama).
+    function setFlagsOf(command, engine) {
+      var found = [],
+        m;
+      // Long flags (--name) and short ones (-c), in the order the command gives them.
+      var flag = /(--[A-Za-z0-9][A-Za-z0-9-]*|(?<![\w-])-[A-Za-z][A-Za-z0-9]*)(?:[ =]+(?!-)('[^']*'|"[^"]*"|[^\s\\]+))?/g;
+      while ((m = flag.exec(command))) found.push([m[1], (m[2] || '').replace(/^['"]|['"]$/g, '')]);
+      var env = /(?:^|[\s&])([A-Z][A-Z0-9_]{3,})=('[^']*'|"[^"]*"|[^\s&]+)/g;
+      while ((m = env.exec(command))) found.push([m[1], m[2].replace(/^['"]|['"]$/g, '')]);
+      var first = command.split('\n')[0],
+        model = /^(?:vllm serve|python -m sglang\.launch_server|text-generation-launcher|llama-server|mlx_lm\.server)/.test(first)
+          ? first.match(/serve\s+('[^']*'|\S+)/)
+          : null;
+      if (model) found.unshift([engine === 'sglang' ? '--model-path' : '--model', model[1].replace(/^['"]|['"]$/g, '')]);
+      return found;
+    }
+    // A description that only restates the flag's own name ("Host name." under --host) says nothing.
+    var HELP_FILLER = /^(the|a|an|of|to|for|and|or|in|on|is|be|use|used|using|whether|enable|enables|set|specify|specifies|number|size|count|groups|name|names|path|value|id|hugging|face|huggingface|hf)$/;
+    function helpWords(t) {
+      return t
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean)
+        .map(function (w) {
+          return w.replace(/(ing|es|s)$/, '');
+        })
+        .filter(function (w) {
+          return w && !HELP_FILLER.test(w);
+        });
+    }
+    function helpRestatesName(flag) {
+      if (!flag.help) return true;
+      var own = helpWords(flag.name.replace(/^-+/, '')).concat(helpWords((flag.aliases || []).join(' ')));
+      return helpWords(flag.help).every(function (w) {
+        return own.indexOf(w) !== -1;
+      });
+    }
+    function flagLine(flag, value, isSet, config) {
+      var shown = isSet ? value : flag.default,
+        alias = (flag.aliases || []).concat(flag.negation ? [flag.negation] : []).join(' ');
       return (
-        '\n\n# More you can set (names can differ by version; check --help):\n' +
-        shown
-          .map(function (o) {
-            return '#   ' + o[0] + new Array(width - o[0].length + 1).join(' ') + o[1];
-          })
-          .join('\n')
+        '<div class="flag-line' + (isSet ? ' set' : '') + '"><div class="flag-head"><code class="flag-name">' +
+        esc(flag.name) + '</code>' +
+        (shown ? '<code class="flag-value' + (isSet ? '' : ' is-default') + '">' + esc(shown) + '</code>' : (flag.value ? '<code class="flag-value is-default">' + esc(flag.value) + '</code>' : '')) +
+        (alias ? '<span class="flag-alias">' + esc(alias) + '</span>' : '') +
+        '</div>' +
+        (helpRestatesName(flag) ? '' : '<p class="flag-help">' + esc(flag.help) + '</p>') +
+        (flag.choices && flag.choices.length ? '<p class="flag-choices">' + esc(flag.choices.join('  ·  ')) + '</p>' : '') +
+        '</div>'
       );
+    }
+    function renderAllFlags(config, command) {
+      var box = $('allFlags'),
+        engine = config.runtime.server;
+      if (engine === 'custom') {
+        box.textContent = 'A custom command template has no flag reference.';
+        return;
+      }
+      loadFlags(engine)
+        .then(function (data) {
+          if (state.tab !== 'all' || state.server !== engine) return;
+          var index = {};
+          data.sections.forEach(function (sec) {
+            sec.flags.forEach(function (f) {
+              [f.name].concat(f.aliases || [], f.negation ? [f.negation] : []).forEach(function (n) {
+                index[n] = f;
+              });
+            });
+          });
+          var setBy = new Map(),
+            extra = [];
+          setFlagsOf(command, engine).forEach(function (pair) {
+            var f = index[pair[0]];
+            if (f) setBy.set(f, pair[1]);
+            else extra.push(pair);
+          });
+          var keep = box.scrollTop,
+            html = '';
+          if (setBy.size || extra.length) {
+            html += '<section class="flag-section"><h4>Set by your configuration</h4>';
+            setBy.forEach(function (v, f) { html += flagLine(f, v, true, config); });
+            extra.forEach(function (pair) {
+              html += flagLine({ name: pair[0], aliases: [], help: 'Not in the documentation list above.' }, pair[1], true, config);
+            });
+            html += '</section>';
+          }
+          data.sections.forEach(function (sec) {
+            html += '<section class="flag-section"><h4>' + esc(sec.title) + '</h4>';
+            sec.flags.forEach(function (f) { html += flagLine(f, setBy.get(f), setBy.has(f), config); });
+            html += '</section>';
+          });
+          box.innerHTML = html;
+          box.scrollTop = keep;
+        })
+        .catch(function () {
+          if (state.tab === 'all') box.textContent = 'The flag reference could not be loaded here. Open the CLI tab for the command.';
+        });
     }
     /* ▸ js: flag map, checks, fit estimate */
     function renderFlagMap(c) {
@@ -4133,7 +4465,27 @@
           ' GB selected VRAM. Confirm runtime overhead and KV cache on the actual GPUs.',
       };
     }
+    // Image, video, and speech/music generation are not served by the engines Modular writes commands for.
+    function unsupportedNote() {
+      var k = state.kind;
+      if (k === 'image' || k === 'video')
+        return (
+          '# Modular does not write a launch command for image and video models yet.\n' +
+          '# They usually run with Hugging Face diffusers or in ComfyUI.\n' +
+          '# Model: ' +
+          val('modelRef')
+        );
+      if (k === 'audio' && state.role !== 'speech-to-text')
+        return (
+          '# Modular does not write a launch command for speech and music generation yet.\n' +
+          '# Follow the model card for the recommended runtime.\n' +
+          '# Model: ' +
+          val('modelRef')
+        );
+      return '';
+    }
     function issue(c) {
+      if (unsupportedNote()) return 'No launch command yet for this kind of model.';
       var r = c.runtime,
         source = c.model.source,
         arch = c.model.architecture;
@@ -4157,7 +4509,7 @@
     }
     /* ▸ js: render — output panel */
     function renderOutput() {
-      if (state.tab === 'docker' && state.server !== 'vllm') state.tab = 'readable';
+      if (state.tab === 'docker' && state.server !== 'vllm') state.tab = 'all';
       var config = spec(),
         out =
           state.tab === 'json'
@@ -4173,7 +4525,11 @@
                 .replace(/ \\\n\s*/g, ' ')
                 .replace(/\n\s*/g, ' ')
                 .trim();
-      if (state.tab === 'readable') out += optionsNote(config.runtime.server, out);
+      var unsupported = unsupportedNote();
+      document.body.setAttribute('data-launch', unsupported ? 'none' : 'yes');
+      if (unsupported) out = unsupported;
+      document.body.setAttribute('data-view', state.tab);
+      if (state.tab === 'all' && !unsupported) renderAllFlags(config, out);
       $('modelRefDisplay').textContent = config.model.reference || 'No reference selected';
       $('modelRefLabel').textContent =
         config.model.source === 'huggingface'
@@ -4194,6 +4550,7 @@
       );
       $('output').textContent = out;
       $('copy').textContent = copyLabel();
+      $('copy').disabled = !!unsupported;
       $('outputHint').hidden = state.tab !== 'docker';
       if (state.tab === 'docker')
         $('outputHint').textContent =
@@ -4369,11 +4726,6 @@
       $('memoryDisplay').textContent = this.value + '%';
       renderOutput();
     };
-    $('portSlider').oninput = function () {
-      $('port').value = this.value;
-      $('portDisplay').textContent = this.value;
-      renderOutput();
-    };
     ['trust', 'prefix', 'chunked', 'eager', 'reasoning', 'tools', 'priority', 'requestLogs'].forEach(
       function (id) {
         $(id).onclick = function () {
@@ -4437,6 +4789,7 @@
     loadSavedData();
     storeSavedData(); // writes upgraded shapes back
     if (models[state.defaultModel]) state.model = state.defaultModel;
+    syncKind();
     $('modelRef').value = models[state.model].ref;
     renderSource();
     renderArch();
@@ -4819,6 +5172,7 @@
           }
         } catch (e) {}
         storeSavedData();
+        syncKind();
         renderSource();
         renderArch();
         renderModelViews();

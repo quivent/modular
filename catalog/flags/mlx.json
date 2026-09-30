@@ -1,0 +1,227 @@
+{
+ "engine": "mlx",
+ "source": "https://raw.githubusercontent.com/ml-explore/mlx-lm/main/mlx_lm/server.py",
+ "fetched": "2026-09-30",
+ "count": 26,
+ "sections": [
+  {
+   "title": "mlx_lm.server options",
+   "flags": [
+    {
+     "name": "--model",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The path to the MLX model weights, tokenizer, and config"
+    },
+    {
+     "name": "--adapter-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Optional path for the trained adapter weights and config."
+    },
+    {
+     "name": "--host",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "127.0.0.1",
+     "help": "Host for the HTTP server (default: 127.0.0.1)"
+    },
+    {
+     "name": "--port",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "8080",
+     "help": "Port for the HTTP server (default: 8080)"
+    },
+    {
+     "name": "--allowed-origins",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "*",
+     "help": "Allowed origins (default: *)"
+    },
+    {
+     "name": "--draft-model",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "A model to be used for speculative decoding."
+    },
+    {
+     "name": "--num-draft-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "3",
+     "help": "Number of tokens to draft when using speculative decoding."
+    },
+    {
+     "name": "--trust-remote-code",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable trusting remote code for tokenizer"
+    },
+    {
+     "name": "--log-level",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "DEBUG",
+      "INFO",
+      "WARNING",
+      "ERROR",
+      "CRITICAL"
+     ],
+     "default": "INFO",
+     "help": "Set the logging level (default: INFO)"
+    },
+    {
+     "name": "--chat-template",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "",
+     "help": "Specify a chat template for the tokenizer"
+    },
+    {
+     "name": "--use-default-chat-template",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Use the default chat template"
+    },
+    {
+     "name": "--temp",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.0",
+     "help": "Default sampling temperature (default: 0.0)"
+    },
+    {
+     "name": "--top-p",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "1.0",
+     "help": "Default nucleus sampling top-p (default: 1.0)"
+    },
+    {
+     "name": "--top-k",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0",
+     "help": "Default top-k sampling (default: 0, disables top-k)"
+    },
+    {
+     "name": "--min-p",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.0",
+     "help": "Default min-p sampling (default: 0.0, disables min-p)"
+    },
+    {
+     "name": "--max-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "512",
+     "help": "Default maximum number of tokens to generate (default: 512)"
+    },
+    {
+     "name": "--chat-template-args",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "{}",
+     "help": "A JSON formatted string of arguments for the tokenizer's apply_chat_template, e.g. '{\"enable_thinking\":false}'"
+    },
+    {
+     "name": "--decode-concurrency",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "32",
+     "help": "When a request is batchable then decode that many requests in parallel"
+    },
+    {
+     "name": "--prompt-concurrency",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "8",
+     "help": "When a request is batchable then process that many prompts in parallel"
+    },
+    {
+     "name": "--prefill-step-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "2048",
+     "help": "Step size for prefill processing (default: 2048)"
+    },
+    {
+     "name": "--prompt-cache-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "10",
+     "help": "Maximum number of distinct KV caches to hold in the prompt cache"
+    },
+    {
+     "name": "--prompt-cache-bytes",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Maximum size in bytes of the KV caches"
+    },
+    {
+     "name": "--kv-bits",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Number of bits for KV cache quantization (e.g., 4 or 8). Reduces memory usage for long contexts. Disables batching, so requests are served one at a time. Default: None (full precision)"
+    },
+    {
+     "name": "--kv-group-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "64",
+     "help": "Group size for KV cache quantization (default: 64)"
+    },
+    {
+     "name": "--quantized-kv-start",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--pipeline",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Use pipelining instead of tensor parallelism"
+    }
+   ]
+  }
+ ]
+}

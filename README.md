@@ -152,7 +152,7 @@ The first screen is a working, cautious starting point. Every default is a decis
 | Context | 8K tokens | Comfortable on small cards; raise it on purpose |
 | Listens on | This machine (`127.0.0.1`) | An inference endpoint with no API key should not be reachable from the network by accident |
 | Trust remote code | Off, except for Ornith | The flag runs Python from the model's repository on your server |
-| GPU memory | 90% | The engine's own default; leaves headroom for spikes |
+| GPU memory | 90% | Just under vLLM's own default (0.92), for headroom against spikes |
 | Prefix caching | On | A free win when prompts share a beginning |
 | Output | Readable CLI | Shows every flag on its own line |
 

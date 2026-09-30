@@ -1,0 +1,2677 @@
+{
+ "engine": "llama",
+ "source": "https://raw.githubusercontent.com/ggml-org/llama.cpp/master/tools/server/README.md",
+ "fetched": "2026-09-30",
+ "count": 255,
+ "sections": [
+  {
+   "title": "Common params",
+   "flags": [
+    {
+     "name": "--help",
+     "aliases": [
+      "--usage",
+      "-h"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "print usage and exit"
+    },
+    {
+     "name": "--version",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "show version and build info"
+    },
+    {
+     "name": "--cache-list",
+     "aliases": [
+      "-cl"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "show list of models in cache"
+    },
+    {
+     "name": "--completion-bash",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "print source-able bash completion script for llama.cpp"
+    },
+    {
+     "name": "--threads",
+     "aliases": [
+      "-t"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "-1",
+     "help": "number of CPU threads to use during generation",
+     "value": "N",
+     "env": "LLAMA_ARG_THREADS"
+    },
+    {
+     "name": "--threads-batch",
+     "aliases": [
+      "-tb"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "same as --threads",
+     "help": "number of threads to use during batch and prompt processing",
+     "value": "N"
+    },
+    {
+     "name": "--cpu-mask",
+     "aliases": [
+      "-C"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "\"\"",
+     "help": "CPU affinity mask: arbitrarily long hex. Complements cpu-range",
+     "value": "M"
+    },
+    {
+     "name": "--cpu-range",
+     "aliases": [
+      "-Cr"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "range of CPUs for affinity. Complements --cpu-mask",
+     "value": "lo-hi"
+    },
+    {
+     "name": "--cpu-strict",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0",
+     "help": "use strict CPU placement",
+     "value": "<0\\|1>"
+    },
+    {
+     "name": "--prio",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0",
+     "help": "set process/thread priority : low(-1), normal(0), medium(1), high(2), realtime(3)",
+     "value": "N"
+    },
+    {
+     "name": "--poll",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use polling level to wait for work (0 - no polling, default: 50)",
+     "value": "<0...100>"
+    },
+    {
+     "name": "--cpu-mask-batch",
+     "aliases": [
+      "-Cb"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "same as --cpu-mask",
+     "help": "CPU affinity mask: arbitrarily long hex. Complements cpu-range-batch",
+     "value": "M"
+    },
+    {
+     "name": "--cpu-range-batch",
+     "aliases": [
+      "-Crb"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "ranges of CPUs for affinity. Complements --cpu-mask-batch",
+     "value": "lo-hi"
+    },
+    {
+     "name": "--cpu-strict-batch",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "same as --cpu-strict",
+     "help": "use strict CPU placement",
+     "value": "<0\\|1>"
+    },
+    {
+     "name": "--prio-batch",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0",
+     "help": "set process/thread priority : 0-normal, 1-medium, 2-high, 3-realtime",
+     "value": "N"
+    },
+    {
+     "name": "--poll-batch",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "same as --poll",
+     "help": "use polling to wait for work",
+     "value": "<0\\|1>"
+    },
+    {
+     "name": "--ctx-size",
+     "aliases": [
+      "-c"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "0, 0 = loaded from model",
+     "help": "size of the prompt context",
+     "value": "N",
+     "env": "LLAMA_ARG_CTX_SIZE"
+    },
+    {
+     "name": "--predict",
+     "aliases": [
+      "--n-predict",
+      "-n"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "-1, -1 = infinity",
+     "help": "number of tokens to predict",
+     "value": "N",
+     "env": "LLAMA_ARG_N_PREDICT"
+    },
+    {
+     "name": "--batch-size",
+     "aliases": [
+      "-b"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "2048",
+     "help": "logical maximum batch size",
+     "value": "N",
+     "env": "LLAMA_ARG_BATCH"
+    },
+    {
+     "name": "--ubatch-size",
+     "aliases": [
+      "-ub"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "512",
+     "help": "physical maximum batch size",
+     "value": "N",
+     "env": "LLAMA_ARG_UBATCH"
+    },
+    {
+     "name": "--keep",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0, -1 = all",
+     "help": "number of tokens to keep from the initial prompt",
+     "value": "N"
+    },
+    {
+     "name": "--swa-full",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "false",
+     "help": "use full-size SWA cache [(more info)](https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)",
+     "env": "LLAMA_ARG_SWA_FULL"
+    },
+    {
+     "name": "--flash-attn",
+     "aliases": [
+      "-fa"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "set Flash Attention use ('on', 'off', or 'auto', default: 'auto')",
+     "value": "[on\\|off\\|auto]",
+     "env": "LLAMA_ARG_FLASH_ATTN"
+    },
+    {
+     "name": "--perf",
+     "aliases": [
+      "--no-perf"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "false",
+     "help": "whether to enable internal libllama performance timings",
+     "env": "LLAMA_ARG_PERF"
+    },
+    {
+     "name": "--escape",
+     "aliases": [
+      "--no-escape",
+      "-e"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "true",
+     "help": "whether to process escapes sequences (\\n, \\r, \\t, \\', \\\", \\\\)"
+    },
+    {
+     "name": "--rope-scaling",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "RoPE frequency scaling method, defaults to linear unless specified by the model",
+     "value": "{none,linear,yarn}",
+     "env": "LLAMA_ARG_ROPE_SCALING_TYPE"
+    },
+    {
+     "name": "--rope-scale",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "RoPE context scaling factor, expands context by a factor of N",
+     "value": "N",
+     "env": "LLAMA_ARG_ROPE_SCALE"
+    },
+    {
+     "name": "--rope-freq-base",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "loaded from model",
+     "help": "RoPE base frequency, used by NTK-aware scaling",
+     "value": "N",
+     "env": "LLAMA_ARG_ROPE_FREQ_BASE"
+    },
+    {
+     "name": "--rope-freq-scale",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "RoPE frequency scaling factor, expands context by a factor of 1/N",
+     "value": "N",
+     "env": "LLAMA_ARG_ROPE_FREQ_SCALE"
+    },
+    {
+     "name": "--yarn-orig-ctx",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0 = model training context size",
+     "help": "YaRN: original context size of model",
+     "value": "N",
+     "env": "LLAMA_ARG_YARN_ORIG_CTX"
+    },
+    {
+     "name": "--yarn-ext-factor",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "-1.00, 0.0 = full interpolation",
+     "help": "YaRN: extrapolation mix factor",
+     "value": "N",
+     "env": "LLAMA_ARG_YARN_EXT_FACTOR"
+    },
+    {
+     "name": "--yarn-attn-factor",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "-1.00",
+     "help": "YaRN: scale sqrt(t) or attention magnitude",
+     "value": "N",
+     "env": "LLAMA_ARG_YARN_ATTN_FACTOR"
+    },
+    {
+     "name": "--yarn-beta-slow",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "-1.00",
+     "help": "YaRN: high correction dim or alpha",
+     "value": "N",
+     "env": "LLAMA_ARG_YARN_BETA_SLOW"
+    },
+    {
+     "name": "--yarn-beta-fast",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "-1.00",
+     "help": "YaRN: low correction dim or beta",
+     "value": "N",
+     "env": "LLAMA_ARG_YARN_BETA_FAST"
+    },
+    {
+     "name": "--kv-offload",
+     "aliases": [
+      "--no-kv-offload",
+      "-kvo",
+      "-nkvo"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to enable KV cache offloading",
+     "env": "LLAMA_ARG_KV_OFFLOAD"
+    },
+    {
+     "name": "--repack",
+     "aliases": [
+      "--no-repack",
+      "-nr"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to enable weight repacking",
+     "env": "LLAMA_ARG_REPACK"
+    },
+    {
+     "name": "--no-host",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "bypass host buffer allowing extra buffers to be used",
+     "env": "LLAMA_ARG_NO_HOST"
+    },
+    {
+     "name": "--cache-type-k",
+     "aliases": [
+      "-ctk"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "f16",
+     "help": "KV cache data type for K allowed values: f32, f16, bf16, q8_0, q4_0, q4_1, iq4_nl, q5_0, q5_1",
+     "value": "TYPE",
+     "env": "LLAMA_ARG_CACHE_TYPE_K"
+    },
+    {
+     "name": "--cache-type-v",
+     "aliases": [
+      "-ctv"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "f16",
+     "help": "KV cache data type for V allowed values: f32, f16, bf16, q8_0, q4_0, q4_1, iq4_nl, q5_0, q5_1",
+     "value": "TYPE",
+     "env": "LLAMA_ARG_CACHE_TYPE_V"
+    },
+    {
+     "name": "--defrag-thold",
+     "aliases": [
+      "-dt"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "KV cache defragmentation threshold (DEPRECATED)",
+     "value": "N",
+     "env": "LLAMA_ARG_DEFRAG_THOLD"
+    },
+    {
+     "name": "--rpc",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "comma-separated list of RPC servers (host:port)",
+     "value": "SERVERS",
+     "env": "LLAMA_ARG_RPC"
+    },
+    {
+     "name": "--load-mode",
+     "aliases": [
+      "-lm"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "auto",
+     "help": "model loading mode - auto: mmap, unless a device does not support it - none: no special loading mode - mmap: memory-map model (if mmap disabled, slower load but may reduce pageouts if not using mlock) - mlock: force system to keep model in RAM rather than swapping or compressing - mmap+mlock: mmap + force system to keep model in RAM rather than swapping or compressing - dio: use DirectIO if available",
+     "value": "MODE",
+     "env": "LLAMA_ARG_LOAD_MODE"
+    },
+    {
+     "name": "--lazy-mode",
+     "aliases": [
+      "-lzm"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "auto",
+     "help": "on-demand reading of certain tensors, for example per-layer embeddings - on: read the rows of such tensors from disk on demand instead of keeping them resident (requires mmap) - auto: on, but only for tensors larger than 4 GiB - off: always keep them resident",
+     "value": "MODE",
+     "env": "LLAMA_ARG_LAZY_MODE"
+    },
+    {
+     "name": "--numa",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "attempt optimizations that help on some NUMA systems - distribute: spread execution evenly over all nodes - isolate: only spawn threads on CPUs on the node that execution started on - numactl: use the CPU map provided by numactl if run without this previously, it is recommended to drop the system page cache before using this see https://github.com/ggml-org/llama.cpp/issues/1437",
+     "value": "TYPE",
+     "env": "LLAMA_ARG_NUMA"
+    },
+    {
+     "name": "--device",
+     "aliases": [
+      "-dev"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "comma-separated list of devices to use for offloading (none = don't offload) use --list-devices to see a list of available devices",
+     "value": "<dev1,dev2,..>",
+     "env": "LLAMA_ARG_DEVICE"
+    },
+    {
+     "name": "--list-devices",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "print list of available devices and exit"
+    },
+    {
+     "name": "--override-tensor",
+     "aliases": [
+      "-ot"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "override tensor buffer type",
+     "value": "<tensor name pattern>=<buffer type>,...",
+     "env": "LLAMA_ARG_OVERRIDE_TENSOR"
+    },
+    {
+     "name": "--cpu-moe",
+     "aliases": [
+      "-cmoe"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "keep all Mixture of Experts (MoE) weights in the CPU",
+     "env": "LLAMA_ARG_CPU_MOE"
+    },
+    {
+     "name": "--n-cpu-moe",
+     "aliases": [
+      "-ncmoe"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "keep the Mixture of Experts (MoE) weights of the first N layers in the CPU",
+     "value": "N",
+     "env": "LLAMA_ARG_N_CPU_MOE"
+    },
+    {
+     "name": "--n-cpu-ffn",
+     "aliases": [
+      "-ncffn"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "keep the dense FFN weights of the first N layers in the CPU (dense models; for MoE expert weights use --n-cpu-moe)",
+     "value": "N",
+     "env": "LLAMA_ARG_N_CPU_FFN"
+    },
+    {
+     "name": "--gpu-layers",
+     "aliases": [
+      "--n-gpu-layers",
+      "-ngl"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "auto",
+     "help": "max. number of layers to store in VRAM, either an exact number, 'auto', or 'all'",
+     "value": "N",
+     "env": "LLAMA_ARG_N_GPU_LAYERS"
+    },
+    {
+     "name": "--split-mode",
+     "aliases": [
+      "-sm"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "how to split the model across multiple GPUs, one of: - none: use one GPU only - layer (default): split layers and KV across GPUs (pipelined) - row: split weight across GPUs by rows (parallelized) - tensor: split weights and KV across GPUs (parallelized, EXPERIMENTAL)",
+     "value": "{none,layer,row,tensor}",
+     "env": "LLAMA_ARG_SPLIT_MODE"
+    },
+    {
+     "name": "--tensor-split",
+     "aliases": [
+      "-ts"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "fraction of the model to offload to each GPU, comma-separated list of proportions, e.g. 3,1",
+     "value": "N0,N1,N2,...",
+     "env": "LLAMA_ARG_TENSOR_SPLIT"
+    },
+    {
+     "name": "--main-gpu",
+     "aliases": [
+      "-mg"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "0",
+     "help": "the GPU to use for the model (with split-mode = none), or for intermediate results and KV (with split-mode = row)",
+     "value": "INDEX",
+     "env": "LLAMA_ARG_MAIN_GPU"
+    },
+    {
+     "name": "--fit",
+     "aliases": [
+      "-fit"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "whether to adjust unset arguments to fit in device memory ('on' or 'off', default: 'on')",
+     "value": "[on\\|off]",
+     "env": "LLAMA_ARG_FIT"
+    },
+    {
+     "name": "--fit-target",
+     "aliases": [
+      "-fitt"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "target margin per device for --fit, comma-separated list of values, single value is broadcast across all devices, default: 1024",
+     "value": "MiB0,MiB1,MiB2,...",
+     "env": "LLAMA_ARG_FIT_TARGET"
+    },
+    {
+     "name": "--fit-ctx",
+     "aliases": [
+      "-fitc"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "minimum ctx size that can be set by --fit option, default: 4096",
+     "value": "N",
+     "env": "LLAMA_ARG_FIT_CTX"
+    },
+    {
+     "name": "--check-tensors",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "false",
+     "help": "check model tensor data for invalid values"
+    },
+    {
+     "name": "--override-kv",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "advanced option to override model metadata by key. to specify multiple overrides, either use comma-separated values. types: int, float, bool, str. example: --override-kv tokenizer.ggml.add_bos_token=bool:false,tokenizer.ggml.add_eos_token=bool:false",
+     "value": "KEY=TYPE:VALUE,..."
+    },
+    {
+     "name": "--op-offload",
+     "aliases": [
+      "--no-op-offload"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "true",
+     "help": "whether to offload host tensor operations to device"
+    },
+    {
+     "name": "--lora",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "path to LoRA adapter (use comma-separated values to load multiple adapters)",
+     "value": "FNAME"
+    },
+    {
+     "name": "--lora-scaled",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "path to LoRA adapter with user defined scaling (format: FNAME:SCALE,...) note: use comma-separated values",
+     "value": "FNAME:SCALE,..."
+    },
+    {
+     "name": "--control-vector",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "add a control vector note: use comma-separated values to add multiple control vectors",
+     "value": "FNAME"
+    },
+    {
+     "name": "--control-vector-scaled",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "add a control vector with user defined scaling SCALE note: use comma-separated values (format: FNAME:SCALE,...)",
+     "value": "FNAME:SCALE,..."
+    },
+    {
+     "name": "--control-vector-layer-range",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "layer range to apply the control vector(s) to, start and end inclusive",
+     "value": "START END"
+    },
+    {
+     "name": "--model",
+     "aliases": [
+      "-m"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "model path to load",
+     "value": "FNAME",
+     "env": "LLAMA_ARG_MODEL"
+    },
+    {
+     "name": "--model-url",
+     "aliases": [
+      "-mu"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "unused",
+     "help": "model download url",
+     "value": "MODEL_URL",
+     "env": "LLAMA_ARG_MODEL_URL"
+    },
+    {
+     "name": "--docker-repo",
+     "aliases": [
+      "-dr"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "unused",
+     "help": "Docker Hub model repository. repo is optional, default to ai/. quant is optional, default to :latest. example: gemma3",
+     "value": "[<repo>/]<model>[:quant]",
+     "env": "LLAMA_ARG_DOCKER_REPO"
+    },
+    {
+     "name": "--hf-repo",
+     "aliases": [
+      "-hf",
+      "-hfr"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "unused",
+     "help": "Hugging Face model repository; quant is optional, case-insensitive, default to Q4_K_M, or falls back to the first file in the repo if Q4_K_M doesn't exist. mmproj is also downloaded automatically if available. to disable, add --no-mmproj example: ggml-org/GLM-4.7-Flash-GGUF:Q4_K_M",
+     "value": "<user>/<model>[:quant]",
+     "env": "LLAMA_ARG_HF_REPO"
+    },
+    {
+     "name": "--hf-file",
+     "aliases": [
+      "-hff"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "unused",
+     "help": "Hugging Face model file. If specified, it will override the quant in --hf-repo",
+     "value": "FILE",
+     "env": "LLAMA_ARG_HF_FILE"
+    },
+    {
+     "name": "--hf-token",
+     "aliases": [
+      "-hft"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "value from HF_TOKEN environment variable",
+     "help": "Hugging Face access token",
+     "value": "TOKEN",
+     "env": "HF_TOKEN"
+    },
+    {
+     "name": "--log-disable",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Log disable"
+    },
+    {
+     "name": "--log-file",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Log to file",
+     "value": "FNAME",
+     "env": "LLAMA_ARG_LOG_FILE"
+    },
+    {
+     "name": "--log-jsonl",
+     "aliases": [
+      "--no-log-jsonl"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "Log as JSONL (one JSON object per line) to stdout, this also disables colored logging",
+     "env": "LLAMA_ARG_LOG_JSONL"
+    },
+    {
+     "name": "--log-colors",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Set colored logging ('on', 'off', or 'auto', default: 'auto') 'auto' enables colors when output is to a terminal",
+     "value": "[on\\|off\\|auto]",
+     "env": "LLAMA_ARG_LOG_COLORS"
+    },
+    {
+     "name": "--verbose",
+     "aliases": [
+      "--log-verbose",
+      "-v"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Set verbosity level to infinity (i.e. log all messages, useful for debugging)"
+    },
+    {
+     "name": "--offline",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Offline mode: forces use of cache, prevents network access",
+     "env": "LLAMA_ARG_OFFLINE"
+    },
+    {
+     "name": "--verbosity",
+     "aliases": [
+      "--log-verbosity",
+      "-lv"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "3",
+     "help": "Set the verbosity threshold. Messages with a higher verbosity will be ignored. Values: - 0: generic output - 1: error - 2: warning - 3: info - 4: trace (more info) - 5: debug",
+     "value": "N",
+     "env": "LLAMA_ARG_LOG_VERBOSITY"
+    },
+    {
+     "name": "--log-prefix",
+     "aliases": [
+      "--no-log-prefix"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable prefix in log messages",
+     "env": "LLAMA_ARG_LOG_PREFIX"
+    },
+    {
+     "name": "--log-timestamps",
+     "aliases": [
+      "--no-log-timestamps"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable timestamps in log messages",
+     "env": "LLAMA_ARG_LOG_TIMESTAMPS"
+    },
+    {
+     "name": "--spec-draft-type-k",
+     "aliases": [
+      "--cache-type-k-draft",
+      "-ctkd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "f16",
+     "help": "KV cache data type for K for the draft model allowed values: f32, f16, bf16, q8_0, q4_0, q4_1, iq4_nl, q5_0, q5_1",
+     "value": "TYPE",
+     "env": "LLAMA_ARG_SPEC_DRAFT_CACHE_TYPE_K"
+    },
+    {
+     "name": "--spec-draft-type-v",
+     "aliases": [
+      "--cache-type-v-draft",
+      "-ctvd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "f16",
+     "help": "KV cache data type for V for the draft model allowed values: f32, f16, bf16, q8_0, q4_0, q4_1, iq4_nl, q5_0, q5_1",
+     "value": "TYPE",
+     "env": "LLAMA_ARG_SPEC_DRAFT_CACHE_TYPE_V"
+    }
+   ]
+  },
+  {
+   "title": "Sampling params",
+   "flags": [
+    {
+     "name": "--samplers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "penalties;dry;top_n_sigma;top_k;typ_p;top_p;min_p;xtc;temperature",
+     "help": "samplers that will be used for generation in the order, separated by ';'",
+     "value": "SAMPLERS"
+    },
+    {
+     "name": "--seed",
+     "aliases": [
+      "-s"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "-1, use random seed for -1",
+     "help": "RNG seed",
+     "value": "SEED"
+    },
+    {
+     "name": "--sampler-seq",
+     "aliases": [
+      "--sampling-seq"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "edskypmxt",
+     "help": "simplified sequence for samplers that will be used",
+     "value": "SEQUENCE"
+    },
+    {
+     "name": "--ignore-eos",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "ignore end of stream token and continue generating (implies --logit-bias EOS-inf)"
+    },
+    {
+     "name": "--temp",
+     "aliases": [
+      "--temperature"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "0.80",
+     "help": "temperature",
+     "value": "N",
+     "env": "LLAMA_ARG_TEMPERATURE"
+    },
+    {
+     "name": "--top-k",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "40, 0 = disabled",
+     "help": "top-k sampling",
+     "value": "N",
+     "env": "LLAMA_ARG_TOP_K"
+    },
+    {
+     "name": "--top-p",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.95, 1.0 = disabled",
+     "help": "top-p sampling",
+     "value": "N",
+     "env": "LLAMA_ARG_TOP_P"
+    },
+    {
+     "name": "--min-p",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.05, 0.0 = disabled",
+     "help": "min-p sampling",
+     "value": "N",
+     "env": "LLAMA_ARG_MIN_P"
+    },
+    {
+     "name": "--top-nsigma",
+     "aliases": [
+      "--top-n-sigma"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "-1.00, -1.0 = disabled",
+     "help": "top-n-sigma sampling",
+     "value": "N"
+    },
+    {
+     "name": "--xtc-probability",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.00, 0.0 = disabled",
+     "help": "xtc probability",
+     "value": "N"
+    },
+    {
+     "name": "--xtc-threshold",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.10, 1.0 = disabled",
+     "help": "xtc threshold",
+     "value": "N"
+    },
+    {
+     "name": "--typical",
+     "aliases": [
+      "--typical-p"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "1.00, 1.0 = disabled",
+     "help": "locally typical sampling, parameter p",
+     "value": "N"
+    },
+    {
+     "name": "--repeat-last-n",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "64, 0 = disabled",
+     "help": "last n tokens to consider for penalize",
+     "value": "N"
+    },
+    {
+     "name": "--repeat-penalty",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "1.00, 1.0 = disabled",
+     "help": "penalize repeat sequence of tokens",
+     "value": "N",
+     "env": "LLAMA_ARG_REPEAT_PENALTY"
+    },
+    {
+     "name": "--presence-penalty",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.00, 0.0 = disabled",
+     "help": "repeat alpha presence penalty",
+     "value": "N",
+     "env": "LLAMA_ARG_PRESENCE_PENALTY"
+    },
+    {
+     "name": "--frequency-penalty",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.00, 0.0 = disabled",
+     "help": "repeat alpha frequency penalty",
+     "value": "N",
+     "env": "LLAMA_ARG_FREQUENCY_PENALTY"
+    },
+    {
+     "name": "--dry-multiplier",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.00, 0.0 = disabled",
+     "help": "set DRY sampling multiplier",
+     "value": "N"
+    },
+    {
+     "name": "--dry-base",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "1.75",
+     "help": "set DRY sampling base value",
+     "value": "N"
+    },
+    {
+     "name": "--dry-allowed-length",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "2",
+     "help": "set allowed length for DRY sampling",
+     "value": "N"
+    },
+    {
+     "name": "--dry-penalty-last-n",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "64, 0 = disable",
+     "help": "set DRY penalty for the last n tokens",
+     "value": "N"
+    },
+    {
+     "name": "--dry-sequence-breaker",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "add sequence breaker for DRY sampling, clearing out default breakers ('\\n', ':', '\"', '*') in the process; use \"none\" to not use any sequence breakers",
+     "value": "STRING"
+    },
+    {
+     "name": "--adaptive-target",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "-1.00",
+     "help": "adaptive-p: select tokens near this probability (valid range 0.0 to 1.0; negative = disabled) [(more info)](https://github.com/ggml-org/llama.cpp/pull/17927)",
+     "value": "N"
+    },
+    {
+     "name": "--adaptive-decay",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.90",
+     "help": "adaptive-p: decay rate for target adaptation over time. lower values are more reactive, higher values are more stable. (valid range 0.0 to 0.99)",
+     "value": "N"
+    },
+    {
+     "name": "--dynatemp-range",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.00, 0.0 = disabled",
+     "help": "dynamic temperature range",
+     "value": "N"
+    },
+    {
+     "name": "--dynatemp-exp",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "1.00",
+     "help": "dynamic temperature exponent",
+     "value": "N"
+    },
+    {
+     "name": "--mirostat",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0, 0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0",
+     "help": "use Mirostat sampling. Top K, Nucleus and Locally Typical samplers are ignored if used.",
+     "value": "N"
+    },
+    {
+     "name": "--mirostat-lr",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0.10",
+     "help": "Mirostat learning rate, parameter eta",
+     "value": "N"
+    },
+    {
+     "name": "--mirostat-ent",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "5.00",
+     "help": "Mirostat target entropy, parameter tau",
+     "value": "N"
+    },
+    {
+     "name": "--logit-bias",
+     "aliases": [
+      "-l"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "modifies the likelihood of token appearing in the completion, i.e. `--logit-bias 15043+1` to increase likelihood of token ' Hello', or `--logit-bias 15043-1` to decrease likelihood of token ' Hello'",
+     "value": "TOKEN_ID(+/-)BIAS"
+    },
+    {
+     "name": "--grammar",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "BNF-like grammar to constrain generations (see samples in grammars/ dir)",
+     "value": "GRAMMAR"
+    },
+    {
+     "name": "--grammar-file",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "file to read grammar from",
+     "value": "FNAME"
+    },
+    {
+     "name": "--json-schema",
+     "aliases": [
+      "-j"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "JSON schema to constrain generations (https://json-schema.org/), e.g. `{\"type\": \"object\"}` for any JSON object",
+     "value": "SCHEMA"
+    },
+    {
+     "name": "--json-schema-file",
+     "aliases": [
+      "-jf"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "File containing a JSON schema to constrain generations (https://json-schema.org/), e.g. `{\"type\": \"object\"}` for any JSON object",
+     "value": "FILE"
+    },
+    {
+     "name": "--backend-sampling",
+     "aliases": [
+      "-bs"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "enable backend sampling (experimental)",
+     "env": "LLAMA_ARG_BACKEND_SAMPLING"
+    }
+   ]
+  },
+  {
+   "title": "Server-specific params",
+   "flags": [
+    {
+     "name": "--lookup-cache-static",
+     "aliases": [
+      "-lcs"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "path to static lookup cache to use for lookup decoding (not updated by generation)",
+     "value": "FNAME"
+    },
+    {
+     "name": "--lookup-cache-dynamic",
+     "aliases": [
+      "-lcd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "path to dynamic lookup cache to use for lookup decoding (updated by generation)",
+     "value": "FNAME"
+    },
+    {
+     "name": "--kv-unified-per-slot",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "unset, behavior unchanged",
+     "help": "context limit per parallel slot . when set without -c/--ctx-size, the shared KV pool is sized to n_parallel*N",
+     "value": "N",
+     "env": "LLAMA_ARG_KV_UNIFIED_PER_SLOT"
+    },
+    {
+     "name": "--ctx-checkpoints",
+     "aliases": [
+      "--swa-checkpoints",
+      "-ctxcp"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "32",
+     "help": "max number of context checkpoints to create per slot [(more info)](https://github.com/ggml-org/llama.cpp/pull/15293)",
+     "value": "N",
+     "env": "LLAMA_ARG_CTX_CHECKPOINTS"
+    },
+    {
+     "name": "--checkpoint-min-step",
+     "aliases": [
+      "-cms"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "8192, 0 = no minimum",
+     "help": "minimum spacing between context checkpoints in tokens",
+     "value": "N",
+     "env": "LLAMA_ARG_CHECKPOINT_MIN_SPACING_NT"
+    },
+    {
+     "name": "--cache-ram",
+     "aliases": [
+      "-cram"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "8192, -1 - no limit, 0 - disable",
+     "help": "set the maximum cache size in MiB [(more info)](https://github.com/ggml-org/llama.cpp/pull/16391)",
+     "value": "N",
+     "env": "LLAMA_ARG_CACHE_RAM"
+    },
+    {
+     "name": "--kv-unified",
+     "aliases": [
+      "--no-kv-unified",
+      "-kvu"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled if number of slots is auto",
+     "help": "use single unified KV buffer shared across all sequences",
+     "env": "LLAMA_ARG_KV_UNIFIED"
+    },
+    {
+     "name": "--cache-idle-slots",
+     "aliases": [
+      "--no-cache-idle-slots"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled, requires cache-ram",
+     "help": "save idle slots to the prompt cache on new task, and clear them when using unified KV",
+     "env": "LLAMA_ARG_CACHE_IDLE_SLOTS"
+    },
+    {
+     "name": "--context-shift",
+     "aliases": [
+      "--no-context-shift"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "whether to use context shift on infinite text generation",
+     "env": "LLAMA_ARG_CONTEXT_SHIFT"
+    },
+    {
+     "name": "--reverse-prompt",
+     "aliases": [
+      "-r"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "halt generation at PROMPT, return control in interactive mode",
+     "value": "PROMPT"
+    },
+    {
+     "name": "--special",
+     "aliases": [
+      "-sp"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "false",
+     "help": "special tokens output enabled"
+    },
+    {
+     "name": "--warmup",
+     "aliases": [
+      "--no-warmup"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to perform warmup with an empty run"
+    },
+    {
+     "name": "--spm-infill",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "use Suffix/Prefix/Middle pattern for infill (instead of Prefix/Suffix/Middle) as some models prefer this."
+    },
+    {
+     "name": "--pooling",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "pooling type for embeddings, use model default if unspecified",
+     "value": "{none,mean,cls,last,rank}",
+     "env": "LLAMA_ARG_POOLING"
+    },
+    {
+     "name": "--parallel",
+     "aliases": [
+      "-np"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "-1, -1 = auto",
+     "help": "number of server slots",
+     "value": "N",
+     "env": "LLAMA_ARG_N_PARALLEL"
+    },
+    {
+     "name": "--cont-batching",
+     "aliases": [
+      "--no-cont-batching",
+      "-cb",
+      "-nocb"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to enable continuous batching (a.k.a dynamic batching)",
+     "env": "LLAMA_ARG_CONT_BATCHING"
+    },
+    {
+     "name": "--mmproj",
+     "aliases": [
+      "-mm"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "path to a multimodal projector file. see tools/mtmd/README.md note: if -hf is used, this argument can be omitted",
+     "value": "FILE",
+     "env": "LLAMA_ARG_MMPROJ"
+    },
+    {
+     "name": "--mmproj-url",
+     "aliases": [
+      "-mmu"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "URL to a multimodal projector file. see tools/mtmd/README.md",
+     "value": "URL",
+     "env": "LLAMA_ARG_MMPROJ_URL"
+    },
+    {
+     "name": "--mmproj-auto",
+     "aliases": [
+      "--no-mmproj",
+      "--no-mmproj-auto"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to use multimodal projector file (if available), useful when using -hf",
+     "env": "LLAMA_ARG_MMPROJ_AUTO"
+    },
+    {
+     "name": "--mmproj-offload",
+     "aliases": [
+      "--no-mmproj-offload"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to enable GPU offloading for multimodal projector",
+     "env": "LLAMA_ARG_MMPROJ_OFFLOAD"
+    },
+    {
+     "name": "--mmproj-device",
+     "aliases": [
+      "-mmdev"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "device to use for multimodal projector (none = don't offload, default: follows --device) use --list-devices to see a list of available devices",
+     "value": "DEVICE",
+     "env": "MTMD_BACKEND_DEVICE"
+    },
+    {
+     "name": "--image-min-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "read from model",
+     "help": "minimum number of tokens each image can take, only used by vision models with dynamic resolution",
+     "value": "N",
+     "env": "LLAMA_ARG_IMAGE_MIN_TOKENS"
+    },
+    {
+     "name": "--image-max-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "read from model",
+     "help": "maximum number of tokens each image can take, only used by vision models with dynamic resolution",
+     "value": "N",
+     "env": "LLAMA_ARG_IMAGE_MAX_TOKENS"
+    },
+    {
+     "name": "--mtmd-batch-max-tokens",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "1024",
+     "help": "maximum number of image tokens per batch when encoding images",
+     "value": "N",
+     "env": "LLAMA_ARG_MTMD_BATCH_MAX_TOKENS"
+    },
+    {
+     "name": "--video-fps",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "4.0",
+     "help": "target video frame rate",
+     "value": "N",
+     "env": "LLAMA_ARG_VIDEO_FPS"
+    },
+    {
+     "name": "--video-timestamp-interval",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "5000",
+     "help": "interval in milliseconds between text timestamps",
+     "value": "N",
+     "env": "LLAMA_ARG_VIDEO_TIMESTAMP_INTERVAL"
+    },
+    {
+     "name": "--video-ffmpeg-dir",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "search in PATH",
+     "help": "path to the directory containing ffmpeg and ffprobe",
+     "value": "DIR",
+     "env": "LLAMA_ARG_VIDEO_FFMPEG_DIR"
+    },
+    {
+     "name": "--alias",
+     "aliases": [
+      "-a"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "set model name aliases, comma-separated (to be used by API)",
+     "value": "STRING",
+     "env": "LLAMA_ARG_ALIAS"
+    },
+    {
+     "name": "--tags",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "set model tags, comma-separated (informational, not used for routing)",
+     "value": "STRING",
+     "env": "LLAMA_ARG_TAGS"
+    },
+    {
+     "name": "--embd-normalize",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "2",
+     "help": "normalisation for embeddings (-1=none, 0=max absolute int16, 1=taxicab, 2=euclidean, >2=p-norm)",
+     "value": "N"
+    },
+    {
+     "name": "--host",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "127.0.0.1",
+     "help": "IP addresses to listen on, comma-separated, or UNIX socket paths ending in .sock; with multiple TCP addresses, :: binds IPv6 only; overlapping addresses result in undefined behavior",
+     "value": "HOST",
+     "env": "LLAMA_ARG_HOST"
+    },
+    {
+     "name": "--port",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "8080",
+     "help": "port to listen",
+     "value": "PORT",
+     "env": "LLAMA_ARG_PORT"
+    },
+    {
+     "name": "--reuse-port",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "allow multiple sockets to bind to the same port",
+     "env": "LLAMA_ARG_REUSE_PORT"
+    },
+    {
+     "name": "--path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "",
+     "help": "path to serve static files from",
+     "value": "PATH",
+     "env": "LLAMA_ARG_STATIC_PATH"
+    },
+    {
+     "name": "--cors-origins",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "*",
+     "help": "comma-separated list of allowed origins for CORS if set to special value 'localhost', reflect the Origin header only if it is localhost",
+     "value": "ORIGINS",
+     "env": "LLAMA_ARG_CORS_ORIGINS"
+    },
+    {
+     "name": "--cors-methods",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "GET, POST, DELETE, OPTIONS",
+     "help": "comma-separated list of allowed methods for CORS",
+     "value": "METHODS",
+     "env": "LLAMA_ARG_CORS_METHODS"
+    },
+    {
+     "name": "--cors-headers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "*",
+     "help": "comma-separated list of allowed headers for CORS",
+     "value": "HEADERS",
+     "env": "LLAMA_ARG_CORS_HEADERS"
+    },
+    {
+     "name": "--cors-credentials",
+     "aliases": [
+      "--no-cors-credentials"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to allow credentials for CORS note: if this is enabled and --cors-origins is set to * (default), the Origin header will be echoed back, and credentials will always be allowed",
+     "env": "LLAMA_ARG_CORS_CREDENTIALS"
+    },
+    {
+     "name": "--api-prefix",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "",
+     "help": "prefix path the server serves from, without the trailing slash",
+     "value": "PREFIX",
+     "env": "LLAMA_ARG_API_PREFIX"
+    },
+    {
+     "name": "--ui-config",
+     "aliases": [
+      "--webui-config"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "JSON that provides default UI settings (overrides UI defaults)",
+     "value": "JSON",
+     "env": "LLAMA_ARG_UI_CONFIG"
+    },
+    {
+     "name": "--ui-config-file",
+     "aliases": [
+      "--webui-config-file"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "JSON file that provides default UI settings (overrides UI defaults)",
+     "value": "PATH",
+     "env": "LLAMA_ARG_UI_CONFIG_FILE"
+    },
+    {
+     "name": "--ui-mcp-proxy",
+     "aliases": [
+      "--webui-mcp-proxy",
+      "--no-ui-mcp-proxy",
+      "--no-webui-mcp-proxy"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "experimental: whether to enable MCP CORS proxy - do not enable in untrusted environments",
+     "env": "LLAMA_ARG_UI_MCP_PROXY"
+    },
+    {
+     "name": "--tools",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "no tools",
+     "help": "experimental: whether to enable built-in tools for AI agents - do not enable in untrusted environments specify \"all\" to enable all tools available tools: read_file, file_glob_search, grep_search, exec_shell_command, write_file, edit_file, get_info note: for security reasons, this will limit --cors-origins to localhost by default",
+     "value": "TOOL1,TOOL2,...",
+     "env": "LLAMA_ARG_TOOLS"
+    },
+    {
+     "name": "--tools-runtime",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "none, use host environment",
+     "help": "experimental: run tools in a separate runtime environment available options: 'docker:<image>', 'podman:<image>': spin up a new container and reuse it for all invocations, clean up on server exit 'docker-container:<id>', 'podman-container:<id>': use an existing container by ID, won't stop on server exit 'ssh:<target>': run tools on a remote POSIX host over SSH, key-based auth and a trusted host key are required",
+     "value": "OPTION",
+     "env": "LLAMA_ARG_TOOLS_RUNTIME"
+    },
+    {
+     "name": "--mcp-servers-config",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "none",
+     "help": "experimental: path to JSON file with MCP server definitions (Cursor-compatible format) - do not enable in untrusted environments note: for security reasons, this will limit --cors-origins to localhost by default",
+     "value": "PATH",
+     "env": "LLAMA_ARG_MCP_SERVERS_CONFIG"
+    },
+    {
+     "name": "--mcp-servers-json",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "none",
+     "help": "experimental: inline JSON with MCP server definitions (Cursor-compatible format) - do not enable in untrusted environments note: for security reasons, this will limit --cors-origins to localhost by default",
+     "value": "JSON",
+     "env": "LLAMA_ARG_MCP_SERVERS_JSON"
+    },
+    {
+     "name": "--agent",
+     "aliases": [
+      "--no-agent",
+      "-ag"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "whether to enable CORS proxy and all built-in tools - do not enable in untrusted environments note: for security reasons, this will limit --cors-origins to localhost by default",
+     "env": "LLAMA_ARG_AGENT"
+    },
+    {
+     "name": "--ui",
+     "aliases": [
+      "--webui",
+      "--no-ui",
+      "--no-webui"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to enable the Web UI",
+     "env": "LLAMA_ARG_UI"
+    },
+    {
+     "name": "--embedding",
+     "aliases": [
+      "--embeddings"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "restrict to only support embedding use case; use only with dedicated embedding models",
+     "env": "LLAMA_ARG_EMBEDDINGS"
+    },
+    {
+     "name": "--rerank",
+     "aliases": [
+      "--reranking"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "enable reranking endpoint on server",
+     "env": "LLAMA_ARG_RERANKING"
+    },
+    {
+     "name": "--api-key",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "none",
+     "help": "API key to use for authentication, multiple keys can be provided as a comma-separated list",
+     "value": "KEY",
+     "env": "LLAMA_API_KEY"
+    },
+    {
+     "name": "--api-key-file",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "none",
+     "help": "path to file containing API keys, one per line; lines starting with a hash are treated as comments",
+     "value": "FNAME",
+     "env": "LLAMA_ARG_API_KEY_FILE"
+    },
+    {
+     "name": "--ssl-key-file",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "path to file a PEM-encoded SSL private key",
+     "value": "FNAME",
+     "env": "LLAMA_ARG_SSL_KEY_FILE"
+    },
+    {
+     "name": "--ssl-cert-file",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "path to file a PEM-encoded SSL certificate",
+     "value": "FNAME",
+     "env": "LLAMA_ARG_SSL_CERT_FILE"
+    },
+    {
+     "name": "--chat-template-kwargs",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "sets additional params for the json template parser, must be a valid json object string, e.g. '{\"key1\":\"value1\",\"key2\":\"value2\"}'",
+     "value": "STRING",
+     "env": "LLAMA_ARG_CHAT_TEMPLATE_KWARGS"
+    },
+    {
+     "name": "--timeout",
+     "aliases": [
+      "-to"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "3600",
+     "help": "server read/write timeout in seconds",
+     "value": "N",
+     "env": "LLAMA_ARG_TIMEOUT"
+    },
+    {
+     "name": "--sse-ping-interval",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "server SSE ping interval in seconds (-1 = disabled, default: 30)",
+     "value": "N",
+     "env": "LLAMA_ARG_SSE_PING_INTERVAL"
+    },
+    {
+     "name": "--threads-http",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "-1",
+     "help": "number of threads used to process HTTP requests",
+     "value": "N",
+     "env": "LLAMA_ARG_THREADS_HTTP"
+    },
+    {
+     "name": "--cache-prompt",
+     "aliases": [
+      "--no-cache-prompt"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to enable prompt caching",
+     "env": "LLAMA_ARG_CACHE_PROMPT"
+    },
+    {
+     "name": "--cache-reuse",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0",
+     "help": "min chunk size to attempt reusing from the cache via KV shifting, requires prompt caching to be enabled [(card)](https://ggml.ai/f0.png)",
+     "value": "N",
+     "env": "LLAMA_ARG_CACHE_REUSE"
+    },
+    {
+     "name": "--metrics",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "enable prometheus compatible metrics endpoint",
+     "env": "LLAMA_ARG_ENDPOINT_METRICS"
+    },
+    {
+     "name": "--props",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "enable changing global properties via POST /props",
+     "env": "LLAMA_ARG_ENDPOINT_PROPS"
+    },
+    {
+     "name": "--slots",
+     "aliases": [
+      "--no-slots"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "expose slots monitoring endpoint",
+     "env": "LLAMA_ARG_ENDPOINT_SLOTS"
+    },
+    {
+     "name": "--slot-save-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "path to save slot kv cache",
+     "value": "PATH"
+    },
+    {
+     "name": "--media-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "directory for loading local media files; files can be accessed via file:// URLs using relative paths",
+     "value": "PATH"
+    },
+    {
+     "name": "--models-dir",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "directory containing models for the router server",
+     "value": "PATH",
+     "env": "LLAMA_ARG_MODELS_DIR"
+    },
+    {
+     "name": "--models-preset",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "path to INI file containing model presets for the router server",
+     "value": "PATH",
+     "env": "LLAMA_ARG_MODELS_PRESET"
+    },
+    {
+     "name": "--models-max",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "4, 0 = unlimited",
+     "help": "for router server, maximum number of models to load simultaneously",
+     "value": "N",
+     "env": "LLAMA_ARG_MODELS_MAX"
+    },
+    {
+     "name": "--models-autoload",
+     "aliases": [
+      "--no-models-autoload"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "for router server, whether to automatically load models",
+     "env": "LLAMA_ARG_MODELS_AUTOLOAD"
+    },
+    {
+     "name": "--jinja",
+     "aliases": [
+      "--no-jinja"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "whether to use jinja template engine for chat",
+     "env": "LLAMA_ARG_JINJA"
+    },
+    {
+     "name": "--reasoning-format",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "auto",
+     "help": "controls whether thought tags are allowed and/or extracted from the response, and in which format they're returned; one of: - none: leaves thoughts unparsed in `message.content` - deepseek: puts thoughts in `message.reasoning_content` - deepseek-legacy: keeps `<think>` tags in `message.content` while also populating `message.reasoning_content`",
+     "value": "FORMAT",
+     "env": "LLAMA_ARG_THINK"
+    },
+    {
+     "name": "--reasoning",
+     "aliases": [
+      "-rea"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Use reasoning/thinking in the chat ('on', 'off', or 'auto', default: 'auto' (detect from template))",
+     "value": "[on\\|off\\|auto]",
+     "env": "LLAMA_ARG_REASONING"
+    },
+    {
+     "name": "--reasoning-effort",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "default",
+     "help": "reasoning effort level given to the chat template: 'default' to keep the template default, or a level such as 'minimal', 'low', 'medium', 'high', 'xhigh' or 'max'",
+     "value": "LEVEL",
+     "env": "LLAMA_ARG_REASONING_EFFORT"
+    },
+    {
+     "name": "--reasoning-budget",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "-1",
+     "help": "token budget for thinking: -1 for unrestricted, 0 for immediate end, N>0 for token budget",
+     "value": "N",
+     "env": "LLAMA_ARG_THINK_BUDGET"
+    },
+    {
+     "name": "--reasoning-budget-message",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "none",
+     "help": "message injected before the end-of-thinking tag when reasoning budget is exhausted",
+     "value": "MESSAGE",
+     "env": "LLAMA_ARG_THINK_BUDGET_MESSAGE"
+    },
+    {
+     "name": "--reasoning-preserve",
+     "aliases": [
+      "--no-reasoning-preserve"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "preserve reasoning trace in the full history, not just the last assistant message compatible with certain templates having 'supports_preserve_reasoning' capability example: https://docs.z.ai/guides/capabilities/thinking-mode#preserved-thinking",
+     "env": "LLAMA_ARG_REASONING_PRESERVE"
+    },
+    {
+     "name": "--chat-template",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "template taken from model's metadata",
+     "help": "set custom jinja chat template if suffix/prefix are specified, template will be disabled only commonly used templates are accepted (unless --jinja is set before this flag): list of built-in templates: bailing, bailing-think, bailing2, chatglm3, chatglm4, chatml, command-r, deepseek, deepseek-ocr, deepseek2, deepseek3, exaone-moe, exaone3, exaone4, falcon3, gemma, gigachat, glmedge, gpt-oss, granite, granite-4.0, granite-4.1, grok-2, hunyuan-dense, hunyuan-moe, hunyuan-vl, kimi-k2, llama2, llama2-sys, llama2-sys-bos, llama2-sys-strip, llama3, llama4, megrez, minicpm, mistral-v1, mistral-v3, mistral-v3-tekken, mistral-v7, mistral-v7-tekken, monarch, openchat, orion, pangu-embedded, phi3, phi4, rwkv-world, seed_oss, smolvlm, solar-open, vicuna, vicuna-orca, yandex, zephyr",
+     "value": "JINJA_TEMPLATE",
+     "env": "LLAMA_ARG_CHAT_TEMPLATE"
+    },
+    {
+     "name": "--chat-template-file",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "template taken from model's metadata",
+     "help": "set custom jinja chat template file if suffix/prefix are specified, template will be disabled only commonly used templates are accepted (unless --jinja is set before this flag): list of built-in templates: bailing, bailing-think, bailing2, chatglm3, chatglm4, chatml, command-r, deepseek, deepseek-ocr, deepseek2, deepseek3, exaone-moe, exaone3, exaone4, falcon3, gemma, gigachat, glmedge, gpt-oss, granite, granite-4.0, granite-4.1, grok-2, hunyuan-dense, hunyuan-moe, hunyuan-vl, kimi-k2, llama2, llama2-sys, llama2-sys-bos, llama2-sys-strip, llama3, llama4, megrez, minicpm, mistral-v1, mistral-v3, mistral-v3-tekken, mistral-v7, mistral-v7-tekken, monarch, openchat, orion, pangu-embedded, phi3, phi4, rwkv-world, seed_oss, smolvlm, solar-open, vicuna, vicuna-orca, yandex, zephyr",
+     "value": "JINJA_TEMPLATE_FILE",
+     "env": "LLAMA_ARG_CHAT_TEMPLATE_FILE"
+    },
+    {
+     "name": "--skip-chat-parsing",
+     "aliases": [
+      "--no-skip-chat-parsing"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "force a pure content parser, even if a Jinja template is specified; model will output everything in the content section, including any reasoning and/or tool calls",
+     "env": "LLAMA_ARG_SKIP_CHAT_PARSING"
+    },
+    {
+     "name": "--prefill-assistant",
+     "aliases": [
+      "--no-prefill-assistant"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "prefill enabled",
+     "help": "whether to prefill the assistant's response if the last message is an assistant message when this flag is set, if the last message is an assistant message then it will be treated as a full message and not prefilled",
+     "env": "LLAMA_ARG_PREFILL_ASSISTANT"
+    },
+    {
+     "name": "--slot-prompt-similarity",
+     "aliases": [
+      "-sps"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "0.10, 0.0 = disabled",
+     "help": "how much the prompt of a request must match the prompt of a slot in order to use that slot",
+     "value": "SIMILARITY"
+    },
+    {
+     "name": "--lora-init-without-apply",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "disabled",
+     "help": "load LoRA adapters without applying them (apply later via POST /lora-adapters)"
+    },
+    {
+     "name": "--sleep-idle-seconds",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "-1; -1 = disabled",
+     "help": "number of seconds of idleness after which the server will sleep",
+     "value": "SECONDS"
+    },
+    {
+     "name": "--log-prompts-dir",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Log prompts to directory (auto-created if not present; only used for debugging, default: disabled)",
+     "value": "PATH"
+    },
+    {
+     "name": "--spec-draft-hf",
+     "aliases": [
+      "--hf-repo-draft",
+      "-hfd",
+      "-hfrd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "unused",
+     "help": "Same as --hf-repo, but for the draft model",
+     "value": "<user>/<model>[:quant]",
+     "env": "LLAMA_ARG_SPEC_DRAFT_HF_REPO"
+    },
+    {
+     "name": "--spec-draft-threads",
+     "aliases": [
+      "--threads-draft",
+      "-td"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "same as --threads",
+     "help": "number of threads to use during generation",
+     "value": "N"
+    },
+    {
+     "name": "--spec-draft-threads-batch",
+     "aliases": [
+      "--threads-batch-draft",
+      "-tbd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "same as --threads-draft",
+     "help": "number of threads to use during batch and prompt processing",
+     "value": "N"
+    },
+    {
+     "name": "--spec-draft-cpu-mask",
+     "aliases": [
+      "--cpu-mask-draft",
+      "-Cd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "same as --cpu-mask",
+     "help": "Draft model CPU affinity mask. Complements cpu-range-draft",
+     "value": "M"
+    },
+    {
+     "name": "--spec-draft-cpu-range",
+     "aliases": [
+      "--cpu-range-draft",
+      "-Crd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Ranges of CPUs for affinity. Complements --cpu-mask-draft",
+     "value": "lo-hi"
+    },
+    {
+     "name": "--spec-draft-cpu-strict",
+     "aliases": [
+      "--cpu-strict-draft"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "same as --cpu-strict",
+     "help": "Use strict CPU placement for draft model",
+     "value": "<0\\|1>"
+    },
+    {
+     "name": "--spec-draft-prio",
+     "aliases": [
+      "--prio-draft"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "0",
+     "help": "set draft process/thread priority : 0-normal, 1-medium, 2-high, 3-realtime",
+     "value": "N"
+    },
+    {
+     "name": "--spec-draft-poll",
+     "aliases": [
+      "--poll-draft"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "same as --poll",
+     "help": "Use polling to wait for draft model work",
+     "value": "<0\\|1>"
+    },
+    {
+     "name": "--spec-draft-cpu-mask-batch",
+     "aliases": [
+      "--cpu-mask-batch-draft",
+      "-Cbd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "same as --cpu-mask",
+     "help": "Draft model CPU affinity mask. Complements cpu-range-draft",
+     "value": "M"
+    },
+    {
+     "name": "--spec-draft-cpu-strict-batch",
+     "aliases": [
+      "--cpu-strict-batch-draft"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "--cpu-strict-draft",
+     "help": "Use strict CPU placement for draft model",
+     "value": "<0\\|1>"
+    },
+    {
+     "name": "--spec-draft-prio-batch",
+     "aliases": [
+      "--prio-batch-draft"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "0",
+     "help": "set draft process/thread priority : 0-normal, 1-medium, 2-high, 3-realtime",
+     "value": "N"
+    },
+    {
+     "name": "--spec-draft-poll-batch",
+     "aliases": [
+      "--poll-batch-draft"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "--poll-draft",
+     "help": "Use polling to wait for draft model work",
+     "value": "<0\\|1>"
+    },
+    {
+     "name": "--spec-draft-override-tensor",
+     "aliases": [
+      "--override-tensor-draft",
+      "-otd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "override tensor buffer type for draft model",
+     "value": "<tensor name pattern>=<buffer type>,..."
+    },
+    {
+     "name": "--spec-draft-cpu-moe",
+     "aliases": [
+      "--cpu-moe-draft",
+      "-cmoed"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "keep all Mixture of Experts (MoE) weights in the CPU for the draft model",
+     "env": "LLAMA_ARG_SPEC_DRAFT_CPU_MOE"
+    },
+    {
+     "name": "--spec-draft-n-cpu-moe",
+     "aliases": [
+      "--spec-draft-ncmoe",
+      "--n-cpu-moe-draft",
+      "-ncmoed"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "keep the Mixture of Experts (MoE) weights of the first N layers in the CPU for the draft model",
+     "value": "N",
+     "env": "LLAMA_ARG_SPEC_DRAFT_N_CPU_MOE"
+    },
+    {
+     "name": "--spec-draft-n-max",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "3",
+     "help": "number of tokens to draft for speculative decoding",
+     "value": "N",
+     "env": "LLAMA_ARG_SPEC_DRAFT_N_MAX"
+    },
+    {
+     "name": "--spec-draft-n-min",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "0",
+     "help": "minimum number of draft tokens to use for speculative decoding",
+     "value": "N",
+     "env": "LLAMA_ARG_SPEC_DRAFT_N_MIN"
+    },
+    {
+     "name": "--spec-synth-len",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "target mean synthetic acceptance length, including the target token (benchmarking only)",
+     "value": "L",
+     "env": "LLAMA_ARG_SPEC_SYNTH_LEN"
+    },
+    {
+     "name": "--spec-synth-rates",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "comma-separated unconditional per-position synthetic acceptance probabilities (benchmarking only)",
+     "value": "P0,P1,...",
+     "env": "LLAMA_ARG_SPEC_SYNTH_RATES"
+    },
+    {
+     "name": "--spec-draft-p-split",
+     "aliases": [
+      "--draft-p-split"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "0.10",
+     "help": "speculative decoding split probability",
+     "value": "P",
+     "env": "LLAMA_ARG_SPEC_DRAFT_P_SPLIT"
+    },
+    {
+     "name": "--spec-draft-p-min",
+     "aliases": [
+      "--draft-p-min"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "0.00",
+     "help": "minimum speculative decoding probability (greedy)",
+     "value": "P",
+     "env": "LLAMA_ARG_SPEC_DRAFT_P_MIN"
+    },
+    {
+     "name": "--spec-draft-backend-sampling",
+     "aliases": [
+      "--no-spec-draft-backend-sampling"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "enabled",
+     "help": "offload draft sampling to the backend",
+     "env": "LLAMA_ARG_SPEC_DRAFT_BACKEND_SAMPLING"
+    },
+    {
+     "name": "--spec-draft-device",
+     "aliases": [
+      "--device-draft",
+      "-devd"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "comma-separated list of devices to use for offloading the draft model (none = don't offload, default: follows --device) use --list-devices to see a list of available devices",
+     "value": "<dev1,dev2,..>"
+    },
+    {
+     "name": "--spec-draft-ngl",
+     "aliases": [
+      "--gpu-layers-draft",
+      "--n-gpu-layers-draft",
+      "-ngld"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "auto",
+     "help": "max. number of draft model layers to store in VRAM, either an exact number, 'auto', or 'all'",
+     "value": "N",
+     "env": "LLAMA_ARG_N_GPU_LAYERS_DRAFT"
+    },
+    {
+     "name": "--spec-draft-model",
+     "aliases": [
+      "--model-draft",
+      "-md"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "unused",
+     "help": "draft model for speculative decoding",
+     "value": "FNAME",
+     "env": "LLAMA_ARG_SPEC_DRAFT_MODEL"
+    },
+    {
+     "name": "--spec-type",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "none",
+     "help": "comma-separated list of types of speculative decoding to use",
+     "value": "none,draft-simple,draft-eagle3,draft-mtp,draft-dflash,draft-dspark,ngram-simple,ngram-map-k,ngram-map-k4v,ngram-mod,ngram-cache",
+     "env": "LLAMA_ARG_SPEC_TYPE"
+    },
+    {
+     "name": "--spec-ngram-mod-n-min",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "48",
+     "help": "minimum number of ngram tokens to use for ngram-based speculative decoding",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-mod-n-max",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "64",
+     "help": "maximum number of ngram tokens to use for ngram-based speculative decoding",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-mod-n-match",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "24",
+     "help": "ngram-mod lookup length",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-simple-size-n",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "12",
+     "help": "ngram size N for ngram-simple speculative decoding, length of lookup n-gram",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-simple-size-m",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "48",
+     "help": "ngram size M for ngram-simple speculative decoding, length of draft m-gram",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-simple-min-hits",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "1",
+     "help": "minimum hits for ngram-simple speculative decoding",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-map-k-size-n",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "12",
+     "help": "ngram size N for ngram-map-k speculative decoding, length of lookup n-gram",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-map-k-size-m",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "48",
+     "help": "ngram size M for ngram-map-k speculative decoding, length of draft m-gram",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-map-k-min-hits",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "1",
+     "help": "minimum hits for ngram-map-k speculative decoding",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-map-k4v-size-n",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "12",
+     "help": "ngram size N for ngram-map-k4v speculative decoding, length of lookup n-gram",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-map-k4v-size-m",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "48",
+     "help": "ngram size M for ngram-map-k4v speculative decoding, length of draft m-gram",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-map-k4v-min-hits",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "1",
+     "help": "minimum hits for ngram-map-k4v speculative decoding",
+     "value": "N"
+    },
+    {
+     "name": "--draft",
+     "aliases": [
+      "--draft-n",
+      "--draft-max"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "the argument has been removed. use --spec-draft-n-max or --spec-ngram-mod-n-max",
+     "value": "N",
+     "env": "LLAMA_ARG_DRAFT_MAX"
+    },
+    {
+     "name": "--draft-min",
+     "aliases": [
+      "--draft-n-min"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "the argument has been removed. use --spec-draft-n-min or --spec-ngram-mod-n-min",
+     "value": "N",
+     "env": "LLAMA_ARG_DRAFT_MIN"
+    },
+    {
+     "name": "--spec-ngram-size-n",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "the argument has been removed. use the respective --spec-ngram-*-size-n or --spec-ngram-mod-n-match",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-size-m",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "the argument has been removed. use the respective --spec-ngram-*-size-m",
+     "value": "N"
+    },
+    {
+     "name": "--spec-ngram-min-hits",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "the argument has been removed. use the respective --spec-ngram-*-min-hits",
+     "value": "N"
+    },
+    {
+     "name": "--embd-gemma-default",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use default EmbeddingGemma model (note: can download weights from the internet)"
+    },
+    {
+     "name": "--fim-qwen-1",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use default Qwen 2.5 Coder 1.5B (note: can download weights from the internet)",
+     "value": ".5b-default"
+    },
+    {
+     "name": "--fim-qwen-3b-default",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use default Qwen 2.5 Coder 3B (note: can download weights from the internet)"
+    },
+    {
+     "name": "--fim-qwen-7b-default",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use default Qwen 2.5 Coder 7B (note: can download weights from the internet)"
+    },
+    {
+     "name": "--fim-qwen-7b-spec",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use Qwen 2.5 Coder 7B + 0.5B draft for speculative decoding (note: can download weights from the internet)"
+    },
+    {
+     "name": "--fim-qwen-14b-spec",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use Qwen 2.5 Coder 14B + 0.5B draft for speculative decoding (note: can download weights from the internet)"
+    },
+    {
+     "name": "--fim-qwen-30b-default",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use default Qwen 3 Coder 30B A3B Instruct (note: can download weights from the internet)"
+    },
+    {
+     "name": "--gpt-oss-20b-default",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use gpt-oss-20b (note: can download weights from the internet)"
+    },
+    {
+     "name": "--gpt-oss-120b-default",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use gpt-oss-120b (note: can download weights from the internet)"
+    },
+    {
+     "name": "--vision-gemma-4b-default",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use Gemma 3 4B QAT (note: can download weights from the internet)"
+    },
+    {
+     "name": "--vision-gemma-12b-default",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "use Gemma 3 12B QAT (note: can download weights from the internet)"
+    },
+    {
+     "name": "--spec-default",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "enable default speculative decoding config"
+    }
+   ]
+  }
+ ]
+}

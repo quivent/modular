@@ -1,0 +1,283 @@
+{
+ "engine": "ollama",
+ "source": "https://raw.githubusercontent.com/ollama/ollama/main/envconfig/config.go",
+ "fetched": "2026-09-30",
+ "count": 30,
+ "sections": [
+  {
+   "title": "Environment variables",
+   "flags": [
+    {
+     "name": "OLLAMA_DEBUG",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Show additional debug information (e.g. OLLAMA_DEBUG=1)",
+     "env": "OLLAMA_DEBUG"
+    },
+    {
+     "name": "OLLAMA_DEBUG_LOG_REQUESTS",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Log inference request bodies and replay curl commands to a temp directory",
+     "env": "OLLAMA_DEBUG_LOG_REQUESTS"
+    },
+    {
+     "name": "OLLAMA_GO_TEMPLATE",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable Modelfile TEMPLATE based rendering when available",
+     "env": "OLLAMA_GO_TEMPLATE"
+    },
+    {
+     "name": "OLLAMA_FLASH_ATTENTION",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enabled flash attention",
+     "env": "OLLAMA_FLASH_ATTENTION"
+    },
+    {
+     "name": "OLLAMA_KV_CACHE_TYPE",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "f16",
+     "help": "Quantization type for the K/V cache",
+     "env": "OLLAMA_KV_CACHE_TYPE"
+    },
+    {
+     "name": "OLLAMA_GPU_OVERHEAD",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Reserve a portion of VRAM per GPU (bytes)",
+     "env": "OLLAMA_GPU_OVERHEAD"
+    },
+    {
+     "name": "OLLAMA_IGPU_ENABLE",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Enable integrated GPUs",
+     "env": "OLLAMA_IGPU_ENABLE"
+    },
+    {
+     "name": "LLAMA_ARG_FIT",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "\"on\"",
+     "help": "Enable llama.cpp automatic fit of unset memory options",
+     "env": "LLAMA_ARG_FIT"
+    },
+    {
+     "name": "LLAMA_ARG_FIT_TARGET",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Target free VRAM margin per device for llama.cpp fit (MiB)",
+     "env": "LLAMA_ARG_FIT_TARGET"
+    },
+    {
+     "name": "OLLAMA_HOST",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "127.0.0.1:11434",
+     "help": "IP Address for the ollama server",
+     "env": "OLLAMA_HOST"
+    },
+    {
+     "name": "OLLAMA_KEEP_ALIVE",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "\"5m\"",
+     "help": "The duration that models stay loaded in memory",
+     "env": "OLLAMA_KEEP_ALIVE"
+    },
+    {
+     "name": "OLLAMA_LLM_LIBRARY",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Set LLM library to bypass autodetection",
+     "env": "OLLAMA_LLM_LIBRARY"
+    },
+    {
+     "name": "OLLAMA_LOAD_TIMEOUT",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "\"5m\"",
+     "help": "How long to allow model loads to stall before giving up",
+     "env": "OLLAMA_LOAD_TIMEOUT"
+    },
+    {
+     "name": "OLLAMA_MAX_LOADED_MODELS",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Maximum number of loaded models per GPU",
+     "env": "OLLAMA_MAX_LOADED_MODELS"
+    },
+    {
+     "name": "OLLAMA_MAX_TRANSFER_STREAMS",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "4",
+     "help": "Maximum parallel transfer streams for safetensors model pulls/pushes",
+     "env": "OLLAMA_MAX_TRANSFER_STREAMS"
+    },
+    {
+     "name": "OLLAMA_MAX_QUEUE",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Maximum number of queued requests",
+     "env": "OLLAMA_MAX_QUEUE"
+    },
+    {
+     "name": "OLLAMA_MODELS",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "The path to the models directory",
+     "env": "OLLAMA_MODELS"
+    },
+    {
+     "name": "OLLAMA_NO_CLOUD",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Disable Ollama cloud features (remote inference and web search)",
+     "env": "OLLAMA_NO_CLOUD"
+    },
+    {
+     "name": "OLLAMA_NOHISTORY",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Do not preserve readline history",
+     "env": "OLLAMA_NOHISTORY"
+    },
+    {
+     "name": "OLLAMA_NOPRUNE",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Do not prune model blobs on startup",
+     "env": "OLLAMA_NOPRUNE"
+    },
+    {
+     "name": "OLLAMA_NUM_PARALLEL",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Maximum number of parallel requests",
+     "env": "OLLAMA_NUM_PARALLEL"
+    },
+    {
+     "name": "OLLAMA_ORIGINS",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "A comma separated list of allowed origins",
+     "env": "OLLAMA_ORIGINS"
+    },
+    {
+     "name": "OLLAMA_SCHED_SPREAD",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Always schedule model across all GPUs",
+     "env": "OLLAMA_SCHED_SPREAD"
+    },
+    {
+     "name": "OLLAMA_CONTEXT_LENGTH",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "4k/32k/256k based on VRAM",
+     "help": "Context length to use unless otherwise specified",
+     "env": "OLLAMA_CONTEXT_LENGTH"
+    },
+    {
+     "name": "OLLAMA_CREATE_REMOTE",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Force model creation through the server API even when the server is local",
+     "env": "OLLAMA_CREATE_REMOTE"
+    },
+    {
+     "name": "OLLAMA_EDITOR",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Path to editor for interactive prompt editing (Ctrl+G)",
+     "env": "OLLAMA_EDITOR"
+    },
+    {
+     "name": "OLLAMA_REMOTES",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": "\"ollama.com\"",
+     "help": "Allowed hosts for remote models",
+     "env": "OLLAMA_REMOTES"
+    },
+    {
+     "name": "HTTP_PROXY",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "HTTP proxy",
+     "env": "HTTP_PROXY"
+    },
+    {
+     "name": "HTTPS_PROXY",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "HTTPS proxy",
+     "env": "HTTPS_PROXY"
+    },
+    {
+     "name": "NO_PROXY",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "No proxy",
+     "env": "NO_PROXY"
+    }
+   ]
+  }
+ ]
+}
