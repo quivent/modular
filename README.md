@@ -1,43 +1,85 @@
-# Modular
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/readme/cover-mobile.png">
+  <img src="assets/readme/cover.png" alt="Modular. Model serving, with room to breathe. A sculpture of precisely balanced glass and ceramic square frames." width="100%">
+</picture>
+
+<br>
 
 <p align="center">
-  <img src="assets/readme-cover.svg" alt="Modular cover: Hard work, held lightly, beside woven green contours surrounding a quiet center" width="100%">
+  <a href="#quick-start">Quick start</a> &nbsp; · &nbsp;
+  <a href="#inside-modular">Workspace</a> &nbsp; · &nbsp;
+  <a href="DESIGN.md">Design notes</a>
 </p>
 
-**Model serving is exacting. The workspace for it can be calm.**
+<br>
 
-Checkpoints, engines, hardware, and runtime flags all have strict requirements. Their rules differ, their syntax is unforgiving, and the details keep changing. Modular gathers those decisions in a spacious browser interface so you can work through them without facing a wall of settings.
+**A difficult task deserves a thoughtful place to do it.**
 
-## 01 / Space to think
+Serving a model means bringing checkpoints, engines, hardware, and runtime settings into agreement. The requirements are strict, the conventions differ, and the details keep changing.
 
-Choose a **model**, then an **engine**, then the **capacity and tuning** the workload needs. The first view stays quiet: generous space, warm off-white, restrained green, plain labels, and direct choices. More specific controls open near the decisions they affect.
+Modular gives that work a calmer shape. A spacious browser interface keeps the main decisions clear, opens deeper controls where they matter, and shows the command taking shape beside you. Enough room to think. Enough detail to stay in control.
 
-A live command sits beside the workspace. **Where each choice goes** traces its parts back to controls; **Checks** points out selected conflicts and settings an engine cannot express. The command is one part of the experience. The larger aim is to make difficult configuration feel clear enough to reason through and comfortable enough to stay with.
+<br>
 
-## 02 / Open the workspace
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/readme/output-mobile.png">
+  <img src="assets/readme/workspace.png" alt="Actual Modular interface: six engines and a custom path beside the generated vLLM command, saved configurations, flag map, and checks. On narrow screens, the live output panel is shown in detail." width="100%">
+</picture>
+
+<br>
+
+## Inside Modular
+
+**01 &nbsp; Choose your starting point.** Browse models by family, bring a reference or path, or load public repositories from a Hugging Face profile. Keep favorites and a default close at hand.
+
+**02 &nbsp; Give the workload what it needs.** Choose an engine, context, weight format, and hardware. Scheduling, cache, offload, and network controls appear where relevant. Engine changes preserve choices and call out selected settings that do not translate.
+
+**03 &nbsp; See what your choices mean.** The live command, flag map, and checks keep the result inspectable. Copy an export or save a configuration in the browser for another session.
+
+<details>
+<summary>Models, engines, and output formats</summary>
+
+| Dimension | Available in the prototype |
+| --- | --- |
+| Models | 15 curated starting points; custom references, tags, URLs, and paths; up to 100 public repositories from a Hugging Face profile |
+| Model-specific controls | Ornith 1.5 checkpoint choices and conditional reasoning and tool-call parsers |
+| Engines | vLLM, SGLang, TGI, llama.cpp, Ollama, MLX LM, and a custom command template |
+| Tuning | Context, GPU count and memory, quantization, plus applicable scheduling, precision, cache, offload, network, and extra-argument controls |
+| Output | Readable CLI, one-line CLI, and JSON; Docker for vLLM |
+
+Catalog inclusion does not establish engine compatibility. Model, engine, hardware, and runtime choices remain separate dimensions.
+
+</details>
+
+<br>
+
+## Quick start
+
+From this directory:
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Open [localhost:8000](http://localhost:8000). The page starts with Qwen3 8B and vLLM. Change the engine, GPU count, or context window and watch the relevant controls and output respond. No build step or account is required.
+Open [localhost:8000](http://localhost:8000). No build step or account is required. Start with Qwen3 8B and vLLM, change a choice, and open **Where each choice goes** beneath the output.
 
-## 03 / Depth where it matters
+Modular is a working prototype that produces a **starting specification**. Its checks cover selected conflicts; confirm the output against the engine version, checkpoint, and hardware you intend to use.
 
-- **Models:** 15 curated starting points, a pasted reference or path, and up to 100 public models loaded from a Hugging Face profile. Ornith 1.5 adds published checkpoint and parser choices. Catalog inclusion does not establish engine compatibility.
-- **Engines:** vLLM, SGLang, TGI, llama.cpp, Ollama, and MLX LM, plus an **Other server** command template. Choices remain in the page when engines change; selected settings that do not translate are called out.
-- **Configuration:** context, GPU count, memory per GPU, and weight format up front; scheduling, cache, offload, network, and extra arguments where relevant. The checkpoint fit note estimates weight memory only.
-- **Output:** readable CLI, one-line CLI, and JSON to copy or download; vLLM also has Docker output. The flag map and checks make generated choices easier to inspect.
+<details>
+<summary>What the prototype checks</summary>
 
-Favorites, a default model, and saved configurations live in browser local storage. Recent models last for the current page session. The optional Hugging Face profile picker requests public data without a token.
+Checks catch cases such as GPU oversubscription, settings omitted by an engine, and extra arguments that repeat generated flags. The checkpoint fit note estimates weight memory only.
 
-## 04 / Honest boundaries
+The page does not install or launch a server. It does not verify engine versions, architecture support, checkpoint contents, actual memory headroom, or arbitrary extra arguments. “No setting conflicts detected” means no implemented check found one.
 
-Modular produces a **starting specification**. It does not install an engine, download weights, or launch a server. Checks cover selected cases; they do not verify engine versions, architecture support, checkpoint contents, actual memory headroom, or arbitrary extra arguments. “No setting conflicts detected” means no implemented check found one. Confirm the output against the engine version and checkpoint you intend to run.
+[DESIGN.md](DESIGN.md) records the intended direction, including versioned engine profiles and broader compatibility rules that are not implemented yet.
 
-[DESIGN.md](DESIGN.md) records the longer term direction, including versioned engine profiles and broader compatibility rules. Those are not yet implemented.
+</details>
 
-## Repository
+<details>
+<summary>Local data and project files</summary>
+
+Favorites, a default model, and saved configurations live in browser local storage. Recent models last for the current page session. The optional Hugging Face profile picker reads public data without asking for a token and remembers the profile name locally. Google Fonts and the public profile lookup are the page’s external requests.
 
 | File | Purpose |
 | --- | --- |
@@ -45,5 +87,6 @@ Modular produces a **starting specification**. It does not install an engine, do
 | [next.html](next.html) | Current working copy |
 | [DESIGN.md](DESIGN.md) | Product direction and iteration history |
 | [catalog-draft.html](catalog-draft.html), [original.html](original.html) | Earlier explorations |
+| [assets/readme](assets/readme) | Artwork, actual interface captures, and editable README compositions |
 
-The page works locally without a backend. Google Fonts and the optional public Hugging Face lookup are its external requests.
+</details>

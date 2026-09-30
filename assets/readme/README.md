@@ -1,0 +1,15 @@
+# README artwork and compositions
+
+The visual direction is **balance under constraint**: the app’s square mark becomes a sculpture of interdependent frames, with warm light and open space. The hero uses the same Manrope type family and forest, cream, and pale green palette as the app. The interface spread provides a concrete view of the product beneath that idea.
+
+- `balance.webp` is the original sculpture artwork, generated with the built-in image generation tool and compressed to WebP. It is an illustration, not a photograph of a physical object.
+- `cover.html` is the editable typesetting and layout. It renders separate desktop and mobile compositions into `cover.png` and `cover-mobile.png`.
+- `engine.png`, `output.png`, and `output-mobile.png` are actual screenshots of the unchanged `index.html` interface, with its default Qwen3 8B / vLLM configuration.
+- `workspace.html` arranges the desktop screenshots into `workspace.png`. The README shows the native mobile output capture on narrow screens.
+- `render.py` reproduces the covers and interface images with Playwright. Run a local server from the repository root, then `python assets/readme/render.py --url http://127.0.0.1:8000`. The script requires Playwright, its Chromium browser, and network access to load Google Fonts. These are documentation tools, not application dependencies.
+
+## Artwork prompt
+
+Generated using the built-in image generation tool with the following prompt:
+
+> Use case: stylized-concept. Create an original editorial art photograph for the README of Modular, a beautifully calm tool for the strict and constantly changing work of AI model server configuration. Landscape 3:2 composition. A gallery-quality minimalist kinetic sculpture, an exquisitely balanced assembly of three LARGE hollow square frames and two slender rectangular planes made of translucent pale celadon glass, warm ivory ceramic, and one deep forest-green anodized aluminum piece. The frames have generous square apertures and crisp, carefully bevelled edges. They are balanced with extraordinary precision on narrow contacts, staggered at different heights, making one coherent, airy, architectural construction. This should feel physically plausible and quietly surprising, like an artist's studied still life. Warm almost-white seamless backdrop and floor, natural low afternoon light from upper left, long soft architectural shadows, subtle glass caustics, tactile material detail. The sculpture fills the RIGHT 55 percent, with generous mostly empty ivory space on the LEFT 45 percent for later typesetting; entire sculpture visible with breathing room. Restrained palette: ivory #f8f9f6, celadon #d8e9cb, pale lime #def5b6, deep forest #233327. Camera near frontal with slight elevated perspective, 70mm editorial photography, sophisticated spatial composition and asymmetry. No text, letters, numbers, logos, UI, cards, screen mockups, contour lines, plants, spheres, generic tech motifs, glowing effects, busy environment or watermark. A single memorable artwork, serene and sculptural.
