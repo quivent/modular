@@ -14,6 +14,7 @@
   <img alt="build: none" src="https://img.shields.io/badge/build-none-a9d6a0?style=flat-square&labelColor=233327">
   <img alt="engines: 6 + custom" src="https://img.shields.io/badge/engines-6_%2B_custom-8ec5e6?style=flat-square&labelColor=233327">
   <img alt="models: 15 curated" src="https://img.shields.io/badge/models-15_curated-f2c879?style=flat-square&labelColor=233327">
+  <img alt="license: MIT" src="https://img.shields.io/badge/license-MIT-b7c9a8?style=flat-square&labelColor=233327">
   <img alt="output: CLI, JSON, Docker" src="https://img.shields.io/badge/output-CLI_·_JSON_·_Docker-ee8b7d?style=flat-square&labelColor=233327">
 </p>
 
@@ -181,6 +182,7 @@ Favorites, a default model, and saved configurations live in browser local stora
 | [server.py](server.py) | Local server: the app plus a small JSON API over SQLite |
 | [db](db) | SQLite schema and roadmap seeding script |
 | [ROADMAP.md](ROADMAP.md) | Checklist to a finished release |
+| [LICENSE](LICENSE) | MIT license |
 | [archive](archive) | Earlier explorations (`original.html`, `catalog-draft.html`) |
 | [assets/readme](assets/readme) | Artwork, actual interface captures, generated ASCII-art SVGs (`ascii.py`), and editable README compositions |
 
@@ -198,7 +200,7 @@ Modular is a prototype, and this is the plain list of what stands between it and
 - [x] **2. Organize the single file.** `index.html` stays one self-contained file, formatted with one statement per line and split into 30 named regions marked `▸ name`. `python3 tools/map.py` prints the map of regions; `python3 tools/map.py checks` prints one region. Splitting into modules is deferred until tests or parallel work need it.
 - [x] **3. Reconcile the docs with the app.** Resolved by deleting `DESIGN.md`, which had drifted from the app. It remains in git history.
 - [ ] **4. Version the saved data.** Add a schema version to saved configurations and preferences in local storage, with migrations, so an update never strands someone's saved setups.
-- [ ] **5. License and contributing guide.** The repository has no license file yet. Add one, plus short instructions for running, testing, and adding a model or engine.
+- [ ] **5. Contributing guide.** The MIT license is in place (`LICENSE`). Still to write: short instructions for running, testing, and adding a model or engine.
 
 ### Trust
 

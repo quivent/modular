@@ -8,7 +8,7 @@ Modular today is a complete, working prototype. This checklist is the path from 
 - [x] **2. Organize the single file.** `index.html` stays one self-contained file, formatted with one statement per line and split into 30 named regions marked `▸ name`. `python3 tools/map.py` prints the map of regions; `python3 tools/map.py checks` prints one region. Splitting into modules is deferred until tests or parallel work need it.
 - [x] **3. Reconcile the docs with the app.** Resolved by deleting `DESIGN.md`, which had drifted from the app. It remains in git history.
 - [ ] **4. Version the saved data.** Add a schema version to saved configurations and preferences in local storage, with migrations, so an update never strands someone's saved setups.
-- [ ] **5. License and contributing guide.** The repository has no license file yet. Add one, plus short instructions for running, testing, and adding a model or engine.
+- [ ] **5. Contributing guide.** The MIT license is in place (`LICENSE`). Still to write: short instructions for running, testing, and adding a model or engine.
 
 ### Trust
 
