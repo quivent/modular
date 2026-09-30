@@ -63,6 +63,25 @@
       "action": "SGLang and TensorRT-LLM profiles; golden commands recorded from the hand-written code; command() now generated from profiles; hand-written branches deleted",
       "observation": "golden comparison 3x250 exact; mutations caught by golden and docs checks; page pixel-identical apart from an earlier deliberate description fix; README screenshots refreshed",
       "gates": "PASS (219)"
+    },
+    {
+      "n": 9,
+      "task": "#6 Versioned engine profiles",
+      "action": "the flag map is generated from the same rules as the command (labels and click targets are part of each rule); flagRows routed through profiles; stale 'Engines 6 + custom' heading found by looking at the page and made derived",
+      "observation": "750 golden maps and 40 Docker maps exact; two real mutations caught (after one invalid mutation was found and redone); screenshot read; 226 green",
+      "gates": "PASS"
     }
-  ]
+  ],
+  "exit": {
+    "reason": "MAX_ITERATIONS",
+    "iterations": 9,
+    "confidence": "high",
+    "completed_tasks": [
+      5,
+      9
+    ],
+    "in_progress": [
+      6
+    ]
+  }
 }

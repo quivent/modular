@@ -2226,7 +2226,7 @@
             <details class="advanced" id="hfProfile"><summary>Hugging Face profile</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="hfNamespace">Username or profile link</label></div><div class="paste-row"><input id="hfNamespace" class="control mono" spellcheck="false" autocomplete="off" placeholder="huggingface.co/your-name"><button type="button" class="secondary" id="pasteProfile">Paste</button><button type="button" class="primary" id="loadProfile">Load</button></div><p class="setting-help" id="hfStatus" role="status">Public models only.</p></div></div></details><div id="hfModelList" class="model-list" aria-label="Models from Hugging Face profile" hidden></div>
             <input id="source" type="hidden" value="huggingface"><input id="architecture" type="hidden" value="text"><input id="modelRef" type="hidden" value="Qwen/Qwen3-8B"><details class="advanced" id="customModel"><summary>Model reference</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="modelLink">Link, tag, or path</label></div><div class="paste-row"><input id="modelLink" class="control mono" spellcheck="false" autocomplete="off" placeholder="Hugging Face link, Ollama tag, or path"><button type="button" class="secondary" id="pasteModel">Paste</button></div></div><div class="field"><div class="field-head"><span class="label" id="sourceLabel">Source</span></div><div class="choice-row" id="sourceChoices" role="group" aria-labelledby="sourceLabel"></div></div><div class="toggle-row" id="customOrnithRow" hidden><div><strong>Ornith 1.5 serving profile</strong><small>Use its reasoning and tool parsers; check your variant’s chat template</small></div><button type="button" class="toggle" id="customOrnith" role="switch" aria-label="Use Ornith 1.5 serving profile" aria-checked="false"></button></div></div></details>
           </div></section>
-          <section class="group" aria-labelledby="runtime-title"><div class="group-head"><span class="number">02</span><div><h2 id="runtime-title">Engines <small class="count">6 + custom</small></h2><p>Choose a serving runtime.</p></div></div><div class="body-indent">
+          <section class="group" aria-labelledby="runtime-title"><div class="group-head"><span class="number">02</span><div><h2 id="runtime-title">Engines <small class="count" id="engineCount">7</small></h2><p>Choose a serving runtime.</p></div></div><div class="body-indent">
             <div class="server-list" id="serverList" role="group" aria-label="Inference server"></div>
             <p class="inline-note" id="serverNote"></p>
             <div class="field" id="quantField" style="margin-top:24px"><div class="field-head"><span class="label" id="quantLabel">Weight format / quantization</span></div><div class="choice-row" id="quantChoices" role="group" aria-labelledby="quantLabel"></div><input id="quant" type="hidden" value="Native / auto"></div>
@@ -3397,6 +3397,7 @@
     }
     /* ▸ js: render — engines */
     function renderServers() {
+      $('engineCount').textContent = servers.length; // the heading counts the real list
       $('serverList').innerHTML = servers
         .map(function (s) {
           return (
@@ -4450,93 +4451,10 @@
       function add(label, flag, target) {
         rows.push({ label: label, flag: flag, target: target });
       }
-      if (id === 'vllm') {
-        if (state.tab === 'docker') add('Container', 'vllm/vllm-openai:v0.30.0', 'outputModes');
-        add('Model', 'vllm serve ' + c.model.reference, 'modelFocus');
-        add('Host', '--host ' + r.host, 'hostChoices');
-        add('Port', '--port ' + r.port, 'hostChoices');
-        add('Context', '--max-model-len ' + r.context_tokens, 'contextField');
-        add('Devices', '--tensor-parallel-size ' + r.parallel_devices, 'parallelField');
-        if (r.kv_cache_gb)
-          add('KV cache', '--kv-cache-memory-bytes ' + r.kv_cache_gb * 1073741824, 'kvMemoryChoices');
-        else
-          add(
-            'GPU memory',
-            '--gpu-memory-utilization ' + (r.gpu_memory_percent / 100).toFixed(2),
-            'memoryField',
-          );
-        if (r.pipeline_stages > 1)
-          add('Pipeline', '--pipeline-parallel-size ' + r.pipeline_stages, 'pipelineChoices');
-        if (r.cpu_offload_gb)
-          add('CPU offload', '--cpu-offload-gb ' + r.cpu_offload_gb, 'offloadChoices');
-        if (r.scheduling.policy === 'priority')
-          add('Scheduling policy', '--scheduling-policy priority', 'priority');
-        if (r.request_logging) add('Request logging', '--enable-log-requests', 'requestLogs');
-        if (!c.model.build && qIsSpecial(r.quantization))
-          add('Weight format', '--quantization ' + r.quantization.toLowerCase(), 'quantChoices');
-        if (r.trust_model_code) add('Model code', '--trust-remote-code', 'trust');
-        if (r.prefix_cache) add('Prefix cache', '--enable-prefix-caching', 'prefix');
-        if (c.model.ornith_profile) {
-          add(
-            'Served name',
-            '--served-model-name ' + c.model.served_name,
-            c.model.ornith_size ? 'checkpointField' : 'modelFocus',
-          );
-          if (r.reasoning_parser) add('Reasoning', '--reasoning-parser qwen3', 'reasoning');
-          if (r.tool_call_parser)
-            add('Tool calls', '--enable-auto-tool-choice · --tool-call-parser qwen3_xml', 'tools');
-        }
-        if (r.scheduling.max_num_batched_tokens)
-          add(
-            'Tokens per batch',
-            '--max-num-batched-tokens ' + r.scheduling.max_num_batched_tokens,
-            'batchChoices',
-          );
-        if (r.scheduling.max_num_seqs)
-          add('Sequences per step', '--max-num-seqs ' + r.scheduling.max_num_seqs, 'seqChoices');
-        if (r.scheduling.chunked_prefill) add('Chunked prefill', '--enable-chunked-prefill', 'chunked');
-        if (r.scheduling.enforce_eager) add('Eager execution', '--enforce-eager', 'eager');
-        if (r.scheduling.dtype !== 'auto')
-          add('Compute dtype', '--dtype ' + r.scheduling.dtype, 'dtypeChoices');
-        if (r.scheduling.kv_cache_dtype !== 'auto')
-          add('KV cache dtype', '--kv-cache-dtype ' + r.scheduling.kv_cache_dtype, 'kvChoices');
-      } else if (id === 'sglang') {
-        add('Model', '--model-path ' + c.model.reference, 'modelFocus');
-        add('Host', '--host ' + r.host, 'hostChoices');
-        add('Port', '--port ' + r.port, 'hostChoices');
-        add('Context', '--context-length ' + r.context_tokens, 'contextField');
-        add('Devices', '--tp-size ' + r.parallel_devices, 'parallelField');
-        add(
-          'GPU memory',
-          '--mem-fraction-static ' + (r.gpu_memory_percent / 100).toFixed(2),
-          'memoryField',
-        );
-        if (!c.model.build && qIsSpecial(r.quantization))
-          add('Weight format', '--quantization ' + r.quantization.toLowerCase(), 'quantChoices');
-        if (r.trust_model_code) add('Model code', '--trust-remote-code', 'trust');
-        if (!r.prefix_cache) add('Prefix cache', '--disable-radix-cache', 'prefix');
-        if (c.model.ornith_profile) {
-          add(
-            'Served name',
-            '--served-model-name ' + c.model.served_name,
-            c.model.ornith_size ? 'checkpointField' : 'modelFocus',
-          );
-          if (r.reasoning_parser) add('Reasoning', '--reasoning-parser qwen3', 'reasoning');
-          if (r.tool_call_parser) add('Tool calls', '--tool-call-parser qwen3_coder', 'tools');
-        }
-      } else if (id === 'trtllm') {
-        add('Model', 'trtllm-serve ' + c.model.reference, 'modelFocus');
-        add('Host', '--host ' + r.host, 'hostChoices');
-        add('Port', '--port ' + r.port, 'hostChoices');
-        add('Devices', '--tp_size ' + r.parallel_devices, 'parallelField');
-        if (r.pipeline_stages > 1) add('Pipeline', '--pp_size ' + r.pipeline_stages, 'pipelineChoices');
-        add('Context', '--max_seq_len ' + r.context_tokens, 'contextField');
-        add(
-          'GPU memory',
-          '--free_gpu_memory_fraction ' + (r.gpu_memory_percent / 100).toFixed(2),
-          'memoryField',
-        );
-        if (r.trust_model_code) add('Model code', '--trust_remote_code', 'trust');
+      if (ENGINE_PROFILES[id]) {
+        rows = profileRows(ENGINE_PROFILES[id], c);
+        if (id === 'vllm' && state.tab === 'docker')
+          rows.unshift({ label: 'Container', flag: 'vllm/vllm-openai:v0.30.0', target: 'outputModes' });
       } else if (id === 'tgi') {
         add('Model', '--model-id ' + c.model.reference, 'modelFocus');
         add('Host', '--hostname ' + r.host, 'hostChoices');
@@ -4905,30 +4823,31 @@
         engine: 'vllm',
         documented: '2026-09-30',
         head: 'vllm serve {model}',
+        modelRow: { label: 'Model', target: 'modelFocus' },
         rules: [
-          { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0' },
-          { flag: '--port', value: 'runtime.port' },
-          { flag: '--max-model-len', value: 'runtime.context_tokens' },
-          { flag: '--tensor-parallel-size', value: 'runtime.parallel_devices' },
-          { flag: '--kv-cache-memory-bytes', value: 'runtime.kv_cache_gb', format: 'bytes', when: { truthy: 'runtime.kv_cache_gb' } },
-          { flag: '--gpu-memory-utilization', value: 'runtime.gpu_memory_percent', format: 'fraction', when: { falsy: 'runtime.kv_cache_gb' } },
-          { flag: '--pipeline-parallel-size', value: 'runtime.pipeline_stages', when: { gt: ['runtime.pipeline_stages', 1] } },
-          { flag: '--cpu-offload-gb', value: 'runtime.cpu_offload_gb', when: { truthy: 'runtime.cpu_offload_gb' } },
-          { flag: '--scheduling-policy', literal: 'priority', when: { eq: ['runtime.scheduling.policy', 'priority'] } },
-          { flag: '--enable-log-requests', when: { truthy: 'runtime.request_logging' } },
-          { flag: '--quantization', value: 'runtime.quantization', format: 'lower_sh', when: { and: [{ falsy: 'model.build' }, { neq: ['runtime.quantization', 'Native / auto'] }] } },
-          { flag: '--trust-remote-code', when: { truthy: 'runtime.trust_model_code' } },
-          { flag: '--enable-prefix-caching', when: { truthy: 'runtime.prefix_cache' } },
-          { flag: '--served-model-name', value: 'model.served_name', format: 'sh', when: { truthy: 'model.ornith_profile' } },
-          { flag: '--reasoning-parser', literal: 'qwen3', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.reasoning_parser' }] } },
-          { flag: '--enable-auto-tool-choice', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] } },
-          { flag: '--tool-call-parser', literal: 'qwen3_xml', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] } },
-          { flag: '--max-num-batched-tokens', value: 'runtime.scheduling.max_num_batched_tokens', when: { truthy: 'runtime.scheduling.max_num_batched_tokens' } },
-          { flag: '--max-num-seqs', value: 'runtime.scheduling.max_num_seqs', when: { truthy: 'runtime.scheduling.max_num_seqs' } },
-          { flag: '--enable-chunked-prefill', when: { truthy: 'runtime.scheduling.chunked_prefill' } },
-          { flag: '--enforce-eager', when: { truthy: 'runtime.scheduling.enforce_eager' } },
-          { flag: '--dtype', value: 'runtime.scheduling.dtype', when: { neq: ['runtime.scheduling.dtype', 'auto'] } },
-          { flag: '--kv-cache-dtype', value: 'runtime.scheduling.kv_cache_dtype', when: { neq: ['runtime.scheduling.kv_cache_dtype', 'auto'] } },
+          { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0', label: 'Host', target: 'hostChoices' },
+          { flag: '--port', value: 'runtime.port', label: 'Port', target: 'hostChoices' },
+          { flag: '--max-model-len', value: 'runtime.context_tokens', label: 'Context', target: 'contextField' },
+          { flag: '--tensor-parallel-size', value: 'runtime.parallel_devices', label: 'Devices', target: 'parallelField' },
+          { flag: '--kv-cache-memory-bytes', value: 'runtime.kv_cache_gb', format: 'bytes', when: { truthy: 'runtime.kv_cache_gb' }, label: 'KV cache', target: 'kvMemoryChoices' },
+          { flag: '--gpu-memory-utilization', value: 'runtime.gpu_memory_percent', format: 'fraction', when: { falsy: 'runtime.kv_cache_gb' }, label: 'GPU memory', target: 'memoryField' },
+          { flag: '--pipeline-parallel-size', value: 'runtime.pipeline_stages', when: { gt: ['runtime.pipeline_stages', 1] }, label: 'Pipeline', target: 'pipelineChoices' },
+          { flag: '--cpu-offload-gb', value: 'runtime.cpu_offload_gb', when: { truthy: 'runtime.cpu_offload_gb' }, label: 'CPU offload', target: 'offloadChoices' },
+          { flag: '--scheduling-policy', literal: 'priority', when: { eq: ['runtime.scheduling.policy', 'priority'] }, label: 'Scheduling policy', target: 'priority' },
+          { flag: '--enable-log-requests', when: { truthy: 'runtime.request_logging' }, label: 'Request logging', target: 'requestLogs' },
+          { flag: '--quantization', value: 'runtime.quantization', format: 'lower_sh', when: { and: [{ falsy: 'model.build' }, { neq: ['runtime.quantization', 'Native / auto'] }] }, label: 'Weight format', target: 'quantChoices' },
+          { flag: '--trust-remote-code', when: { truthy: 'runtime.trust_model_code' }, label: 'Model code', target: 'trust' },
+          { flag: '--enable-prefix-caching', when: { truthy: 'runtime.prefix_cache' }, label: 'Prefix cache', target: 'prefix' },
+          { flag: '--served-model-name', value: 'model.served_name', format: 'sh', when: { truthy: 'model.ornith_profile' }, label: 'Served name', target: 'modelFocus', targetIf: { when: { truthy: 'model.ornith_size' }, target: 'checkpointField' } },
+          { flag: '--reasoning-parser', literal: 'qwen3', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.reasoning_parser' }] }, label: 'Reasoning', target: 'reasoning' },
+          { flag: '--enable-auto-tool-choice', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] }, label: 'Tool calls', target: 'tools', group: 'tools' },
+          { flag: '--tool-call-parser', literal: 'qwen3_xml', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] }, label: 'Tool calls', target: 'tools', group: 'tools' },
+          { flag: '--max-num-batched-tokens', value: 'runtime.scheduling.max_num_batched_tokens', when: { truthy: 'runtime.scheduling.max_num_batched_tokens' }, label: 'Tokens per batch', target: 'batchChoices' },
+          { flag: '--max-num-seqs', value: 'runtime.scheduling.max_num_seqs', when: { truthy: 'runtime.scheduling.max_num_seqs' }, label: 'Sequences per step', target: 'seqChoices' },
+          { flag: '--enable-chunked-prefill', when: { truthy: 'runtime.scheduling.chunked_prefill' }, label: 'Chunked prefill', target: 'chunked' },
+          { flag: '--enforce-eager', when: { truthy: 'runtime.scheduling.enforce_eager' }, label: 'Eager execution', target: 'eager' },
+          { flag: '--dtype', value: 'runtime.scheduling.dtype', when: { neq: ['runtime.scheduling.dtype', 'auto'] }, label: 'Compute dtype', target: 'dtypeChoices' },
+          { flag: '--kv-cache-dtype', value: 'runtime.scheduling.kv_cache_dtype', when: { neq: ['runtime.scheduling.kv_cache_dtype', 'auto'] }, label: 'KV cache dtype', target: 'kvChoices' },
         ],
       },
       sglang: {
@@ -4936,32 +4855,33 @@
         documented: '2026-09-30',
         head: 'python -m sglang.launch_server',
         rules: [
-          { flag: '--model-path', value: 'model.reference', format: 'sh', fallback: 'MODEL_REFERENCE' },
-          { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0' },
-          { flag: '--port', value: 'runtime.port' },
-          { flag: '--context-length', value: 'runtime.context_tokens' },
-          { flag: '--tp-size', value: 'runtime.parallel_devices' },
-          { flag: '--mem-fraction-static', value: 'runtime.gpu_memory_percent', format: 'fraction' },
-          { flag: '--quantization', value: 'runtime.quantization', format: 'lower_sh', when: { and: [{ falsy: 'model.build' }, { neq: ['runtime.quantization', 'Native / auto'] }] } },
-          { flag: '--trust-remote-code', when: { truthy: 'runtime.trust_model_code' } },
-          { flag: '--disable-radix-cache', when: { falsy: 'runtime.prefix_cache' } },
-          { flag: '--served-model-name', value: 'model.served_name', format: 'sh', when: { truthy: 'model.ornith_profile' } },
-          { flag: '--reasoning-parser', literal: 'qwen3', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.reasoning_parser' }] } },
-          { flag: '--tool-call-parser', literal: 'qwen3_coder', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] } },
+          { flag: '--model-path', value: 'model.reference', format: 'sh', fallback: 'MODEL_REFERENCE', label: 'Model', target: 'modelFocus' },
+          { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0', label: 'Host', target: 'hostChoices' },
+          { flag: '--port', value: 'runtime.port', label: 'Port', target: 'hostChoices' },
+          { flag: '--context-length', value: 'runtime.context_tokens', label: 'Context', target: 'contextField' },
+          { flag: '--tp-size', value: 'runtime.parallel_devices', label: 'Devices', target: 'parallelField' },
+          { flag: '--mem-fraction-static', value: 'runtime.gpu_memory_percent', format: 'fraction', label: 'GPU memory', target: 'memoryField' },
+          { flag: '--quantization', value: 'runtime.quantization', format: 'lower_sh', when: { and: [{ falsy: 'model.build' }, { neq: ['runtime.quantization', 'Native / auto'] }] }, label: 'Weight format', target: 'quantChoices' },
+          { flag: '--trust-remote-code', when: { truthy: 'runtime.trust_model_code' }, label: 'Model code', target: 'trust' },
+          { flag: '--disable-radix-cache', when: { falsy: 'runtime.prefix_cache' }, label: 'Prefix cache', target: 'prefix' },
+          { flag: '--served-model-name', value: 'model.served_name', format: 'sh', when: { truthy: 'model.ornith_profile' }, label: 'Served name', target: 'modelFocus', targetIf: { when: { truthy: 'model.ornith_size' }, target: 'checkpointField' } },
+          { flag: '--reasoning-parser', literal: 'qwen3', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.reasoning_parser' }] }, label: 'Reasoning', target: 'reasoning' },
+          { flag: '--tool-call-parser', literal: 'qwen3_coder', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] }, label: 'Tool calls', target: 'tools' },
         ],
       },
       trtllm: {
         engine: 'trtllm',
         documented: '2026-09-30',
         head: 'trtllm-serve {model}',
+        modelRow: { label: 'Model', target: 'modelFocus' },
         rules: [
-          { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0' },
-          { flag: '--port', value: 'runtime.port' },
-          { flag: '--tp_size', value: 'runtime.parallel_devices' },
-          { flag: '--pp_size', value: 'runtime.pipeline_stages', when: { gt: ['runtime.pipeline_stages', 1] } },
-          { flag: '--max_seq_len', value: 'runtime.context_tokens' },
-          { flag: '--free_gpu_memory_fraction', value: 'runtime.gpu_memory_percent', format: 'fraction' },
-          { flag: '--trust_remote_code', when: { truthy: 'runtime.trust_model_code' } },
+          { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0', label: 'Host', target: 'hostChoices' },
+          { flag: '--port', value: 'runtime.port', label: 'Port', target: 'hostChoices' },
+          { flag: '--tp_size', value: 'runtime.parallel_devices', label: 'Devices', target: 'parallelField' },
+          { flag: '--pp_size', value: 'runtime.pipeline_stages', when: { gt: ['runtime.pipeline_stages', 1] }, label: 'Pipeline', target: 'pipelineChoices' },
+          { flag: '--max_seq_len', value: 'runtime.context_tokens', label: 'Context', target: 'contextField' },
+          { flag: '--free_gpu_memory_fraction', value: 'runtime.gpu_memory_percent', format: 'fraction', label: 'GPU memory', target: 'memoryField' },
+          { flag: '--trust_remote_code', when: { truthy: 'runtime.trust_model_code' }, label: 'Model code', target: 'trust' },
         ],
       },
     };
@@ -5022,6 +4942,33 @@
           return (i ? '  ' : '') + x + (i < parts.length - 1 ? ' \\' : '');
         })
         .join('\n');
+    }
+    // The "where each choice goes" rows: the same rules, shown with the label and the control that sets each flag.
+    var PROFILE_DISPLAY = { sh: 'raw', lower_sh: 'lower' };
+    PROFILE_FORMATS.lower = function (v) {
+      return String(v).toLowerCase();
+    };
+    function profileRows(profile, config) {
+      var rows = [],
+        byGroup = {};
+      if (profile.modelRow)
+        rows.push({ label: profile.modelRow.label, flag: profile.head.replace('{model}', config.model.reference), target: profile.modelRow.target });
+      profile.rules.forEach(function (rule) {
+        if (!profileHolds(rule.when, config)) return;
+        var hasValue = rule.value || rule.literal !== undefined;
+        var value = rule.literal !== undefined ? rule.literal : rule.value ? profileGet(config, rule.value) : undefined;
+        var format = PROFILE_DISPLAY[rule.format] || rule.format || 'raw';
+        var text = rule.flag + (hasValue ? ' ' + PROFILE_FORMATS[format](value) : '');
+        var target = rule.targetIf && profileHolds(rule.targetIf.when, config) ? rule.targetIf.target : rule.target;
+        if (rule.group && byGroup[rule.group]) {
+          byGroup[rule.group].flag += ' · ' + text;
+          return;
+        }
+        var row = { label: rule.label, flag: text, target: target };
+        if (rule.group) byGroup[rule.group] = row;
+        rows.push(row);
+      });
+      return rows;
     }
     /* ▸ js: flag map, checks, fit estimate */
     function renderFlagMap(c) {
