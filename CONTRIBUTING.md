@@ -5,8 +5,8 @@ build step and no dependencies to install.
 
 ## What you need
 
-- **Python 3.9 or newer** (standard library only)
-- **Node 22 or newer** (for the tests; it has the WebSocket client the tests use)
+- **Python 3.9 or newer**, standard library only (tested on 3.9 and 3.14)
+- **Node 22 or newer** for the tests, which use its built-in WebSocket (tested on 26)
 - **Chrome or Chromium** (for the browser tests; set `CHROME=/path/to/chrome` if it is not found)
 - **sqlite3** (only for the database migration test)
 
@@ -73,5 +73,6 @@ only what was asked, use the words practitioners use, take facts from sources an
 never show a command Modular cannot stand behind.
 
 - Commits stay local until someone reviews them. Nothing here deploys itself.
-- The tracker (`python3 server.py`, the Tracker button) is the task list; `@fix_plan.md` is generated
-  from it with `python3 tools/fix_plan.py`.
+- The tracker (`python3 server.py`, the Tracker button) is the task list. Its database is local to your
+  machine and starts from the roadmap, so `@fix_plan.md` in the repository is a snapshot of the
+  maintainer's tracker. `python3 tools/fix_plan.py` regenerates it from yours.
