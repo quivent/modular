@@ -115,11 +115,35 @@
     @media(max-width:520px){#modelList .family-row{display:block}#modelList .family-label{display:flex}#modelList .family-models{grid-template-columns:1fr 1fr}}
     @media(max-width:390px){#modelList .family-models{grid-template-columns:1fr}}
     @media(max-width:480px){.model-list{grid-template-columns:1fr 1fr}.model-option{font-size:10px}}
+
+    /* Tracker */
+    .top-right .secondary{min-width:0;height:34px;min-height:34px;padding:0 13px;border-radius:50px}
+    .top-right .count{margin-left:7px;vertical-align:0}
+    #trackerDialog{width:min(720px,calc(100vw - 30px))}
+    .tracker-progress{height:4px;border-radius:4px;background:var(--line2);overflow:hidden;margin-bottom:18px}
+    .tracker-progress span{display:block;height:100%;width:0;background:#88b75c;transition:width .25s}
+    #trackerFilters{margin-bottom:6px}
+    .tracker-group{margin-top:22px}
+    .tracker-group h3{font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#658b49;margin:0 0 4px}
+    .task{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:12px;align-items:start;padding:13px 0;border-top:1px solid var(--line2)}
+    .task-check{width:20px;height:20px;margin-top:1px;border:1.5px solid #c3d4bb;border-radius:50%;background:#fff;padding:0;position:relative}
+    .task-check:hover{border-color:#88b75c}
+    .task[data-status=doing] .task-check{border-color:#88b75c;background:linear-gradient(90deg,#88b75c 50%,#fff 50%)}
+    .task[data-status=blocked] .task-check{border-color:#d9a05b;background:#fbeed9}
+    .task[data-status=done] .task-check{border-color:#88b75c;background:#88b75c}
+    .task[data-status=done] .task-check:after{content:'';position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(40deg)}
+    .task strong{display:block;font-size:12px;line-height:1.4}
+    .task[data-status=done] strong{color:var(--soft);text-decoration:line-through}
+    .task small{display:block;color:var(--soft);font-size:10px;line-height:1.55;margin-top:3px}
+    .task select{width:auto;min-height:32px;font-size:10px;font-weight:700;padding:4px 8px}
+    .tracker-add{display:flex;gap:8px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+    .tracker-add .control{min-width:0}.tracker-add select{width:130px;flex:none}.tracker-add .secondary{min-width:64px}
+    @media(max-width:480px){.tracker-add{flex-wrap:wrap}.tracker-add select{width:auto;flex:1}.task{grid-template-columns:24px minmax(0,1fr)}.task select{grid-column:2}}
   </style>
 </head>
 <body>
   <div class="page">
-    <header class="top"><a class="brand" href="#top" aria-label="Modular home"><span class="brand-mark"></span><span>modular<span style="color:#86ad5e">.</span></span></a></header>
+    <header class="top"><a class="brand" href="#top" aria-label="Modular home"><span class="brand-mark"></span><span>modular<span style="color:#86ad5e">.</span></span></a><div class="top-right"><button class="secondary" type="button" id="trackerOpen" aria-haspopup="dialog">Tracker<span class="count" id="trackerCount"></span></button></div></header>
     <main id="top">
       <section class="intro"><h1>Build a server command.</h1></section>
       <div class="workspace" id="builder">
@@ -157,6 +181,15 @@
     </main>
     <footer class="foot"><span>Modular builds a starting specification. Check model, weight, and server compatibility before deployment.</span><span>Server docs: <a href="https://docs.vllm.ai/en/latest/cli/serve/" target="_blank" rel="noopener">vLLM</a> · <a href="https://docs.sglang.ai/" target="_blank" rel="noopener">SGLang</a> · <a href="https://huggingface.co/docs/text-generation-inference/basic_tutorials/launcher" target="_blank" rel="noopener">TGI</a> · <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md" target="_blank" rel="noopener">llama.cpp</a> · <a href="https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md" target="_blank" rel="noopener">MLX</a></span></footer>
   </div>
+  <dialog id="trackerDialog" aria-labelledby="trackerTitle">
+    <div class="dialog-head"><div><h2 id="trackerTitle">Tracker</h2><p id="trackerSummary">Road to a finished release.</p></div><button class="close" type="button" id="trackerClose" aria-label="Close tracker">×</button></div>
+    <div class="dialog-body">
+      <div class="tracker-progress" aria-hidden="true"><span id="trackerBar"></span></div>
+      <div class="choice-row" id="trackerFilters" role="group" aria-label="Filter tasks"></div>
+      <div id="trackerList" aria-live="polite"></div>
+      <form class="tracker-add" id="trackerAdd"><input class="control" id="trackerNew" placeholder="Add a task" maxlength="200" aria-label="New task"><select class="control" id="trackerGroup" aria-label="Group"></select><button class="secondary" type="submit">Add</button></form>
+    </div>
+  </dialog>
   <script>
     'use strict';
     var $ = function(id){ return document.getElementById(id); };
@@ -573,6 +606,69 @@
     $('modelRef').value=models[state.model].ref;
     renderSource();renderArch();renderModelViews();renderModelList();renderServers();renderQuant();renderCheckpoint();renderContext();renderHost();renderServerFields();renderTuning();renderSavedConfigs();$('trust').setAttribute('aria-checked','true');$('prefix').setAttribute('aria-checked','true');renderOutput();
     try{var savedProfile=localStorage.getItem('modular.hfNamespace');if(savedProfile){$('hfNamespace').value=savedProfile;loadProfile();}}catch(e){}
+
+    /* Tracker: talks to server.py; degrades to a hint on a plain static server. */
+    (function(){
+      var dlg=$('trackerDialog'),list=$('trackerList'),filters=$('trackerFilters'),data=null,filter='all';
+      var LABEL={todo:'To do',doing:'Doing',blocked:'Blocked',done:'Done'};
+      function api(method,path,body){
+        return fetch('/api/tasks'+path,{method:method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined})
+          .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});
+      }
+      function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+      function counts(){var d=data.tasks.filter(function(t){return t.status==='done';}).length;return{done:d,total:data.tasks.length};}
+      function renderCount(){var c=data?counts():null;$('trackerCount').textContent=c?c.done+'/'+c.total:'';}
+      function render(){
+        var c=counts();
+        $('trackerSummary').textContent='Road to a finished release · '+c.done+' of '+c.total+' done';
+        $('trackerBar').style.width=(c.total?c.done/c.total*100:0)+'%';
+        filters.textContent='';
+        ['all','todo','doing','blocked','done'].forEach(function(f){
+          var n=f==='all'?c.total:data.tasks.filter(function(t){return t.status===f;}).length;
+          var b=el('button','choice',(f==='all'?'All':LABEL[f])+' '+n);b.type='button';b.setAttribute('aria-pressed',String(filter===f));
+          b.onclick=function(){filter=f;render();};filters.appendChild(b);
+        });
+        var sel=$('trackerGroup');if(!sel.options.length)data.groups.forEach(function(g){var o=el('option',null,g.title);o.value=g.slug;sel.appendChild(o);});
+        list.textContent='';
+        data.groups.forEach(function(g){
+          var rows=data.tasks.filter(function(t){return t.group===g.slug&&(filter==='all'||t.status===filter);});
+          if(!rows.length)return;
+          var box=el('section','tracker-group');box.appendChild(el('h3',null,g.title));
+          rows.forEach(function(t){
+            var row=el('div','task');row.dataset.status=t.status;
+            var chk=el('button','task-check');chk.type='button';chk.setAttribute('aria-label',(t.status==='done'?'Reopen: ':'Mark done: ')+t.title);
+            chk.onclick=function(){update(t,t.status==='done'?'todo':'done');};
+            var body=el('div');body.appendChild(el('strong',null,t.title));if(t.detail)body.appendChild(el('small',null,t.detail));
+            var s=el('select','control');s.setAttribute('aria-label','Status: '+t.title);
+            Object.keys(LABEL).forEach(function(k){var o=el('option',null,LABEL[k]);o.value=k;if(k===t.status)o.selected=true;s.appendChild(o);});
+            s.onchange=function(){update(t,s.value);};
+            row.appendChild(chk);row.appendChild(body);row.appendChild(s);box.appendChild(row);
+          });
+          list.appendChild(box);
+        });
+        if(!list.children.length)list.appendChild(el('p','empty','Nothing here.'));
+        renderCount();
+      }
+      function update(t,status){
+        api('PATCH','/'+t.id,{status:status}).then(function(u){Object.assign(t,u);render();}).catch(offline);
+      }
+      function offline(){
+        data=null;filters.textContent='';list.textContent='';$('trackerBar').style.width='0';
+        $('trackerSummary').textContent='Tracker is offline.';
+        var p=el('p','empty');p.append('The tracker keeps its tasks in a local database. Start it with ');
+        p.appendChild(el('code',null,'python3 server.py'));p.append(' and open the page from that address.');
+        list.appendChild(p);
+      }
+      function load(){return api('GET','').then(function(d){data=d;render();}).catch(offline);}
+      $('trackerOpen').onclick=function(){if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');load();};
+      $('trackerClose').onclick=function(){dlg.close();};
+      dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close();});
+      $('trackerAdd').onsubmit=function(e){
+        e.preventDefault();var title=$('trackerNew').value.trim();if(!title||!data)return;
+        api('POST','',{title:title,group:$('trackerGroup').value}).then(function(t){data.tasks.push(t);$('trackerNew').value='';filter='all';render();}).catch(offline);
+      };
+      load();
+    })();
   </script>
 </body>
 </html>

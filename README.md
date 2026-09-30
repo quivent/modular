@@ -115,6 +115,12 @@ Modular keeps **what you want** separate from **how each engine spells it**. You
 
 <br>
 
+## Tracker
+
+The **Tracker** button in the top bar opens the project checklist: progress, filters by status, and a field to add tasks. Tasks live in `db/modular.db`, created from [`db/schema.sql`](db/schema.sql) and seeded from [ROADMAP.md](ROADMAP.md) the first time the server starts. The same database has tables ready for saved configurations, favorites, and preferences.
+
+<br>
+
 ## Engines
 
 | | Engine | Command shape | Notable controls in the prototype |
@@ -150,10 +156,10 @@ Catalog inclusion does not establish engine compatibility. Model, engine, hardwa
 From this directory:
 
 ```sh
-python3 -m http.server 8000
+python3 server.py
 ```
 
-Open [localhost:8000](http://localhost:8000). No build step or account is required.
+Open [127.0.0.1:8000](http://127.0.0.1:8000). No build step or account is required. The server listens on your machine only, serves the app, and keeps the [tracker](#tracker) in a local SQLite database. To use just the configurator, any static server works: `python3 -m http.server 8000`.
 
 1. Start with **Qwen3 8B** and **vLLM**.
 2. Change a choice: context, GPU count, or engine.
@@ -170,6 +176,8 @@ Favorites, a default model, and saved configurations live in browser local stora
 | File | Purpose |
 | --- | --- |
 | [index.html](index.html) | Live, self-contained prototype |
+| [server.py](server.py) | Local server: the app plus a small JSON API over SQLite |
+| [db](db) | SQLite schema and roadmap seeding script |
 | [DESIGN.md](DESIGN.md) | Product direction and iteration history |
 | [ROADMAP.md](ROADMAP.md) | Checklist to a finished release |
 | [archive](archive) | Earlier explorations (`original.html`, `catalog-draft.html`) |
