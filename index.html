@@ -2150,7 +2150,7 @@
               <div class="toggle-row"><div><strong>Eager execution</strong><small>Useful when debugging; may reduce throughput</small></div><button type="button" class="toggle" id="eager" role="switch" aria-label="Eager execution" aria-checked="false"></button></div>
               <details class="advanced" id="memoryDetails"><summary>Memory and precision <span>Cache, offload, dtype</span></summary><div class="advanced-body"><div class="field"><div class="field-head"><span class="label" id="offloadLabel">CPU weight offload per GPU</span></div><div class="choice-row" id="offloadChoices" role="group" aria-labelledby="offloadLabel"></div><p class="setting-help">Moves some weights through system RAM each step; speed depends on the CPU–GPU link.</p></div><div class="field"><div class="field-head"><span class="label" id="kvMemoryLabel">KV cache allocation</span></div><div class="choice-row" id="kvMemoryChoices" role="group" aria-labelledby="kvMemoryLabel"></div><p class="setting-help">A fixed cache allocation replaces the GPU memory target below.</p></div><div class="field"><div class="field-head"><span class="label" id="dtypeLabel">Compute dtype</span></div><div class="choice-row" id="dtypeChoices" role="group" aria-labelledby="dtypeLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="kvLabel">KV cache dtype</span></div><div class="choice-row" id="kvChoices" role="group" aria-labelledby="kvLabel"></div><p class="setting-help">FP8 cache needs hardware and checkpoint support; verify quality for your workload.</p></div></div></details><details class="advanced" id="requestDetails"><summary>Request behavior <span>Priority and logs</span></summary><div class="advanced-body"><div class="toggle-row"><div><strong>Priority scheduling</strong><small>Serve requests by priority instead of arrival order</small></div><button type="button" class="toggle" id="priority" role="switch" aria-label="Priority scheduling" aria-checked="false"></button></div><div class="toggle-row"><div><strong>Request logging</strong><small>Log request information at the server's log level</small></div><button type="button" class="toggle" id="requestLogs" role="switch" aria-label="Request logging" aria-checked="false"></button></div></div></details>
             </div><p class="capability-note" id="capabilityNote" hidden></p>
-            <details class="advanced" id="advanced"><summary>Advanced settings <span>Network, memory, and flags</span></summary><div class="advanced-body"><div class="field"><div class="field-head"><span class="label" id="hostLabel">Host</span></div><div class="choice-row" id="hostChoices" role="group" aria-labelledby="hostLabel"></div><input id="host" type="hidden" value="0.0.0.0"></div><div class="field" id="customHostField" hidden><div class="field-head"><label for="customHost">Custom host</label></div><input id="customHost" class="control mono" value="0.0.0.0" spellcheck="false"></div><div class="field"><div class="field-head"><span class="label" id="portLabel">Port</span></div><div id="portChoices" class="choice-row" role="group" aria-labelledby="portLabel"></div><input id="port" type="hidden" value="8000"></div><div class="field" id="customPortField" hidden><div class="field-head"><label for="portSlider">Custom port</label><output id="portDisplay">8000</output></div><input id="portSlider" class="range" type="range" min="1024" max="65535" step="1" value="8000"><div class="range-ends"><span>1024</span><span>65535</span></div></div><div class="field" id="memoryField"><div class="field-head"><label for="memorySlider">GPU memory target</label><output id="memoryDisplay">90%</output></div><input id="memorySlider" class="range" type="range" min="50" max="99" step="1" value="90"><div class="range-ends"><span>50%</span><span>99%</span></div><input id="memory" type="hidden" value="90"></div><input id="revision" type="hidden" value=""><div class="field"><div class="field-head"><label for="extraArgs">Extra server arguments</label><span class="hint">Optional</span></div><input id="extraArgs" class="control mono" spellcheck="false" placeholder="--your-server-flag value"></div><div class="toggle-list"><div class="toggle-row"><div><strong>Trust model code</strong><small>Allow model repository code where the server supports it</small></div><button type="button" class="toggle" id="trust" role="switch" aria-label="Trust model code" aria-checked="false"></button></div><div class="toggle-row"><div><strong>Prefix cache</strong><small>Reuse computation for shared prompt prefixes</small></div><button type="button" class="toggle" id="prefix" role="switch" aria-label="Prefix cache" aria-checked="false"></button></div></div></div></details>
+            <details class="advanced" id="advanced"><summary>Advanced settings <span>Network, memory, and flags</span></summary><div class="advanced-body"><div class="field"><div class="field-head"><span class="label" id="hostLabel">Host</span></div><div class="choice-row" id="hostChoices" role="group" aria-labelledby="hostLabel"></div><input id="host" type="hidden" value="127.0.0.1"></div><div class="field" id="customHostField" hidden><div class="field-head"><label for="customHost">Custom host</label></div><input id="customHost" class="control mono" value="0.0.0.0" spellcheck="false"></div><div class="field"><div class="field-head"><span class="label" id="portLabel">Port</span></div><div id="portChoices" class="choice-row" role="group" aria-labelledby="portLabel"></div><input id="port" type="hidden" value="8000"></div><div class="field" id="customPortField" hidden><div class="field-head"><label for="portSlider">Custom port</label><output id="portDisplay">8000</output></div><input id="portSlider" class="range" type="range" min="1024" max="65535" step="1" value="8000"><div class="range-ends"><span>1024</span><span>65535</span></div></div><div class="field" id="memoryField"><div class="field-head"><label for="memorySlider">GPU memory target</label><output id="memoryDisplay">90%</output></div><input id="memorySlider" class="range" type="range" min="50" max="99" step="1" value="90"><div class="range-ends"><span>50%</span><span>99%</span></div><input id="memory" type="hidden" value="90"></div><input id="revision" type="hidden" value=""><div class="field"><div class="field-head"><label for="extraArgs">Extra server arguments</label><span class="hint">Optional</span></div><input id="extraArgs" class="control mono" spellcheck="false" placeholder="--your-server-flag value"></div><div class="toggle-list"><div class="toggle-row"><div><strong>Trust model code</strong><small>Allow model repository code where the server supports it</small></div><button type="button" class="toggle" id="trust" role="switch" aria-label="Trust model code" aria-checked="false"></button></div><div class="toggle-row"><div><strong>Prefix cache</strong><small>Reuse computation for shared prompt prefixes</small></div><button type="button" class="toggle" id="prefix" role="switch" aria-label="Prefix cache" aria-checked="false"></button></div></div></div></details>
           </div></section>
         </div>
         <aside class="preview" aria-label="Configuration preview"><div class="preview-top"><div><h2>Your configuration</h2><p>Updates as you make decisions.</p></div><button class="primary copy-main" type="button" id="copy">Copy command</button></div><div class="output-mode" id="outputModes" role="group" aria-label="Output format"></div><div class="preview-content"><pre class="code" id="output" aria-live="polite"></pre><p class="setting-help" id="outputHint" hidden></p><div class="preview-actions"><button class="secondary" type="button" id="download">Export file</button></div><details class="advanced saved-configs" id="savedConfigs"><summary>Saved configurations <span id="savedConfigCount">0</span></summary><div class="advanced-body"><button class="secondary" type="button" id="saveConfig">Save current</button><div id="savedConfigList"></div></div></details><details class="flag-details" id="flagDetails"><summary>Where each choice goes <span id="flagCount"></span></summary><div class="flag-map" id="flagMap"></div></details></div><div class="preview-bottom"><p class="mini-heading">At a glance</p><div class="summary" id="summary"></div><p class="mini-heading">Checks</p><ul class="checks" id="checks"></ul><p class="status" id="status"></p></div></aside>
@@ -2389,14 +2389,14 @@
       tab: 'readable',
       contextMode: 'preset',
       portMode: 'default',
-      hostMode: 'all',
+      hostMode: 'local',
       batch: 'auto',
       seq: 'auto',
       dtype: 'auto',
       kv: 'auto',
       untranslatedQuant: null,
       prefixStates: { vllm: true, sglang: true },
-      trustStates: { vllm: true },
+      trustStates: { vllm: false },
     };
     var sourceOptions = [
       ['huggingface', 'Hugging Face'],
@@ -2959,10 +2959,11 @@
       $('revision').value = '';
       $('modelLink').value = '';
       $('customModel').open = false;
-      if (model.ornith) {
-        $('trust').setAttribute('aria-checked', 'true');
-        $('prefix').setAttribute('aria-checked', 'true');
-      }
+      // --trust-remote-code runs Python from the model's repository on your server, so it starts off
+      // and is turned on only for models known to need it.
+      $('trust').setAttribute('aria-checked', String(!!model.ornith));
+      state.trustStates[state.server] = !!model.ornith;
+      if (model.ornith) $('prefix').setAttribute('aria-checked', 'true');
       state.recent = state.recent || [];
       state.recent = [index]
         .concat(
@@ -3619,6 +3620,11 @@
           return line.trim().replace(/ \\$/, '');
         });
       args[0] = args[0].replace(/^vllm serve /, '--model ');
+      // Inside the container the server must listen on every interface for the published port to reach it;
+      // the -p mapping below still exposes it on this machine's loopback only.
+      args = args.map(function (line) {
+        return line.replace(/^--host '[^']*'$/, "--host '0.0.0.0'");
+      });
       var devices = Array.from(
         { length: c.runtime.parallel_devices * c.runtime.pipeline_stages },
         function (_, i) {
@@ -3917,6 +3923,82 @@
           '.',
       };
     }
+    /* ▸ js: more options */
+    /* Below the command, list other flags people commonly reach for, with what each one is for. They are
+       comments, so the copied command runs exactly as shown. Flag names can change between engine
+       versions, which the note says. A flag already in the command is not listed again. */
+    var MORE_OPTIONS = {
+      vllm: [
+        ['--max-num-seqs N', 'most requests decoded at once'],
+        ['--max-num-batched-tokens N', 'tokens per step: throughput against latency'],
+        ['--kv-cache-dtype fp8', 'halve KV-cache memory (needs hardware support)'],
+        ['--enable-chunked-prefill', 'stop long prompts stalling short ones'],
+        ['--api-key KEY', 'require a key on every request'],
+        ['--dtype bfloat16', 'compute precision (or float16)'],
+        ['--quantization fp8', 'weight format of a pre-quantized checkpoint'],
+        ['--served-model-name NAME', 'the model name clients send'],
+        ['--cpu-offload-gb GB', 'spill weights to CPU memory'],
+        ['--pipeline-parallel-size N', 'split layers across GPUs or nodes'],
+        ['--enforce-eager', 'skip CUDA graphs: less memory, easier debugging'],
+      ],
+      sglang: [
+        ['--max-running-requests N', 'most requests running at once'],
+        ['--chunked-prefill-size N', 'prompt tokens processed per step'],
+        ['--api-key KEY', 'require a key on every request'],
+        ['--kv-cache-dtype fp8_e5m2', 'halve KV-cache memory'],
+        ['--dp-size N', 'data-parallel replicas for more throughput'],
+        ['--schedule-policy lpm', 'reuse cached prefixes first (or fcfs)'],
+        ['--dtype bfloat16', 'compute precision (or float16)'],
+        ['--quantization fp8', 'weight format of a pre-quantized checkpoint'],
+        ['--served-model-name NAME', 'the model name clients send'],
+      ],
+      tgi: [
+        ['--max-total-tokens N', 'prompt plus generated tokens per request'],
+        ['--max-input-tokens N', 'longest prompt accepted'],
+        ['--max-batch-prefill-tokens N', 'tokens prefilled per batch'],
+        ['--num-shard N', 'GPUs to shard the model across'],
+        ['--quantize bitsandbytes', 'quantize on load (or gptq, awq, fp8)'],
+        ['--dtype bfloat16', 'compute precision (or float16)'],
+      ],
+      llama: [
+        ['--n-gpu-layers N', 'layers to keep on the GPU'],
+        ['--parallel N', 'requests served at once'],
+        ['--flash-attn', 'faster attention with less memory'],
+        ['--cache-type-k q8_0', 'compress the KV cache'],
+        ['--batch-size N', 'prompt tokens processed per step'],
+        ['--api-key KEY', 'require a key on every request'],
+      ],
+      ollama: [
+        ['OLLAMA_KEEP_ALIVE=30m', 'how long a model stays loaded when idle'],
+        ['OLLAMA_MAX_LOADED_MODELS=2', 'models kept in memory together'],
+        ['OLLAMA_FLASH_ATTENTION=1', 'faster attention with less memory'],
+        ['OLLAMA_KV_CACHE_TYPE=q8_0', 'compress the KV cache'],
+        ['OLLAMA_MAX_QUEUE=512', 'requests waiting before rejecting new ones'],
+      ],
+    };
+    function optionsNote(server, command) {
+      var shown = (MORE_OPTIONS[server] || [])
+        .filter(function (o) {
+          return command.indexOf(o[0].split(/[ =]/)[0]) === -1;
+        })
+        .slice(0, 8);
+      if (!shown.length) return '';
+      var width =
+        Math.max.apply(
+          null,
+          shown.map(function (o) {
+            return o[0].length;
+          }),
+        ) + 3;
+      return (
+        '\n\n# More you can set (names can differ by version; check --help):\n' +
+        shown
+          .map(function (o) {
+            return '#   ' + o[0] + new Array(width - o[0].length + 1).join(' ') + o[1];
+          })
+          .join('\n')
+      );
+    }
     /* ▸ js: flag map, checks, fit estimate */
     function renderFlagMap(c) {
       var rows = flagRows(c);
@@ -4091,6 +4173,7 @@
                 .replace(/ \\\n\s*/g, ' ')
                 .replace(/\n\s*/g, ' ')
                 .trim();
+      if (state.tab === 'readable') out += optionsNote(config.runtime.server, out);
       $('modelRefDisplay').textContent = config.model.reference || 'No reference selected';
       $('modelRefLabel').textContent =
         config.model.source === 'huggingface'
@@ -4162,11 +4245,6 @@
         checks.push([
           'warn',
           'CPU offload uses system RAM and transfers weights during inference; verify the host memory and link speed.',
-        ]);
-      if (state.tab === 'docker' && config.runtime.host !== '0.0.0.0')
-        checks.push([
-          'warn',
-          'Docker needs the server bound to All interfaces inside the container; set Host to All interfaces.',
         ]);
       if (fit.warn) checks.push(['warn', fit.text]);
       if (
@@ -4372,7 +4450,7 @@
     renderServerFields();
     renderTuning();
     renderSavedConfigs();
-    $('trust').setAttribute('aria-checked', 'true');
+    $('trust').setAttribute('aria-checked', 'false');
     $('prefix').setAttribute('aria-checked', 'true');
     renderOutput();
     try {

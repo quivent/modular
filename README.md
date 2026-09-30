@@ -140,6 +140,28 @@ Themes are built on about 35 named color roles plus radius and type variables, s
 
 <br>
 
+## Defaults
+
+The first screen is a working, cautious starting point. Every default is a decision, and this is the reasoning.
+
+| Setting | Default | Why |
+| --- | --- | --- |
+| Model | Qwen3 8B | Fits a 24 GB GPU with room left for context |
+| Engine | vLLM | The most widely deployed server for this job |
+| Hardware | 1 GPU × 24 GB | The common single-card case; change it and the memory check follows |
+| Context | 8K tokens | Comfortable on small cards; raise it on purpose |
+| Listens on | This machine (`127.0.0.1`) | An inference endpoint with no API key should not be reachable from the network by accident |
+| Trust remote code | Off, except for Ornith | The flag runs Python from the model's repository on your server |
+| GPU memory | 90% | The engine's own default; leaves headroom for spikes |
+| Prefix caching | On | A free win when prompts share a beginning |
+| Output | Readable CLI | Shows every flag on its own line |
+
+Docker output listens inside the container and publishes only on your loopback, so the safe default works there too.
+
+Beneath the command, a **More you can set** list names other flags people commonly reach for, with what each is for. They are comments, so the command you copy runs exactly as shown.
+
+<br>
+
 ## Engines
 
 | | Engine | Command shape | Notable controls in the prototype |
