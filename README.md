@@ -23,7 +23,7 @@
   <a href="#how-it-works">How it works</a> &nbsp;·&nbsp;
   <a href="#inside-modular">Workspace</a> &nbsp;·&nbsp;
   <a href="#engines">Engines</a> &nbsp;·&nbsp;
-  <a href="#honest-limits">Limits</a> &nbsp;·&nbsp;
+  <a href="#road-to-a-finished-release">Roadmap</a> &nbsp;·&nbsp;
   <a href="DESIGN.md">Design notes</a>
 </p>
 
@@ -35,7 +35,7 @@ Serving a model means bringing checkpoints, engines, hardware, and runtime setti
 
 Modular gives that work a calmer shape. Choose a model, an engine, and the hardware you have. Modular assembles a launch command, explains where every flag came from, and tells you plainly when two choices disagree. The interface is spacious, the deeper controls open only where they apply, and the finished command is always in view beside you.
 
-> **Modular is a prototype.** It is a complete, working interface that generates a *starting specification* for a server. It does not install or launch anything, and it does not yet check against versioned engine profiles. See [Honest limits](#honest-limits) and the [roadmap](ROADMAP.md).
+> **Modular is a prototype**, and the [roadmap](#road-to-a-finished-release) shows where it is headed.
 
 <br>
 
@@ -159,22 +159,6 @@ Open [localhost:8000](http://localhost:8000). No build step or account is requir
 2. Change a choice: context, GPU count, or engine.
 3. Open **Where each choice goes** beneath the output to see the flag it produced.
 4. **Save current** to keep the setup, or copy the command.
-
-<br>
-
-## Honest limits
-
-Modular is a working prototype that produces a **starting specification**. Its checks cover selected conflicts; confirm the output against the engine version, checkpoint, and hardware you intend to use.
-
-| ✅ It does | ⚠️ It does not |
-| --- | --- |
-| Catch GPU oversubscription | Install or launch a server |
-| Flag settings an engine omits | Verify engine versions or architecture support |
-| Warn when extra arguments repeat or oppose generated flags | Inspect checkpoint contents |
-| Estimate weight memory for the chosen checkpoint | Measure real memory headroom, KV cache, or activations |
-| Say “no setting conflicts detected” | Promise that message means the setup will run. It means no implemented check found a conflict |
-
-The path to a finished product is in [ROADMAP.md](ROADMAP.md). [DESIGN.md](DESIGN.md) records the intended direction, including versioned engine profiles, source links with last-checked dates, and broader compatibility rules that are not implemented yet.
 
 <br>
 
