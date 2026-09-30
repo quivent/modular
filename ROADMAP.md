@@ -6,7 +6,7 @@ Modular today is a complete, working prototype. This checklist is the path from 
 
 - [x] **1. Separate the working copy.** Rollback is git: releases are tagged (`v0.7` is the first), risky work happens on a branch, and `next.html` is retired.
 - [ ] **2. Split the single file.** Move the ~89 KB page into a configuration model, engine renderers, checks, and UI modules. Stay buildless with ES modules so `python3 -m http.server` keeps working.
-- [ ] **3. Reconcile the docs with the app.** `DESIGN.md` still cites 12 models in earlier sections; the app has 15. Keep one current-state summary at the top and move history below it.
+- [x] **3. Reconcile the docs with the app.** Resolved by deleting `DESIGN.md`, which had drifted from the app. It remains in git history.
 - [ ] **4. Version the saved data.** Add a schema version to saved configurations and preferences in local storage, with migrations, so an update never strands someone's saved setups.
 - [ ] **5. License and contributing guide.** The repository has no license file yet. Add one, plus short instructions for running, testing, and adding a model or engine.
 

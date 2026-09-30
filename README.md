@@ -23,8 +23,7 @@
   <a href="#how-it-works">How it works</a> &nbsp;·&nbsp;
   <a href="#inside-modular">Workspace</a> &nbsp;·&nbsp;
   <a href="#engines">Engines</a> &nbsp;·&nbsp;
-  <a href="#road-to-a-finished-release">Roadmap</a> &nbsp;·&nbsp;
-  <a href="DESIGN.md">Design notes</a>
+  <a href="#road-to-a-finished-release">Roadmap</a>
 </p>
 
 <br>
@@ -180,7 +179,6 @@ Favorites, a default model, and saved configurations live in browser local stora
 | [index.html](index.html) | Live, self-contained prototype |
 | [server.py](server.py) | Local server: the app plus a small JSON API over SQLite |
 | [db](db) | SQLite schema and roadmap seeding script |
-| [DESIGN.md](DESIGN.md) | Product direction and iteration history |
 | [ROADMAP.md](ROADMAP.md) | Checklist to a finished release |
 | [archive](archive) | Earlier explorations (`original.html`, `catalog-draft.html`) |
 | [assets/readme](assets/readme) | Artwork, actual interface captures, generated ASCII-art SVGs (`ascii.py`), and editable README compositions |
@@ -197,7 +195,7 @@ Modular is a prototype, and this is the plain list of what stands between it and
 
 - [x] **1. Separate the working copy.** Rollback is git: releases are tagged (`v0.7` is the first), risky work happens on a branch, and `next.html` is retired.
 - [ ] **2. Split the single file.** Move the ~89 KB page into a configuration model, engine renderers, checks, and UI modules. Stay buildless with ES modules so `python3 -m http.server` keeps working.
-- [ ] **3. Reconcile the docs with the app.** `DESIGN.md` still cites 12 models in earlier sections; the app has 15. Keep one current-state summary at the top and move history below it.
+- [x] **3. Reconcile the docs with the app.** Resolved by deleting `DESIGN.md`, which had drifted from the app. It remains in git history.
 - [ ] **4. Version the saved data.** Add a schema version to saved configurations and preferences in local storage, with migrations, so an update never strands someone's saved setups.
 - [ ] **5. License and contributing guide.** The repository has no license file yet. Add one, plus short instructions for running, testing, and adding a model or engine.
 
