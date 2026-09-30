@@ -40,7 +40,7 @@ export default async function (t) {
 
     // ── GPU cards, then memory ──
     t.equal(await $(() => [...document.querySelectorAll('.hardware-cluster .label')].map((x) => x.textContent).slice(0, 2)), ['GPU', 'Memory per GPU'], 'the card comes first, memory under it');
-    t.equal(await $(() => [...document.querySelectorAll('#gpuVramChoices .choice')].map((b) => b.textContent)), ['12 GB', '24 GB', '32 GB', '40 GB', '48 GB', '80 GB', '96 GB', '141 GB', '180 GB', '288 GB'], 'memory row: no 16, has 12, 40, 48, 141 and 288 (the L40, L40S and RTX 3060 need them)');
+    t.equal(await $(() => [...document.querySelectorAll('#gpuVramChoices .choice')].map((b) => b.textContent)), ['24 GB', '32 GB', '40 GB', '48 GB', '80 GB', '96 GB', '141 GB', '180 GB', '288 GB'], 'memory row: no 16, has 40, 48, 141 and 288 (the L40 and L40S need 48)');
     t.equal(await $(() => [...document.querySelectorAll('#gpuCardChoices .choice[aria-pressed=true]')].map((b) => b.textContent)), ['H100'], 'default card is the H100');
     await pick('#gpuCardChoices .choice', 'RTX 4090');
     t.ok(/Weights need about 52 GB/.test(await $(() => document.getElementById('fitNote').textContent)), 'a 24 GB card cannot hold Qwen3.8 27B and says so');

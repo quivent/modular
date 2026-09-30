@@ -3155,9 +3155,19 @@
       { id: 'rtx-5090', name: 'RTX 5090', gb: 32, cc: 12.0 },
       { id: 'rtx-4090', name: 'RTX 4090', gb: 24, cc: 8.9 },
       { id: 'rtx-3090', name: 'RTX 3090', gb: 24, cc: 8.6 },
-      { id: 'rtx-3060', name: 'RTX 3060', gb: 12, cc: 8.6 },
     ];
-    var GPU_MEMORY = [12, 24, 32, 40, 48, 80, 96, 141, 180, 288];
+    // Repos Hugging Face asks you to sign in and accept a license for (read from the API, 2026-09-30).
+    var HF_GATED = {
+      'Lightricks/LTX-2.5-Diffusers': 1,
+      'black-forest-labs/FLUX.1-dev': 1,
+      'black-forest-labs/FLUX.2-dev': 1,
+      'black-forest-labs/FLUX.2-klein-9B': 1,
+      'google/gemma-3-27b-it': 1,
+      'meta-llama/Llama-3.3-70B-Instruct': 1,
+      'meta-llama/Llama-4-Scout-17B-16E-Instruct': 1,
+      'stabilityai/stable-audio-3-medium': 1,
+    };
+    var GPU_MEMORY = [24, 32, 40, 48, 80, 96, 141, 180, 288];
     function currentCard() {
       for (var i = 0; i < GPU_CARDS.length; i++) if (GPU_CARDS[i].id === state.gpuCard) return GPU_CARDS[i];
       return null;
@@ -4780,13 +4790,11 @@
       return '';
     }
     function flagLine(flag, value, isSet, config) {
-      var shown = isSet ? value : flag.default,
-        alias = (flag.aliases || []).concat(flag.negation ? [flag.negation] : []).join(' ');
+      var shown = isSet ? value : flag.default; // other spellings (-tp, --no-…) are the same flag: not repeated
       return (
         '<div class="flag-line' + (isSet ? ' set' : '') + '"><div class="flag-head"><code class="flag-name">' +
         esc(flag.name) + '</code>' +
         (shown ? '<code class="flag-value' + (isSet ? '' : ' is-default') + '">' + esc(shown) + '</code>' : (flag.value ? '<code class="flag-value is-default">' + esc(flag.value) + '</code>' : '')) +
-        (alias ? '<span class="flag-alias">' + esc(alias) + '</span>' : '') +
         '</div>' +
         (flagHelpText(flag) ? '<p class="flag-help">' + esc(flagHelpText(flag)) + '</p>' : '') +
         (flag.choices && flag.choices.length ? '<p class="flag-choices">' + esc(flag.choices.join('  ·  ')) + '</p>' : '') +
@@ -5343,6 +5351,8 @@
         on('requestLogs')
       )
         checks.push(['warn', 'Saved vLLM choices are omitted from this engine command.']);
+      if (HF_GATED[config.model.reference])
+        checks.push(['warn', 'Gated model: accept its license on Hugging Face and set HF_TOKEN.']);
       if (config.runtime.extra_arguments)
         checks.push(['warn', 'Other extra arguments are passed through without support checks.']);
       if (!checks.length) checks.push(['ok', 'No setting conflicts detected.']);
