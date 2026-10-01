@@ -14,6 +14,8 @@
       if (savedTheme && /^[a-z]+$/.test(savedTheme) && savedTheme !== 'meadow')
         document.documentElement.setAttribute('data-theme', savedTheme);
     } catch (e) {}
+    // The flag list is the biggest thing the page waits for: start it now, not after the page has run.
+    window.flagsEarly = { vllm: fetch('catalog/flags/vllm.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }) };
   </script>
   <style>
     /* ▸ css: theme & base */
@@ -4646,6 +4648,13 @@
     var flagCache = {};
     function loadFlags(engine) {
       if (flagCache[engine]) return Promise.resolve(flagCache[engine]);
+      var early = window.flagsEarly && window.flagsEarly[engine];
+      if (early)
+        return early.then(function (d) {
+          if (d) return (flagCache[engine] = d);
+          window.flagsEarly[engine] = null; // the early request failed: ask again normally
+          return loadFlags(engine);
+        });
       return fetch('catalog/flags/' + engine + '.json')
         .then(function (r) {
           if (!r.ok) throw new Error(r.status);
