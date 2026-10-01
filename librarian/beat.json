@@ -5,6 +5,7 @@
   "engines": {
     "vllm":   { "repo": "vllm-project/vllm" },
     "sglang": { "repo": "sgl-project/sglang" },
+    "sglang-diffusion": { "repo": "sgl-project/sglang" },
     "trtllm": { "repo": "NVIDIA/TensorRT-LLM" },
     "tgi":    { "repo": "huggingface/text-generation-inference" },
     "llama":  { "repo": "ggml-org/llama.cpp", "cooldown_hours": 168 },

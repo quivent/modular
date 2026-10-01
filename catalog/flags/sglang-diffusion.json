@@ -1,0 +1,575 @@
+{
+ "engine": "sglang-diffusion",
+ "source": "https://docs.sglang.io/docs/sglang-diffusion/api/cli",
+ "fetched": "2026-10-01",
+ "count": 57,
+ "sections": [
+  {
+   "title": "Generate",
+   "flags": [
+    {
+     "name": "--disable-conditioning-cache",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Disable cross-request text/image conditioning reuse and VAE posterior caching. Reuse within a grouped stage remains enabled."
+    },
+    {
+     "name": "--conditioning-cache-max-size-mb",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Shared CPU and device LRU capacity per executor/rank, default 512; 0 disables cross-request caching. Consumed negative text conditioning stays on its original device; other entries live on the CPU. The cache holds at most 128 entries and bypasses oversized outputs.",
+     "value": "<MiB>"
+    }
+   ]
+  },
+  {
+   "title": "Model and runtime",
+   "flags": [
+    {
+     "name": "--model-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Model path or Hugging Face model ID",
+     "value": "<MODEL>"
+    },
+    {
+     "name": "--served-model-name",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Stable model name exposed by serving APIs. Defaults to --model-id when set, otherwise --model-path.",
+     "value": "<NAME>"
+    },
+    {
+     "name": "--model-variant",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Semantic checkpoint variant to load when one model repository contains multiple weight partitions. The pipeline maps this stable name to the repository layout before loading; for example, MiniMax-H3 accepts fl2va and ref2va, or hybrid with explicit merged transformer weights to serve all three tasks (see the H3 cookbook). This is a server/load-time choice, unlike a request’s task.",
+     "value": "<NAME>"
+    },
+    {
+     "name": "--minimax-h3-adaln-cache-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Advanced MiniMax-H3-only inference cache. It replaces the checkpoint’s AdaLN projection weights with precomputed outputs and only accepts requests whose exact FP32 timestep plan is included in the cache. It requires unquantized weights and the matching model variant.",
+     "value": "<FILE>"
+    },
+    {
+     "name": "--minimax-h3-adaln-online",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "true",
+      "false"
+     ],
+     "default": null,
+     "help": "Rebuild MiniMax-H3 AdaLN outputs from the checkpoint on demand instead of keeping the 24.2 GiB of adaln_proj weights resident. Works with any step count or schedule; requires the unquantized native-layout checkpoint. Built plans live in a GPU slab with per-plan LRU eviction and, by default, a pinned-host cache so previously seen schedules swap back in over PCIe instead of re-reading the checkpoint."
+    },
+    {
+     "name": "--minimax-h3-adaln-plan-width",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Widest timestep plan the online slab is sized for (default 4 covers every task; t2va needs 2, fl2va 3).",
+     "value": "<N>"
+    },
+    {
+     "name": "--minimax-h3-adaln-host-cache-gb",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Pinned host memory per rank caching built AdaLN plans (default 8; 0 disables). A 50-step schedule needs about 0.9 (t2va) / 1.33 (fl2va) / 1.77 (ref2va) GB; over-capacity plan sets simply recompute. Expert escape hatches (GPU slot count, experimental fp32 rebuild) are the SGLANG_DIFFUSION_MINIMAX_H3_ADALN_* environment variables.",
+     "value": "<GB>"
+    },
+    {
+     "name": "--model-subfolder",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Advanced direct override for a component subfolder inside the model repository. Prefer --model-variant when the pipeline exposes semantic routing. If both are supplied, they must resolve to the same weight partition.",
+     "value": "<PATH>"
+    },
+    {
+     "name": "--lora-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Load a LoRA adapter from a local path, Hugging Face repo/subfolder, or exact Hub file URL",
+     "value": "<PATH>"
+    },
+    {
+     "name": "--lora-nickname",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Load a LoRA adapter from a local path, Hugging Face repo/subfolder, or exact Hub file URL",
+     "value": "<NAME>"
+    },
+    {
+     "name": "--lora-weight-name",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Select one adapter file from a repository that contains multiple LoRA revisions. The Hub download is filtered to that file plus JSON metadata, so unused weights are not downloaded.",
+     "value": "<FILE>"
+    },
+    {
+     "name": "--lora-alpha",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Supply the training alpha when a single-file adapter omits both per-layer alpha tensors and adapter_config.json. Do not set it when the adapter already records alpha metadata.",
+     "value": "<N>"
+    },
+    {
+     "name": "--lora-merge-mode",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "auto",
+      "merge",
+      "dynamic"
+     ],
+     "default": null,
+     "help": "Choose how LoRA is applied. auto statically merges regular weights and uses dynamic LoRA for FSDP-sharded weights to avoid full-gather peaks."
+    },
+    {
+     "name": "--num-gpus",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Number of GPUs to use",
+     "value": "<N>"
+    },
+    {
+     "name": "--performance-mode",
+     "aliases": [
+      "--mode"
+     ],
+     "negation": null,
+     "choices": [
+      "manual",
+      "auto",
+      "speed",
+      "memory"
+     ],
+     "default": null,
+     "help": "Preset for latency/throughput and memory defaults. auto is the default and dispatches residency from selected-GPU headroom and workload type: image DiTs stay resident above the 45 GiB threshold, while video DiT placement remains model-specific. It uses FSDP only for validated DiT-offload replacement paths. speed keeps torch.compile disabled unless a model-specific deployment config opts in after validation; pass --enable-torch-compile true to enable it explicitly. Use manual to keep performance-related server args under explicit user control. Explicit offload, FSDP, and parallelism flags take precedence in all modes."
+    },
+    {
+     "name": "--direct-gpu-weight-loading",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "true",
+      "false"
+     ],
+     "default": null,
+     "help": "Opt into direct GPU loading for an unquantized, GPU-resident, TP=1 DiT by materializing its complete checkpoint state dict on GPU. Compatible tensors become parameter storage without another GPU copy, while tensors requiring transforms can still need temporary allocations. It is disabled by default; startup time and peak GPU memory remain model-dependent, so benchmark the target model before deployment. It is incompatible with DiT CPU/layerwise offload and FSDP."
+    },
+    {
+     "name": "--tp-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Tensor parallelism size. Depending on the pipeline, it can shard the DiT, one or more encoders, or both.",
+     "value": "<N>"
+    },
+    {
+     "name": "--sp-degree",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Sequence parallelism size",
+     "value": "<N>"
+    },
+    {
+     "name": "--dp-size",
+     "aliases": [
+      "--data-parallel-size"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Number of data-parallel replicas. Each replica is a full copy of the engine on num_gpus / N GPUs with its own ingress; generation requests round-robin across replicas, realtime sessions stick to the replica holding their state, and control operations (weights, LoRA, memory occupation, shutdown) apply to every replica. Combines with the other parallelism axes (num_gpus = dp × cfg × tp × sp); monolithic serving only.",
+     "value": "<N>"
+    },
+    {
+     "name": "--ulysses-degree",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "USP parallelism controls",
+     "value": "<N>"
+    },
+    {
+     "name": "--ring-degree",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "USP parallelism controls",
+     "value": "<N>"
+    },
+    {
+     "name": "--kv-gather-degree",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Sequence-parallel degree that splits rows inside attention and exchanges with one K/V all-gather (queries stay local) instead of Ulysses all-to-all. Non-causal attention only; does not compose with --ulysses-degree/--ring-degree yet. When no SP degree is set explicitly, sp_degree=2 defaults to kv_gather_degree=2 (its measured-win zone) and higher degrees default to Ulysses; under that auto assignment, attention calls the gather path cannot take fall back to the Ulysses exchange, while an explicit degree fails instead of degrading.",
+     "value": "<N>"
+    },
+    {
+     "name": "--enable-cfg-parallel",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "true",
+      "false"
+     ],
+     "default": null,
+     "help": "Enable or explicitly disable CFG parallelism. Requests that disable CFG remain valid on a CFG-parallel server, but extra CFG ranks redundantly recompute the single active branch."
+    },
+    {
+     "name": "--encoder-parallel",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "auto",
+      "fold",
+      "dp",
+      "replicate"
+     ],
+     "default": null,
+     "help": "How native encoders use the GPUs in each DiT replica. auto TP-folds a native text/image encoder wide enough to benefit, selects batch DP for an explicitly supported native text encoder when it can engage, and otherwise keeps the existing encoder TP layout; fold shards native text/image encoders across the full replica whenever dimensions allow; dp splits a batched encode across supported native text encoder copies and composes with encoder TP; replicate disables folding and batch DP. Encoder collectives never cross --dp-size replicas. See Encoder Parallelism."
+    },
+    {
+     "name": "--warmup-mode",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "off",
+      "request",
+      "server"
+     ],
+     "default": null,
+     "help": "Control startup warmup for sglang serve; off skips warmup, request primes the request path, and server runs a full synthetic server warmup before serving traffic"
+    },
+    {
+     "name": "--enable-torch-compile",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "true",
+      "false"
+     ],
+     "default": null,
+     "help": "Compile native diffusion hot paths. When no warmup mode is configured, this also enables server warmup so first real requests do not pay compile latency."
+    },
+    {
+     "name": "--offload-during-compile",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "true",
+      "false"
+     ],
+     "default": null,
+     "help": "When compile warmup is active, temporarily layerwise-offload DiT weights and move resident non-DiT components off-device so max-autotune fits on tighter-memory GPUs; the configured serving residency is restored before real traffic. Skipped under existing layerwise offload, Cache-DiT, or FSDP."
+    },
+    {
+     "name": "--enable-breakable-cuda-graph",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "true",
+      "false"
+     ],
+     "default": null,
+     "help": "Capture supported DiT forwards as breakable CUDA graph segments to reduce launch overhead. Requires --warmup-resolutions for every served resolution because each resolution is captured separately. An extra-high or high request is rejected when it would mount request-scoped DiT fusions that were not present during lossless graph capture; VAE-only request-gated paths remain compatible."
+    },
+    {
+     "name": "--bcg-text-buckets",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Prompt-length padding buckets for breakable CUDA graph capture/replay reuse.",
+     "value": "<N...>"
+    },
+    {
+     "name": "--attention-backend",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Attention backend for native SGLang and diffusers pipelines",
+     "value": "<BACKEND>"
+    },
+    {
+     "name": "--enable-attention-backend-autotune",
+     "aliases": [],
+     "negation": null,
+     "choices": [
+      "true",
+      "false"
+     ],
+     "default": null,
+     "help": "For SGLang-native pipelines, benchmark compatible attention backends on each layer’s first sufficiently large input and keep a backend only when it is both numerically compatible and measurably faster. Disabled by default and currently validated on SM90 and SM12x. Explicit --attention-backend, component overrides, and model-required backends are never replaced."
+    },
+    {
+     "name": "--component-attention-backends",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Per-component attention backend overrides, for example text_encoder=torch_sdpa,transformer=fa",
+     "value": "<MAP>"
+    },
+    {
+     "name": "--attention-backend-config",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Attention backend configuration",
+     "value": "<CONFIG>"
+    },
+    {
+     "name": "--srt-encoder-url",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Address of SGLang srt server with AR model for GLM-Image like models. See Models with AR Stage.",
+     "value": "<HTTPADDRESS>"
+    },
+    {
+     "name": "--srt-encoder-timeout",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Timeout in seconds for HTTP requests to the SGLang encoder server",
+     "value": "<SECONDS>"
+    },
+    {
+     "name": "--srt-encoder-connection-timeout",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "TCP connection timeout in seconds for SGLang encoder server",
+     "value": "<SECONDS>"
+    },
+    {
+     "name": "--scheduler-rpc-timeout",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Optional end-to-end deadline for an internal scheduler RPC, including scheduler queue time. It is unset by default so valid long-running and queued video jobs are not failed by the transport layer. Set it only when the deployment requires a bounded request deadline; caller cancellation and server shutdown remain effective without it.",
+     "value": "<SECONDS>"
+    },
+    {
+     "name": "--enable-trace",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Export OpenTelemetry traces for the diffusion scheduler and worker stages."
+    },
+    {
+     "name": "--otlp-service-name",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Service.name attached to exported traces. Resolution order is this flag, OTEL_SERVICE_NAME, then sglang-diffusion.",
+     "value": "<NAME>"
+    },
+    {
+     "name": "--enable-metrics",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Expose Prometheus metrics at /metrics (default: disabled). Includes request counts, queue time, host-side stage timing and LoRA state, separated by role and DP replica. See Production metrics for metric semantics and disaggregated scraping."
+    },
+    {
+     "name": "--pe-server-url",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Url of SGLang server hosting the PE model (e.g., for ERNIE-Image). See Models with Prompt Enhancement.",
+     "value": "<HTTPADDRESS>"
+    },
+    {
+     "name": "--prompt-enhancer-config",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Configure an independent SRT LLM/VLM for opt-in HTTP prompt rewriting. Requests use enhance_prompt=true; no enhancer runs by default. See Prompt enhancement.",
+     "value": "<JSON_FILE>"
+    }
+   ]
+  },
+  {
+   "title": "Quantization",
+   "flags": [
+    {
+     "name": "--component-paths.text_encoder",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<MODEL>"
+    },
+    {
+     "name": "--text-encoder-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<MODEL>"
+    },
+    {
+     "name": "--component-quantizations.text_encoder",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<METHOD>"
+    },
+    {
+     "name": "--component-quantization-ignored-layers.text_encoder",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<PATTERN...>"
+    }
+   ]
+  },
+  {
+   "title": "Request logging",
+   "flags": [
+    {
+     "name": "--log-requests",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Log user-facing fields of all requests (default: False). The verbosity is decided by --log-requests-level."
+    },
+    {
+     "name": "--log-requests-level",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Verbosity level for request logging (default: 2). 0: Log metadata (request id). 1: Log metadata and sampling config (seed, steps, guidance, resolution, frames, fps, …). 2: Log metadata, sampling config and prompt (truncated to 2 KiB). 3: Log metadata, sampling config and full prompt.",
+     "value": "<&#123;0|1|2|3&#125;>"
+    },
+    {
+     "name": "--log-requests-format",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Format for request logging (default: text). text is human-readable; json outputs structured JSON lines.",
+     "value": "<&#123;text|json&#125;>"
+    },
+    {
+     "name": "--log-requests-target",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Target(s) for request logging. Use stdout for console output and/or directory path(s) for file output. Can specify multiple targets, e.g., --log-requests-target stdout /my/log/dir.",
+     "value": "<&#123;TARGET...&#125;>"
+    }
+   ]
+  },
+  {
+   "title": "Layerwise Offload Tuning",
+   "flags": [
+    {
+     "name": "--layerwise-prefetch-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "How many layers to fetch ahead. Fractional values are a share of the stack, >= 1 an absolute count. Deeper prefetch overlaps more of the transfer with compute, at the cost of staging buffers."
+    },
+    {
+     "name": "--layerwise-resident-layers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "How many layers stay on the GPU instead of being streamed. Fractional values are a share of the stack. Resident layers pay for a component that runs its layers many times per request — a DiT across the denoise steps, a video VAE across the latent chunks — and do nothing for one that runs them once per request, such as a text encoder."
+    },
+    {
+     "name": "--layerwise-residency-policy",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Leading keeps the first layers, strided spreads them across the stack so the transfers do not arrive as one burst."
+    },
+    {
+     "name": "--layerwise-residency-lifetime",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "How long the resident layers stay. forward (default) places them when the component starts running its layers for a request and releases them when it finishes, so they are transferred once per request and keep a copy in host memory. permanent places them at load time, keeps no host copy, and never releases them: one transfer for the life of the server."
+    }
+   ]
+  },
+  {
+   "title": "In the serve examples",
+   "flags": [
+    {
+     "name": "--port",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<PORT>"
+    }
+   ]
+  }
+ ]
+}

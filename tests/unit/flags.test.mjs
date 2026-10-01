@@ -5,9 +5,9 @@ export const name = 'flag data: what tools/flags.py extracted from each engine\'
 
 export default async function (t) {
   const dir = join(ROOT, 'catalog', 'flags');
-  const floor = { vllm: 300, sglang: 400, llama: 240, tgi: 50, trtllm: 45, ollama: 25, mlx: 20 };
+  const floor = { vllm: 300, sglang: 400, llama: 240, tgi: 50, trtllm: 45, ollama: 25, mlx: 20, 'sglang-diffusion': 45 };
   const files = readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', '')).sort();
-  t.equal(files, Object.keys(floor).sort(), 'there is a flag file for each of the seven engines');
+  t.equal(files, Object.keys(floor).sort(), 'there is a flag file for each engine');
   for (const engine of Object.keys(floor)) {
     const d = JSON.parse(readFileSync(join(dir, engine + '.json'), 'utf8'));
     const all = d.sections.flatMap((s) => s.flags);

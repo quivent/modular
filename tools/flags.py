@@ -246,7 +246,51 @@ def trtllm():
     return write("trtllm", url, [{"title": "trtllm-serve options", "flags": flags}])
 
 
-ENGINES = {"vllm": vllm, "trtllm": trtllm, "sglang": sglang, "llama": llamacpp, "tgi": tgi, "ollama": ollama, "mlx": mlx}
+# ── SGLang Diffusion: the `sglang serve` options of its CLI reference (image and video models) ─────────
+def sglang_diffusion():
+    url = "https://docs.sglang.io/docs/sglang-diffusion/api/cli"
+    page = fetch(url)
+    body = page[page.find("<h1") :]
+    # Server options only: "Sampling and output" lists the options of one generation request, not of the server.
+    keep = {"Model and runtime", "Quantization", "Request logging", "Layerwise Offload Tuning", "Generate"}
+    sections, current = {}, None
+    for m in re.finditer(r"<h([1-4])[^>]*>(.*?)</h\1>|<li>(\s*<code>--.*?)</li>", body, re.S):
+        if m.group(1):
+            title = clean(text(m.group(2)))
+            current = sections.setdefault(title, {"title": title, "flags": []}) if title in keep else None
+            continue
+        if current is None:
+            continue
+        head, _, desc = m.group(3).partition(":")
+        desc = text(desc)
+        desc = desc[:1].upper() + desc[1:]
+        codes = re.findall(r"(<code>(--[\w.\-]+)([^<]*)</code>)", head)
+        if not codes:
+            continue
+        first = None
+        for k, (whole, name, spec) in enumerate(codes):
+            between = text(head[head.find(codes[k - 1][0]) + len(codes[k - 1][0]) : head.find(whole)]) if k else ""
+            spec = html.unescape(spec).strip()
+            if k and ("alias" in between or "/" in between):
+                first["aliases"].append(name)  # the same flag under another name
+                continue
+            choices = re.search(r"\{([^{}]*[|,][^{}]*)\}", spec)
+            flag = {"name": name, "aliases": [], "negation": None,
+                    "choices": [c.strip() for c in re.split(r"[|,]", choices.group(1))] if choices else None,
+                    "default": None, "help": desc}
+            if spec and not choices:
+                flag["value"] = "<" + spec.strip("{} ") + ">"
+            current["flags"].append(flag)
+            first = first or flag
+    # --port is only shown in the serve examples, never in an option list: record that it is used, with no description
+    serve_example = re.search(r"sglang serve[^<]{0,400}?--port", html.unescape(re.sub(r"<[^>]+>", "", body)), re.S)
+    if serve_example and not any(f["name"] == "--port" for s in sections.values() for f in s["flags"]):
+        sections["In the serve examples"] = {"title": "In the serve examples", "flags": [
+            {"name": "--port", "aliases": [], "negation": None, "choices": None, "default": None, "help": "", "value": "<PORT>"}]}
+    return write("sglang-diffusion", url, list(sections.values()))
+
+
+ENGINES = {"vllm": vllm, "trtllm": trtllm, "sglang": sglang, "llama": llamacpp, "tgi": tgi, "ollama": ollama, "mlx": mlx, "sglang-diffusion": sglang_diffusion}
 
 if __name__ == "__main__":
     args = sys.argv[1:]

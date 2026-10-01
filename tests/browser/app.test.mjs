@@ -18,12 +18,15 @@ export default async function (t) {
     await pick('#archChoices .choice', 'Video');
     t.equal(await families(), ['Wan 2.2: Text to video | Image to video | Text + image to video', 'LTX-2.5: LTX-2.5', 'MiniMax-H3: MiniMax-H3'], 'video shows Wan, click in for its variants');
     t.equal(await $(() => document.getElementById('modelRefDisplay').textContent), 'Wan-AI/Wan2.2-T2V-A14B-Diffusers', 'choosing a kind selects a model of that kind');
-    t.equal(await $(() => document.getElementById('output').textContent.split('\n')[0]), '# Modular does not write a launch command for image and video models yet.', 'no made-up command for video');
-    t.equal(await $(() => [document.getElementById('copy').textContent, document.getElementById('copy').disabled]), ['No command yet', true], 'the copy button says there is no command');
+    t.equal(await $(() => document.getElementById('output').textContent.split('\n').slice(0, 2).join(' ')), "sglang serve \\   --model-path 'Wan-AI/Wan2.2-T2V-A14B-Diffusers' \\", 'video gets a real command, through SGLang Diffusion');
+    t.equal(await $(() => [document.getElementById('copy').textContent, document.getElementById('copy').disabled]), ['Copy command', false], 'and the command can be copied');
+    t.equal(await $(() => [...document.querySelectorAll('#serverList .server strong')].map((x) => x.textContent)), ['SGLang'], 'the one engine that serves video is the only one listed');
+    t.equal(await $(() => ['contextField', 'quantField', 'vllmControls'].map((id) => getComputedStyle(document.getElementById(id)).display)), ['none', 'none', 'none'], 'text-only settings step aside');
     await pick('#archChoices .choice', 'Audio');
     t.equal(await $(() => [...document.querySelectorAll('#archDesign .choice')].map((b) => b.textContent.trim())), ['Speech to text', 'Text to speech', 'Music'], 'audio has its three roles');
     await pick('#archChoices .choice', 'Language');
     t.equal(await $(() => document.getElementById('modelRefDisplay').textContent), 'Wan-AI/Wan2.2-T2V-A14B-Diffusers' === '' ? '' : await $(() => document.getElementById('modelRefDisplay').textContent), 'returning to language selects a language model');
+    t.equal(await $(() => [document.querySelectorAll('#serverList .server').length, document.querySelector('#serverList .server.active strong').textContent]), [7, 'vLLM'], 'leaving video brings all engines back, on the one you had');
     t.ok(/Qwen3\.8/.test(await $(() => document.getElementById('modelRefDisplay').textContent)), 'and remembers the one you had (Qwen3.8 27B)');
     await pick('#archDesign .choice', 'Mixture of experts');
     t.ok((await $(() => document.querySelectorAll('.model-option').length)) > 5 && !(await families()).join().includes('27B'), 'the mixture-of-experts filter narrows the list');
