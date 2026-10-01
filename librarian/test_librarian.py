@@ -25,6 +25,7 @@ class Shelf(unittest.TestCase):
         sh(self.tmp, "git", "config", "user.name", "t")
         sh(self.tmp, "git", "add", "-A")
         sh(self.tmp, "git", "commit", "-q", "-m", "base")
+        self.count = len(flags_of(json.loads((self.tmp / 'catalog/flags/vllm.json').read_text())))  # whatever the shelf holds today
         self.told = []
         self.ok = (True, "")
         self.world = {}  # what each engine's source looks like right now: engine -> data
@@ -129,7 +130,7 @@ class Filing(Shelf):
         before = self.head()
         self.assertIn("dismissed", self.lib.resolve(r["item"], apply=False))
         self.assertEqual(self.head(), before)
-        self.assertEqual(len(flags_of(self.data())), 311)
+        self.assertEqual(len(flags_of(self.data())), self.count)
 
     def test_it_will_not_touch_files_a_person_has_changed(self):
         self.world["vllm"] = self.with_new_flag()
@@ -152,7 +153,7 @@ class Filing(Shelf):
         r = self.lib.handle("vllm", "v4")
         self.assertEqual(r["outcome"], "held")
         self.assertEqual(self.head(), before)
-        self.assertEqual(len(flags_of(self.data())), 311)
+        self.assertEqual(len(flags_of(self.data())), self.count)
         self.assertEqual(self.lib.items()[0]["kind"], "unreadable")
 
     def test_if_the_tests_fail_everything_is_put_back_exactly(self):
