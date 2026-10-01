@@ -81,6 +81,8 @@ export default async function (t) {
         const set = [...box.querySelector('.flag-section').querySelectorAll('.flag-line')];
         out[sv] = {
           lines: box.querySelectorAll('.flag-line').length,
+          docFlags: Object.assign({}, ...document.getElementById('flagData').textContent.trim().split('\n').map((l) => JSON.parse(l)))[sv].sections.reduce((n, sec) => n + sec.flags.length, 0),
+          repeated: new Set([...box.querySelectorAll('.flag-name')].map((x) => x.textContent)).size !== box.querySelectorAll('.flag-name').length,
           setNames: set.map((l) => l.querySelector('.flag-name').textContent),
           notInDocs: [...box.querySelectorAll('.flag-help')].filter((h) => h.textContent.startsWith('Not in the documentation')).length,
           hasCount: /\bflags\b.*\bsections?\b/.test(box.innerText.split('\n').slice(0, 3).join(' ')),
@@ -89,9 +91,8 @@ export default async function (t) {
       }
       return out;
     });
-    const expect = { vllm: 311 + 7, sglang: 423 + 5, trtllm: 50 + 5, tgi: 56 + 5, llama: 255 + 4, ollama: 30 + 3, mlx: 26 + 3 };
     for (const [sv, f] of Object.entries(flags)) {
-      t.ok(f.lines >= expect[sv] - 3 && f.lines <= expect[sv] + 3, `${sv}: every documented flag is listed (${f.lines} lines)`);
+      t.equal([f.lines, f.repeated], [f.docFlags, false], `${sv}: every documented flag is listed once (${f.lines} lines)`);
       t.equal(f.notInDocs, 0, `${sv}: every flag the configuration sets is found in the documentation`);
       t.equal([f.hasCount, f.restating], [false, 0], `${sv}: no flag count, no description repeating --host or --port`);
     }

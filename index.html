@@ -5047,9 +5047,10 @@
             html += '</section>';
           }
           data.sections.forEach(function (sec) {
-            html += '<section class="flag-section"><h4>' + esc(sec.title) + '</h4>';
-            sec.flags.forEach(function (f) { html += flagLine(f, setBy.get(f), setBy.has(f), config); });
-            html += '</section>';
+            // a flag your configuration sets is shown once, in the block above, not again in its own section
+            var lines = '';
+            sec.flags.forEach(function (f) { if (!setBy.has(f)) lines += flagLine(f, undefined, false, config); });
+            if (lines) html += '<section class="flag-section"><h4>' + esc(sec.title) + '</h4>' + lines + '</section>';
           });
           box.innerHTML = html;
           box.scrollTop = keep;
