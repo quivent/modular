@@ -46,6 +46,24 @@ export default async function (t) {
     t.ok(/--runner pooling/.test((await read()).cmd), 'and a reranker too');
     await click('#archChoices .choice', 'Language'); await sleep(200);
     t.ok(!/--runner|--is-embedding/.test((await read()).cmd), 'a chat model gets neither');
+    // a Mac: MLX offers Macs and their memory, not NVIDIA cards; coming back restores your card
+    await click('#archChoices .choice', 'Language'); await sleep(150);
+    await click('#gpuCardChoices .choice', 'RTX 4090'); await sleep(150);
+    await click('#serverList .server', 'MLX'); await sleep(250);
+    const mac = await $(() => ({
+      cards: [...document.querySelectorAll('#gpuCardChoices .choice')].map((b) => b.textContent),
+      label: document.getElementById('gpuCardLabel').textContent,
+      memory: document.getElementById('gpuVramLabel').textContent,
+      count: getComputedStyle(document.getElementById('gpuCountField')).display,
+      chip: [...document.querySelectorAll('#summary span')].map((x) => x.textContent)[1],
+    }));
+    t.equal(mac.cards.slice(0, 3), ['Mac · 16 GB', 'Mac · 24 GB', 'Mac · 32 GB'], 'MLX offers Macs by their memory');
+    t.ok(mac.cards.every((c) => /^Mac/.test(c)) && mac.label === 'Mac' && mac.memory === 'Unified memory' && mac.count === 'none', 'no NVIDIA cards, no GPU count, memory called what it is', JSON.stringify(mac));
+    t.equal(mac.chip, 'Mac · 64 GB', 'the summary says Mac, not GPU');
+    await click('#serverList .server', 'vLLM'); await sleep(250);
+    t.equal(await $(() => document.querySelector('#gpuCardChoices .choice[aria-pressed=true]').textContent), 'RTX 4090', 'back on vLLM, your card is back');
+    await click('#serverList .server', 'llama.cpp'); await sleep(250);
+    t.ok(await $(() => { const c = [...document.querySelectorAll('#gpuCardChoices .choice')].map((b) => b.textContent); return c.includes('RTX 4090') && c.includes('Mac · 64 GB'); }), 'llama.cpp and Ollama run on both, so both are offered');
     t.equal((await browser.errors()).length, 0, 'no page errors');
   } finally {
     await browser.close();

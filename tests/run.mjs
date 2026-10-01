@@ -38,8 +38,13 @@ if (process.argv[3] === '--child') {
 const files = walk(here).filter((f) => !filter || relative(here, f).includes(filter)).sort();
 let pass = 0, fail = 0, skipped = 0;
 for (const file of files) {
-  const r = spawnSync('node', [fileURLToPath(import.meta.url), file, '--child'], { encoding: 'utf8', timeout: 180000 });
-  const m = /@@RESULTS@@(.*)/.exec(r.stdout || '');
+  const once = () => spawnSync('node', [fileURLToPath(import.meta.url), file, '--child'], { encoding: 'utf8', timeout: 180000 });
+  let r = once();
+  let m = /@@RESULTS@@(.*)/.exec(r.stdout || '');
+  if (!m) { // a browser that failed to start says nothing at all: ask once more before calling it a failure
+    r = once();
+    m = /@@RESULTS@@(.*)/.exec(r.stdout || '');
+  }
   const rel = relative(here, file);
   if (!m) {
     fail++;

@@ -1003,15 +1003,6 @@
       line-height: 1.5;
       margin: 7px 0 0;
     }
-    .capability-note {
-      font-size: 11px;
-      line-height: 1.6;
-      color: var(--muted);
-      background: var(--tint);
-      border-left: 2px solid var(--accent-line);
-      padding: 11px 13px;
-      margin: 20px 0 0;
-    }
     .output-mode .choice {
       flex: 1;
       text-align: center;
@@ -2353,7 +2344,7 @@
               <div class="toggle-row"><div><strong>Chunked prefill</strong><small>Split long prompts across scheduler steps</small></div><button type="button" class="toggle" id="chunked" role="switch" aria-label="Chunked prefill" aria-checked="false"></button></div>
               <div class="toggle-row"><div><strong>Eager execution</strong><small>Useful when debugging; may reduce throughput</small></div><button type="button" class="toggle" id="eager" role="switch" aria-label="Eager execution" aria-checked="false"></button></div>
               <details class="advanced" id="memoryDetails"><summary>Memory and precision <span>Cache, offload, dtype</span></summary><div class="advanced-body"><div class="field"><div class="field-head"><span class="label" id="offloadLabel">CPU weight offload per GPU</span></div><div class="choice-row" id="offloadChoices" role="group" aria-labelledby="offloadLabel"></div><p class="setting-help">Moves some weights through system RAM each step; speed depends on the CPU–GPU link.</p></div><div class="field"><div class="field-head"><span class="label" id="kvMemoryLabel">KV cache allocation</span></div><div class="choice-row" id="kvMemoryChoices" role="group" aria-labelledby="kvMemoryLabel"></div><p class="setting-help">A fixed cache allocation replaces the GPU memory target below.</p></div><div class="field"><div class="field-head"><span class="label" id="dtypeLabel">Compute dtype</span></div><div class="choice-row" id="dtypeChoices" role="group" aria-labelledby="dtypeLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="kvLabel">KV cache dtype</span></div><div class="choice-row" id="kvChoices" role="group" aria-labelledby="kvLabel"></div><p class="setting-help">FP8 cache needs hardware and checkpoint support; verify quality for your workload.</p></div></div></details><details class="advanced" id="requestDetails"><summary>Request behavior <span>Priority and logs</span></summary><div class="advanced-body"><div class="toggle-row"><div><strong>Priority scheduling</strong><small>Serve requests by priority instead of arrival order</small></div><button type="button" class="toggle" id="priority" role="switch" aria-label="Priority scheduling" aria-checked="false"></button></div><div class="toggle-row"><div><strong>Request logging</strong><small>Log request information at the server's log level</small></div><button type="button" class="toggle" id="requestLogs" role="switch" aria-label="Request logging" aria-checked="false"></button></div></div></details>
-            </div><p class="capability-note" id="capabilityNote" hidden></p>
+            </div>
             <details class="advanced" id="advanced"><summary>Advanced settings <span>Network, memory, and flags</span></summary><div class="advanced-body"><div class="field" id="pipelineField" hidden><div class="field-head"><span class="label" id="pipelineLabel">Pipeline stages</span></div><div class="choice-row" id="pipelineChoices" role="group" aria-labelledby="pipelineLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="hostLabel">Host</span></div><div class="choice-row" id="hostChoices" role="group" aria-labelledby="hostLabel"></div><input id="host" type="hidden" value="127.0.0.1"></div><div class="field" id="customHostField" hidden><div class="field-head"><label for="customHost">Custom host</label></div><input id="customHost" class="control mono" value="0.0.0.0" spellcheck="false"></div><input id="port" type="hidden" value="8000"><div class="field" id="memoryField"><div class="field-head"><label for="memorySlider">GPU memory target</label><output id="memoryDisplay">90%</output></div><input id="memorySlider" class="range" type="range" min="50" max="99" step="1" value="90"><div class="range-ends"><span>50%</span><span>99%</span></div><input id="memory" type="hidden" value="90"></div><input id="revision" type="hidden" value=""><div class="field"><div class="field-head"><label for="extraArgs">Extra server arguments</label><span class="hint">Optional</span></div><input id="extraArgs" class="control mono" spellcheck="false" placeholder="--your-server-flag value"></div><div class="toggle-list"><div class="toggle-row"><div><strong>Trust model code</strong><small>Allow model repository code where the server supports it</small></div><button type="button" class="toggle" id="trust" role="switch" aria-label="Trust model code" aria-checked="false"></button></div><div class="toggle-row"><div><strong>Prefix cache</strong><small>Reuse computation for shared prompt prefixes</small></div><button type="button" class="toggle" id="prefix" role="switch" aria-label="Prefix cache" aria-checked="false"></button></div></div></div></details>
           </div></section>
         </div>
@@ -3345,7 +3336,44 @@
       { id: 'rtx-5090', name: 'RTX 5090', gb: 32, cc: 12.0 },
       { id: 'rtx-4090', name: 'RTX 4090', gb: 24, cc: 8.9 },
       { id: 'rtx-3090', name: 'RTX 3090', gb: 24, cc: 8.6 },
-    ];
+    ].concat(
+      // A Mac has one pool of memory shared by the chip and the GPU: the size is the whole choice.
+      [16, 24, 32, 48, 64, 96, 128, 192, 256, 512].map(function (gb) {
+        return { id: 'mac-' + gb, name: 'Mac', gb: gb, cc: 0, mac: true };
+      }),
+    );
+    // MLX runs on Macs; llama.cpp and Ollama run on both; the other engines are NVIDIA.
+    function visibleCards() {
+      return GPU_CARDS.filter(function (c) {
+        return state.server === 'mlx' ? c.mac : state.server === 'llama' || state.server === 'ollama' ? true : !c.mac;
+      });
+    }
+    function memoryOptions() {
+      var seen = {};
+      visibleCards().forEach(function (c) {
+        seen[c.gb] = 1;
+      });
+      return Object.keys(seen).map(Number).sort(function (a, b) {
+        return a - b;
+      });
+    }
+    // Keep the card in step with the engine (and bring your own card back when you return).
+    function fitHardwareToEngine() {
+      var card = currentCard(),
+        shown = visibleCards();
+      if (card && shown.indexOf(card) === -1) {
+        if (!card.mac) state.cardBeforeMac = card.id;
+        var back = GPU_CARDS.filter(function (c) {
+          return c.id === (card.mac ? state.cardBeforeMac || 'h100' : 'mac-64');
+        })[0];
+        var pick = shown.indexOf(back) !== -1 ? back : shown[0];
+        state.gpuCard = pick.id;
+        state.gpuVram = pick.gb;
+      } else if (!card && state.gpuVram && memoryOptions().indexOf(state.gpuVram) === -1) {
+        state.gpuVram = memoryOptions()[0];
+      }
+      if (currentCard() && currentCard().mac) state.hardware = 'single';
+    }
     // Repos Hugging Face asks you to sign in and accept a license for (read from the API, 2026-09-30).
     var HF_GATED = {
       'Lightricks/LTX-2.5-Diffusers': 1,
@@ -3357,7 +3385,6 @@
       'meta-llama/Llama-4-Scout-17B-16E-Instruct': 1,
       'stabilityai/stable-audio-3-medium': 1,
     };
-    var GPU_MEMORY = [24, 32, 40, 48, 80, 96, 141, 180, 288];
     function currentCard() {
       for (var i = 0; i < GPU_CARDS.length; i++) if (GPU_CARDS[i].id === state.gpuCard) return GPU_CARDS[i];
       return null;
@@ -3538,6 +3565,7 @@
         fitEngineToKind();
         renderServers();
         renderTuning();
+        renderHardware();
       } else if (models[state.model].kind !== next) {
         setModel(pickModel(next)); // the summary and command always describe what is highlighted
         return;
@@ -3623,6 +3651,7 @@
             renderQuant();
             renderServerFields();
             renderTuning();
+            renderHardware();
             renderOutput();
           };
         });
@@ -3689,6 +3718,11 @@
     }
     /* ▸ js: render — hardware, context, host, port, tuning */
     function renderHardware() {
+      fitHardwareToEngine();
+      var mac = !!(currentCard() && currentCard().mac);
+      $('gpuCountField').hidden = mac; // one Mac is one machine
+      $('gpuCardLabel').textContent = state.server === 'mlx' ? 'Mac' : state.server === 'llama' || state.server === 'ollama' ? 'Hardware' : 'GPU';
+      $('gpuVramLabel').textContent = mac ? 'Unified memory' : 'Memory per GPU';
       var multi = state.hardware === 'multi',
         parallel = state.server === 'vllm' || state.server === 'sglang' || state.server === 'tgi' || state.server === 'trtllm';
       $('parallelField').hidden = !multi || !parallel;
@@ -3713,8 +3747,8 @@
       );
       choiceButtons(
         'gpuCardChoices',
-        GPU_CARDS.map(function (c) {
-          var twin = GPU_CARDS.filter(function (o) {
+        visibleCards().map(function (c) {
+          var twin = visibleCards().filter(function (o) {
             return o.name === c.name;
           }).length > 1; // A100 and GH200 come in two sizes; the memory row below says the rest
           return [c.id, twin ? c.name + ' · ' + c.gb + ' GB' : c.name];
@@ -3729,7 +3763,7 @@
       );
       choiceButtons(
         'gpuVramChoices',
-        GPU_MEMORY.map(function (gb) {
+        memoryOptions().map(function (gb) {
           return [String(gb), gb + ' GB'];
         }),
         state.gpuVram,
@@ -3852,10 +3886,6 @@
     function renderTuning() {
       var visible = state.server === 'vllm';
       $('vllmControls').hidden = !visible;
-      $('capabilityNote').hidden = visible;
-      if (!visible)
-        $('capabilityNote').textContent =
-          'Engine-specific choices stay saved. Unsupported ones are listed in Checks.';
       var choices = {
         batch: [
           ['auto', 'Auto'],
@@ -3993,6 +4023,7 @@
       fitEngineToKind();
       renderServers();
       renderTuning();
+      renderHardware();
       renderQuant();
       renderOrnithServing();
       renderModelList();
@@ -4476,7 +4507,7 @@
         runtime: {
           server: state.server,
           hardware: {
-            type: 'GPU',
+            type: currentCard() && currentCard().mac ? 'Apple silicon' : 'GPU',
             available_devices: state.hardware === 'single' ? 1 : state.gpuCount,
             memory_per_device_gb: state.gpuVram,
             name: currentCard() ? currentCard().name + ' ' + currentCard().gb + ' GB' : null,
@@ -5277,10 +5308,7 @@
               })
             : null;
         if (estimate) return { warn: estimate.level === 'fail', text: estimate.text };
-        return {
-          warn: false,
-          text: 'No memory estimate for this model.',
-        };
+        return { warn: false, text: '' }; // nothing known: say nothing
       }
       var build = c.model.build,
         engine = c.runtime.server,
@@ -5372,8 +5400,6 @@
         return 'MLX expects a converted checkpoint, usually a Hugging Face ID or path.';
       if (r.server === 'llama' && source !== 'path' && source !== 'huggingface')
         return 'llama.cpp expects a GGUF path or compatible Hugging Face reference.';
-      if ((arch === 'speech' || arch === 'diffusion' || arch === 'reranker') && r.server !== 'custom')
-        return 'This workload may need a specialized server. Check support for the exact architecture.';
       if (source === 'url' && r.server !== 'custom')
         return 'Most server commands expect a model ID or mounted path. Fetch or mount the URL first.';
       if (!c.model.build && qIsSpecial(r.quantization) && r.server !== 'custom')
@@ -5434,16 +5460,17 @@
       renderFlagMap(config);
       var fit = fitAssessment(config);
       $('fitNote').textContent = fit.text;
+      $('fitNote').hidden = !fit.text;
       $('fitNote').classList.toggle('warn', fit.warn);
       var badges = [
         server().name,
-        config.runtime.parallel_devices * config.runtime.pipeline_stages +
-          ' GPU · ' +
-          state.gpuVram +
-          ' GB each',
+        currentCard() && currentCard().mac
+          ? 'Mac · ' + state.gpuVram + ' GB'
+          : config.runtime.parallel_devices * config.runtime.pipeline_stages + ' GPU · ' + state.gpuVram + ' GB each',
         format(),
         state.server === 'mlx' ? 'MLX default' : Number(val('context')).toLocaleString() + ' tokens',
       ];
+      if (diffusionKind()) badges = badges.slice(0, 2); // a weight format and a token window mean nothing for images
       $('summary').innerHTML = badges
         .map(function (x) {
           return '<span>' + esc(x) + '</span>';
