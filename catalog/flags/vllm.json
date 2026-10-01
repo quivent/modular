@@ -2,7 +2,8 @@
  "engine": "vllm",
  "source": "https://docs.vllm.ai/en/latest/cli/serve/",
  "fetched": "2026-09-30",
- "count": 311,
+ "release": "v0.31.0rc2",
+ "count": 312,
  "sections": [
   {
    "title": "Arguments",
@@ -1860,7 +1861,7 @@
      "negation": null,
      "choices": null,
      "default": "16",
-     "help": "ReplaySSM logical history length B for Mamba2. Triton uses B physical rows and FlashInfer uses B+1. Kimi-K3 speculative decode does not use B. Default 16."
+     "help": "ReplaySSM logical history length B for Mamba2. Triton uses B physical rows and FlashInfer uses B+T, where T is the target verification length. Kimi-K3 speculative decode does not use B. Default 16."
     },
     {
      "name": "--use-replayssm",
@@ -1868,7 +1869,7 @@
      "negation": "--no-use-replayssm",
      "choices": null,
      "default": "False",
-     "help": "Use the ReplaySSM Mamba2 decode kernel: cache recent SSM inputs and skip the per-step full-state store, writing the checkpoint back only on flush. Requires mamba_cache_mode 'none' or 'align' (prefix caching) and the Triton or FlashInfer mamba backend; standard (non-speculative) decode only. In align mode flushes are most efficient when mamba_block_size is a multiple of replayssm_buffer_len, but this is not required."
+     "help": "Use the ReplaySSM Mamba2 decode kernel: cache recent SSM inputs and skip the per-step full-state store, writing the checkpoint back only on flush. Requires mamba_cache_mode 'none' or 'align' (prefix caching) and the Triton or FlashInfer mamba backend. Mamba2 speculative decode requires FlashInfer and mamba_cache_mode 'none'. In align mode flushes are most efficient when mamba_block_size is a multiple of replayssm_buffer_len, but this is not required."
     },
     {
      "name": "--kv-offloading-size",
@@ -2440,6 +2441,14 @@
      "choices": null,
      "default": "False",
      "help": "Log every monitored JIT compile with runtime details. This can emit many logs and add overhead, so it is intended for debugging."
+    },
+    {
+     "name": "--custom-histogram-buckets",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "Custom Prometheus histogram bucket boundaries, as a JSON mapping from bucket-family key to a list of strictly increasing, positive, finite upper bounds. When a family key is present, its list replaces the default buckets for every histogram in that family; families not listed keep their defaults. Known families: request_latency, time_to_first_token, inter_token_latency, iteration_tokens, request_params_n, request_num_preemptions, request_tokens, kv_cache_residency. Example: --custom-histogram-buckets '{\"request_latency\": [0.01, 0.05, 0.1, 0.5]}'. Note that every extra bucket adds one time series per metric and label set. Should either be a valid JSON string or JSON keys passed individually."
     }
    ]
   },
