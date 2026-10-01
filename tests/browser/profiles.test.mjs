@@ -24,7 +24,7 @@ export default async function (t) {
     const noticed = await browser.eval(`(() => { ${PAGE_SOURCE}
       const want = ${JSON.stringify(golden.engines.vllm)};
       const broken = JSON.parse(JSON.stringify(ENGINE_PROFILES.vllm));
-      [broken.rules[1], broken.rules[2]] = [broken.rules[2], broken.rules[1]];
+      [broken.rules[0], broken.rules[1]] = [broken.rules[1], broken.rules[0]]; // host and port: always printed
       return makeRandomConfigs('vllm', 20, ${golden.seed}).some((c, i) => profileCommand(broken, c) !== want[i]);
     })()`);
     t.ok(noticed, 'a profile with two rules swapped is noticed');

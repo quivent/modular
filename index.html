@@ -2446,6 +2446,8 @@
       {
         name: 'Qwen3 32B',
         ref: 'Qwen/Qwen3-32B',
+        gguf: 'unsloth/Qwen3-32B-GGUF',
+        mlx: 'mlx-community/Qwen3-32B-4bit',
         retired: true, kind: 'language', group: 'Qwen', family: 'Qwen',
         arch: 'text',
         size: '32B',
@@ -2455,6 +2457,8 @@
       {
         name: 'DeepSeek R1 Distill 32B',
         ref: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-32B',
+        gguf: 'unsloth/DeepSeek-R1-Distill-Qwen-32B-GGUF',
+        mlx: 'mlx-community/DeepSeek-R1-Distill-Qwen-32B-4bit',
         retired: true, kind: 'language', group: 'DeepSeek', family: 'DeepSeek',
         arch: 'text',
         size: '32B',
@@ -2463,6 +2467,8 @@
       {
         name: 'Llama 3.3 70B Instruct',
         ref: 'meta-llama/Llama-3.3-70B-Instruct',
+        gguf: 'unsloth/Llama-3.3-70B-Instruct-GGUF',
+        mlx: 'mlx-community/Llama-3.3-70B-Instruct-4bit',
         retired: true, kind: 'language', group: 'Llama', family: 'Llama',
         arch: 'text',
         size: '70B',
@@ -2471,6 +2477,8 @@
       {
         name: 'Gemma 3 27B',
         ref: 'google/gemma-3-27b-it',
+        gguf: 'unsloth/gemma-3-27b-it-GGUF',
+        mlx: 'mlx-community/gemma-3-27b-it-qat-4bit',
         retired: true, kind: 'language', group: 'Gemma', family: 'Gemma',
         arch: 'vision',
         size: '27B',
@@ -2479,6 +2487,8 @@
       {
         name: 'Qwen2.5 VL 7B',
         ref: 'Qwen/Qwen2.5-VL-7B-Instruct',
+        gguf: 'unsloth/Qwen2.5-VL-7B-Instruct-GGUF',
+        mlx: 'mlx-community/Qwen2.5-VL-7B-Instruct-4bit',
         retired: true, kind: 'language', group: 'Qwen', family: 'Qwen',
         arch: 'vision',
         size: '7B',
@@ -2487,6 +2497,7 @@
       {
         name: 'Mixtral 8x7B',
         ref: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+        mlx: 'mlx-community/Mixtral-8x7B-Instruct-v0.1-4bit',
         retired: true, kind: 'language', group: 'Mistral', family: 'Mixtral',
         arch: 'moe',
         size: '8x7B',
@@ -2523,6 +2534,8 @@
       {
         name: 'Qwen3.8 27B',
         ref: 'Qwen/Qwen3.8-27B',
+        gguf: 'unsloth/Qwen3.8-27B-GGUF',
+        mlx: 'mlx-community/Qwen3.8-27B-4bit',
         family: 'Qwen3.8',
         kind: 'language',
         group: 'Qwen3.8',
@@ -2536,6 +2549,8 @@
       {
         name: 'Qwen3.8 Flash-Next',
         ref: 'Qwen/Qwen3.8-Flash-Next',
+        gguf: 'unsloth/Qwen3.8-Flash-Next-GGUF',
+        mlx: 'mlx-community/Qwen3.8-Flash-Next-4bit',
         family: 'Qwen3.8',
         kind: 'language',
         group: 'Qwen3.8',
@@ -2550,6 +2565,7 @@
       {
         name: 'Qwen3.8 2.4T-A95B',
         ref: 'Qwen/Qwen3.8-2.4T-A95B',
+        gguf: 'unsloth/Qwen3.8-2.4T-A95B-GGUF',
         family: 'Qwen3.8',
         kind: 'language',
         group: 'Qwen3.8',
@@ -2563,6 +2579,8 @@
       {
         name: 'Gemma 4 31B',
         ref: 'google/gemma-4-31B-it',
+        gguf: 'unsloth/gemma-4-31B-it-qat-GGUF',
+        mlx: 'mlx-community/gemma-4-31b-it-4bit',
         family: 'Gemma 4',
         kind: 'language',
         group: 'Gemma 4',
@@ -2576,6 +2594,8 @@
       {
         name: 'Gemma 4 26B-A4B',
         ref: 'google/gemma-4-26B-A4B-it',
+        gguf: 'unsloth/gemma-4-26B-A4B-it-qat-GGUF',
+        mlx: 'mlx-community/gemma-4-26b-a4b-it-4bit',
         family: 'Gemma 4',
         kind: 'language',
         group: 'Gemma 4',
@@ -2590,6 +2610,8 @@
       {
         name: 'Gemma 4 12B',
         ref: 'google/gemma-4-12B-it',
+        gguf: 'unsloth/gemma-4-12b-it-GGUF',
+        mlx: 'mlx-community/gemma-4-12B-it-qat-4bit',
         family: 'Gemma 4',
         kind: 'language',
         group: 'Gemma 4',
@@ -2603,6 +2625,8 @@
       {
         name: 'Gemma 4 E4B',
         ref: 'google/gemma-4-E4B-it',
+        gguf: 'ggml-org/gemma-4-E4B-it-GGUF',
+        mlx: 'mlx-community/gemma-4-e4b-it-4bit',
         family: 'Gemma 4',
         kind: 'language',
         group: 'Gemma 4',
@@ -2616,6 +2640,7 @@
       {
         name: 'DeepSeek V4.1 Flash',
         ref: 'deepseek-ai/DeepSeek-V4.1-Flash',
+        mlx: 'mlx-community/DeepSeek-V4.1-Flash-MLX-4bit',
         family: 'DeepSeek V4',
         kind: 'language',
         group: 'DeepSeek V4',
@@ -2630,6 +2655,7 @@
       {
         name: 'DeepSeek V4 Pro',
         ref: 'deepseek-ai/DeepSeek-V4-Pro-0813',
+        gguf: 'unsloth/DeepSeek-V4-Pro-0813-GGUF',
         family: 'DeepSeek V4',
         kind: 'language',
         group: 'DeepSeek V4',
@@ -2643,6 +2669,8 @@
       {
         name: 'GLM-5.3',
         ref: 'zai-org/GLM-5.3',
+        gguf: 'unsloth/GLM-5.3-GGUF',
+        mlx: 'mlx-community/GLM-5.3-4bit',
         family: 'GLM-5.3',
         kind: 'language',
         group: 'GLM-5.3',
@@ -2656,6 +2684,8 @@
       {
         name: 'GLM-5.3 Flash',
         ref: 'zai-org/GLM-5.3-Flash',
+        gguf: 'unsloth/GLM-5.3-Flash-GGUF',
+        mlx: 'mlx-community/GLM-5.3-Flash-4bit',
         family: 'GLM-5.3',
         kind: 'language',
         group: 'GLM-5.3',
@@ -2670,6 +2700,8 @@
       {
         name: 'gpt-oss 120B',
         ref: 'openai/gpt-oss-120b',
+        gguf: 'ggml-org/gpt-oss-120b-GGUF',
+        mlx: 'mlx-community/gpt-oss-120b-4bit',
         family: 'gpt-oss',
         kind: 'language',
         group: 'gpt-oss',
@@ -2683,6 +2715,7 @@
       {
         name: 'gpt-oss 20B',
         ref: 'openai/gpt-oss-20b',
+        gguf: 'unsloth/gpt-oss-20b-GGUF',
         family: 'gpt-oss',
         kind: 'language',
         group: 'gpt-oss',
@@ -2696,6 +2729,7 @@
       {
         name: 'Kimi K3',
         ref: 'moonshotai/Kimi-K3',
+        gguf: 'unsloth/Kimi-K3-GGUF',
         family: 'Kimi',
         kind: 'language',
         group: 'Kimi',
@@ -2736,6 +2770,7 @@
       {
         name: 'Granite 4.2 30B',
         ref: 'ibm-granite/granite-4.2-30b',
+        gguf: 'ibm-granite/granite-4.2-30b-GGUF',
         family: 'Granite 4.2',
         kind: 'language',
         group: 'Granite 4.2',
@@ -2748,6 +2783,7 @@
       {
         name: 'Granite 4.2 8B',
         ref: 'ibm-granite/granite-4.2-8b',
+        gguf: 'ibm-granite/granite-4.2-8b-GGUF',
         family: 'Granite 4.2',
         kind: 'language',
         group: 'Granite 4.2',
@@ -2760,6 +2796,8 @@
       {
         name: 'Mistral Medium 3.5',
         ref: 'mistralai/Mistral-Medium-3.5-128B',
+        gguf: 'unsloth/Mistral-Medium-3.5-128B-GGUF',
+        mlx: 'mlx-community/Mistral-Medium-3.5-128B-4bit',
         family: 'Mistral',
         kind: 'language',
         group: 'Mistral',
@@ -2773,6 +2811,8 @@
       {
         name: 'Mistral Small 4',
         ref: 'mistralai/Mistral-Small-4-119B-2603',
+        gguf: 'unsloth/Mistral-Small-4-119B-2603-GGUF',
+        mlx: 'mlx-community/Mistral-Small-4-119B-2603-4bit',
         family: 'Mistral',
         kind: 'language',
         group: 'Mistral',
@@ -2787,6 +2827,8 @@
       {
         name: 'Ministral 3 14B',
         ref: 'mistralai/Ministral-3-14B-Instruct-2512',
+        gguf: 'mistralai/Ministral-3-14B-Instruct-2512-GGUF',
+        mlx: 'mlx-community/Ministral-3-14B-Instruct-2512-4bit',
         family: 'Mistral',
         kind: 'language',
         group: 'Mistral',
@@ -2800,6 +2842,8 @@
       {
         name: 'Ministral 3 8B',
         ref: 'mistralai/Ministral-3-8B-Instruct-2512',
+        gguf: 'mistralai/Ministral-3-8B-Instruct-2512-GGUF',
+        mlx: 'mlx-community/Ministral-3-8B-Instruct-2512-4bit',
         family: 'Mistral',
         kind: 'language',
         group: 'Mistral',
@@ -2813,6 +2857,8 @@
       {
         name: 'Llama 4 Scout',
         ref: 'meta-llama/Llama-4-Scout-17B-16E-Instruct',
+        gguf: 'unsloth/Llama-4-Scout-17B-16E-Instruct-GGUF',
+        mlx: 'mlx-community/Llama-4-Scout-17B-16E-Instruct-4bit',
         family: 'Llama 4',
         kind: 'language',
         group: 'Llama 4',
@@ -3535,12 +3581,15 @@
         .querySelectorAll('[data-server]')
         .forEach(function (button) {
           button.onclick = function () {
-            var previousQuant = val('quant');
+            var previousQuant = val('quant'),
+              leaving = server();
             state.prefixStates[state.server] = on('prefix');
             state.trustStates[state.server] = on('trust');
             state.server = button.dataset.server;
             state.untranslatedQuant =
-              availableBuilds() || server().quant.includes(previousQuant) ? null : previousQuant;
+              availableBuilds() || server().quant.includes(previousQuant) || previousQuant === leaving.quant[0]
+                ? null // an engine's own default ("Native / auto", "Set by checkpoint") is not a choice that needs carrying over
+                : previousQuant;
             $('prefix').setAttribute('aria-checked', String(!!state.prefixStates[state.server]));
             $('trust').setAttribute('aria-checked', String(!!state.trustStates[state.server]));
             renderServers();
@@ -4384,6 +4433,8 @@
           ornith_profile: ornithProfileActive(),
           ornith_size: selectedOrnith() ? models[state.model].ornith : null,
           build: availableBuilds() ? state.build : null,
+          gguf: (!state.customModel && models[state.model] && models[state.model].gguf) || null, // the builds llama.cpp, Ollama and MLX need
+          mlx: (!state.customModel && models[state.model] && models[state.model].mlx) || null,
           served_name: selectedOrnith()
             ? models[state.model].served
             : state.customOrnith
@@ -4453,18 +4504,19 @@
         var hf = c.model.source === 'huggingface';
         parts = [
           'llama-server',
-          hf ? '-hf ' + m : '-m ' + m,
+          hf ? '-hf ' + (c.model.gguf ? sh(c.model.gguf) : m) : '-m ' + m,
           '--host ' + host,
           '--port ' + port,
           '-c ' + ctx,
         ];
       }
       if (r.server === 'mlx') {
-        parts = ['mlx_lm.server', '--model ' + m, '--host ' + host, '--port ' + port];
+        parts = ['mlx_lm.server', '--model ' + (c.model.mlx ? sh(c.model.mlx) : m), '--host ' + host, '--port ' + port];
         if (r.trust_model_code) parts.push('--trust-remote-code');
       }
       if (r.server === 'ollama') {
         if (c.model.build === 'GGUF') m = sh('hf.co/' + c.model.reference);
+        else if (c.model.gguf) m = sh('hf.co/' + c.model.gguf);
         var env =
           'OLLAMA_HOST=' +
           sh((r.host || '0.0.0.0') + ':' + port) +
@@ -4552,18 +4604,18 @@
       } else if (id === 'llama') {
         add(
           'Model',
-          c.model.source === 'huggingface' ? '-hf ' + c.model.reference : '-m ' + c.model.reference,
+          c.model.source === 'huggingface' ? '-hf ' + (c.model.gguf || c.model.reference) : '-m ' + c.model.reference,
           'modelFocus',
         );
         add('Host', '--host ' + r.host, 'hostChoices');
         add('Port', '--port ' + r.port, 'hostChoices');
         add('Context', '-c ' + r.context_tokens, 'contextField');
       } else if (id === 'mlx') {
-        add('Model', '--model ' + c.model.reference, 'modelFocus');
+        add('Model', '--model ' + (c.model.mlx || c.model.reference), 'modelFocus');
         add('Host', '--host ' + r.host, 'hostChoices');
         add('Port', '--port ' + r.port, 'hostChoices');
       } else if (id === 'ollama') {
-        add('Model', 'ollama pull ' + c.model.reference, 'modelFocus');
+        add('Model', 'ollama pull ' + (c.model.build === 'GGUF' ? 'hf.co/' + c.model.reference : c.model.gguf ? 'hf.co/' + c.model.gguf : c.model.reference), 'modelFocus');
         add('Host', 'OLLAMA_HOST=' + r.host + ':' + r.port, 'hostChoices');
         add('Context', 'OLLAMA_CONTEXT_LENGTH=' + r.context_tokens, 'contextField');
         add('Parallel requests', 'OLLAMA_NUM_PARALLEL=' + r.parallel_devices, 'parallelField');
@@ -4944,7 +4996,7 @@
        renderer turns a profile and a configuration into the command. Every flag named here has to exist in
        that engine's documentation (catalog/flags/<engine>.json); a test checks it. Paths read the
        configuration that spec() builds ("runtime.port", "model.reference"). Conditions: truthy, falsy, eq,
-       neq, gt, and, not. Formats: raw (default), sh (shell-quoted), fraction (percent as 0.90), bytes (GiB
+       neq, gt, and, or, not. Formats: raw (default), sh (shell-quoted), fraction (percent as 0.90), bytes (GiB
        to bytes), lower_sh (lower-cased, quoted). */
     var ENGINE_PROFILES = {
       vllm: {
@@ -4955,6 +5007,7 @@
         rules: [
           { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0', label: 'Host', target: 'hostChoices' },
           { flag: '--port', value: 'runtime.port', label: 'Port', target: 'hostChoices' },
+          { flag: '--runner', literal: 'pooling', when: { or: [{ eq: ['model.architecture', 'embedding'] }, { eq: ['model.architecture', 'reranker'] }] }, label: 'Model type', target: 'archChoices' },
           { flag: '--max-model-len', value: 'runtime.context_tokens', label: 'Context', target: 'contextField' },
           { flag: '--tensor-parallel-size', value: 'runtime.parallel_devices', label: 'Devices', target: 'parallelField' },
           { flag: '--kv-cache-memory-bytes', value: 'runtime.kv_cache_gb', format: 'bytes', when: { truthy: 'runtime.kv_cache_gb' }, label: 'KV cache', target: 'kvMemoryChoices' },
@@ -4986,6 +5039,7 @@
           { flag: '--model-path', value: 'model.reference', format: 'sh', fallback: 'MODEL_REFERENCE', label: 'Model', target: 'modelFocus' },
           { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0', label: 'Host', target: 'hostChoices' },
           { flag: '--port', value: 'runtime.port', label: 'Port', target: 'hostChoices' },
+          { flag: '--is-embedding', when: { eq: ['model.architecture', 'embedding'] }, label: 'Model type', target: 'archChoices' },
           { flag: '--context-length', value: 'runtime.context_tokens', label: 'Context', target: 'contextField' },
           { flag: '--tp-size', value: 'runtime.parallel_devices', label: 'Devices', target: 'parallelField' },
           { flag: '--mem-fraction-static', value: 'runtime.gpu_memory_percent', format: 'fraction', label: 'GPU memory', target: 'memoryField' },
@@ -5030,6 +5084,10 @@
           return profileHolds(c, config);
         });
       if (cond.not) return !profileHolds(cond.not, config);
+      if (cond.or)
+        return cond.or.some(function (c) {
+          return profileHolds(c, config);
+        });
       return false;
     }
     var PROFILE_FORMATS = {
@@ -5378,7 +5436,7 @@
           'warn',
           'CPU offload uses system RAM and transfers weights during inference; verify the host memory and link speed.',
         ]);
-      if (fit.warn) checks.push(['warn', fit.text]);
+      if (fit.warn) checks.push(['warn', 'This setup will not run as chosen: see the note under Hardware.']); // the explanation lives there, once
       if (currentCard() && currentCard().cc < 8.9 && config.runtime.quantization === 'FP8')
         checks.push([
           'warn',
@@ -5441,6 +5499,8 @@
         on('requestLogs')
       )
         checks.push(['warn', 'Saved vLLM choices are omitted from this engine command.']);
+      if ((state.server === 'llama' || state.server === 'ollama') && !state.customModel && !config.model.build && !config.model.gguf)
+        checks.push(['warn', 'No GGUF build of this model is known: ' + server().name + ' cannot load the original weights.']);
       if (HF_GATED[config.model.reference])
         checks.push(['warn', 'Gated model: accept its license on Hugging Face and set HF_TOKEN.']);
       if (config.runtime.extra_arguments)
