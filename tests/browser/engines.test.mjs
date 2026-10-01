@@ -35,6 +35,15 @@ export default async function (t) {
     await click('#serverList .server', 'llama.cpp'); await sleep(250);
     const r = await read();
     t.ok(r.checks.some((c) => /No GGUF build/.test(c)), 'a model with no GGUF build is flagged for llama.cpp', JSON.stringify(r.checks));
+    // engines that cannot serve a kind of model are not offered for it
+    const offered = async (kind) => { await click('#archChoices .choice', kind); await sleep(200); return $(() => [...document.querySelectorAll('#serverList .server strong')].map((x) => x.textContent)); };
+    t.equal(await offered('Embeddings'), ['vLLM', 'SGLang'], 'embedding models: the engines that serve them');
+    t.equal(await offered('Reranker'), ['vLLM'], 'rerankers: vLLM');
+    t.equal(await offered('Audio'), ['vLLM'], 'speech to text: vLLM');
+    t.equal(await offered('Language'), ['vLLM', 'SGLang', 'TensorRT', 'TGI', 'llama.cpp', 'Ollama', 'MLX'], 'and language models get all seven');
+    await $(() => { const b = [...document.querySelectorAll('#modelList .model-option')].find((x) => x.textContent.trim().startsWith('27B')); b && b.click(); });
+    await click('#serverList .server', 'Ollama'); await sleep(200);
+    t.equal((await $(() => document.getElementById('status').hidden ? '' : document.getElementById('status').textContent)), '', 'Ollama with a catalog model raises no error banner');
     // embedding and reranker models are not chat models: the engines are told
     await click('#archChoices .choice', 'Embeddings'); await sleep(200);
     await click('#serverList .server', 'vLLM'); await sleep(200);

@@ -3511,19 +3511,21 @@
         kind
       ];
     }
-    // Image and video models are served by one engine; choosing them moves to it, and leaving puts your engine back.
+    // Only some engines can serve some kinds of model. Choosing such a kind moves to one that can; leaving puts yours back.
+    var KIND_ENGINES = { image: ['sglang'], video: ['sglang'], audio: ['vllm'], embedding: ['vllm', 'sglang'], reranker: ['vllm'] };
     function diffusionKind() {
       return state.kind === 'image' || state.kind === 'video';
     }
     function fitEngineToKind() {
-      if (diffusionKind()) {
-        if (state.server !== 'sglang') {
-          state.engineBeforeDiffusion = state.server;
-          state.server = 'sglang';
+      var allowed = KIND_ENGINES[state.kind];
+      if (allowed) {
+        if (allowed.indexOf(state.server) === -1) {
+          if (!state.engineBeforeKind) state.engineBeforeKind = state.server;
+          state.server = allowed[0];
         }
-      } else if (state.engineBeforeDiffusion) {
-        state.server = state.engineBeforeDiffusion;
-        state.engineBeforeDiffusion = null;
+      } else if (state.engineBeforeKind) {
+        state.server = state.engineBeforeKind;
+        state.engineBeforeKind = null;
       }
     }
     function inCurrentKind(model) {
@@ -3614,7 +3616,7 @@
     function renderServers() {
       $('serverList').innerHTML = servers
         .filter(function (s) {
-          return !diffusionKind() || s.id === 'sglang';
+          return !KIND_ENGINES[state.kind] || KIND_ENGINES[state.kind].indexOf(s.id) !== -1;
         })
         .map(function (s) {
           return (
@@ -5395,7 +5397,7 @@
         source = c.model.source,
         arch = c.model.architecture;
       if (!c.model.reference) return 'Enter a model reference to complete the output.';
-      if (r.server === 'ollama' && source !== 'ollama' && !(c.model.build === 'GGUF'))
+      if (r.server === 'ollama' && source !== 'ollama' && !(c.model.build === 'GGUF') && !c.model.gguf)
         return 'Ollama expects a registry tag. Choose Ollama as the source and enter a tag.';
       if (r.server === 'mlx' && source === 'ollama')
         return 'MLX expects a converted checkpoint, usually a Hugging Face ID or path.';

@@ -139,7 +139,9 @@ export async function startBrowser() {
         ws.close();
       } catch {}
       await stop(child);
-      rmSync(profile, { recursive: true, force: true });
+      try {
+        rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 150 }); // Chrome may still be writing as it exits
+      } catch {}
     },
     pid: child.pid,
   };
