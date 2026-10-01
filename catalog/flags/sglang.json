@@ -2,7 +2,8 @@
  "engine": "sglang",
  "source": "https://docs.sglang.io/advanced_features/server_arguments.html",
  "fetched": "2026-09-30",
- "count": 423,
+ "release": "v0.5.20",
+ "count": 424,
  "sections": [
   {
    "title": "Model and tokenizer",
@@ -1690,7 +1691,7 @@
      "negation": null,
      "choices": null,
      "default": "1",
-     "help": "The data parallelism size.",
+     "help": "The number of data-parallel replicas of the model.",
      "type": "int"
     },
     {
@@ -1706,6 +1707,17 @@
      ],
      "default": "auto",
      "help": "The load balancing strategy for data parallelism. The total_tokens algorithm can only be used when DP attention is applied. This algorithm performs load balancing based on the real-time token load of the DP workers."
+    },
+    {
+     "name": "--attention-data-parallel-size",
+     "aliases": [
+      "--attn-dp-size"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": "1",
+     "help": "The attention data parallelism size: the number of data-parallel attention groups inside the TP group, one scheduler each, while the FFN stays tensor parallel.",
+     "type": "int"
     }
    ]
   },
@@ -3582,7 +3594,7 @@
       "bool flag (set to enable)"
      ],
      "default": "False",
-     "help": "Enabling data parallelism for attention and tensor parallelism for FFN. The dp size should be equal to the tp size. Currently DeepSeek-V2 and Qwen 2/3 MoE models are supported."
+     "help": "Deprecated. Use —attn-dp-size <dp-size> instead of —dp-size <dp-size> —enable-dp-attention."
     },
     {
      "name": "--enable-dp-lm-head",
