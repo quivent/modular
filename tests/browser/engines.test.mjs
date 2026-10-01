@@ -44,6 +44,13 @@ export default async function (t) {
     await $(() => { const b = [...document.querySelectorAll('#modelList .model-option')].find((x) => x.textContent.trim().startsWith('27B')); b && b.click(); });
     await click('#serverList .server', 'Ollama'); await sleep(200);
     t.equal((await $(() => document.getElementById('status').hidden ? '' : document.getElementById('status').textContent)), '', 'Ollama with a catalog model raises no error banner');
+    // a speech model has its own, fixed window: a text context length and a prefix cache do not belong in its command
+    await click('#archChoices .choice', 'Audio'); await sleep(200);
+    const speech = (await read()).cmd;
+    t.ok(/^vllm serve 'openai\/whisper/.test(speech) && !/--max-model-len|--enable-prefix-caching/.test(speech), 'speech to text: no text context length, no prefix cache', speech);
+    await click('#archChoices .choice', 'Language'); await sleep(200);
+    await click('#serverList .server', 'vLLM'); await sleep(200);
+    t.ok(/--max-model-len/.test((await read()).cmd), 'a language model still gets its context length');
     // embedding and reranker models are not chat models: the engines are told
     await click('#archChoices .choice', 'Embeddings'); await sleep(200);
     await click('#serverList .server', 'vLLM'); await sleep(200);

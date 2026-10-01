@@ -2292,7 +2292,7 @@
     .checks { font-size: 14px; }
     .foot { font-size: 13px; padding: 32px 0 48px; border-top: 0; }
 
-    body[data-diffusion='true'] #contextField, body[data-diffusion='true'] #customContextField,
+    body[data-nocontext='true'] #contextField, body[data-nocontext='true'] #customContextField,
     body[data-diffusion='true'] #quantField, body[data-diffusion='true'] #customQuantField,
     body[data-diffusion='true'] #parallelField, body[data-diffusion='true'] #pipelineField,
     body[data-diffusion='true'] #vllmControls, body[data-diffusion='true'] #memoryDetails,
@@ -2338,9 +2338,9 @@
             <div class="field" id="contextField"><div class="field-head"><span class="label" id="contextLabel">Context window</span></div><div class="choice-row" id="contextChoices" role="group" aria-labelledby="contextLabel"></div><input id="context" type="hidden" value="8192"></div>
             <div class="field" id="customContextField" hidden><div class="field-head"><label for="customContext">Custom context window</label><output id="contextDisplay">8,192 tokens</output></div><input id="customContext" class="range" type="range" min="512" max="262144" step="512" value="8192"><div class="range-ends"><span>512</span><span>262K</span></div></div>
             <div class="setting-cluster hardware-cluster"><div class="field"><div class="field-head"><span class="label" id="gpuCardLabel">GPU</span></div><div class="choice-row" id="gpuCardChoices" role="group" aria-labelledby="gpuCardLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="gpuVramLabel">Memory per GPU</span></div><div class="choice-row" id="gpuVramChoices" role="group" aria-labelledby="gpuVramLabel"></div></div><div class="field" id="gpuCountField"><div class="field-head"><span class="label" id="gpuCountLabel">GPUs</span></div><div class="choice-row" id="gpuCountChoices" role="group" aria-labelledby="gpuCountLabel"></div></div><div class="field" id="parallelField" hidden><div class="field-head"><span class="label" id="parallelLabel">Tensor parallel</span></div><div class="choice-row" id="parallelChoices" role="group" aria-labelledby="parallelLabel"></div></div><input id="parallel" type="hidden" value="1"><p class="fit-note" id="fitNote"></p></div>
-            <div class="setting-cluster" id="ornithServing" hidden><div class="cluster-head"><h3>Model behavior</h3><span>Ornith 1.5</span></div><div class="toggle-row"><div><strong>Reasoning parser</strong><small>Separate reasoning from the final answer</small></div><button type="button" class="toggle" id="reasoning" role="switch" aria-label="Reasoning parser" aria-checked="true"></button></div><div class="toggle-row"><div><strong>Tool-call parser</strong><small>Expose model tool calls in the API</small></div><button type="button" class="toggle" id="tools" role="switch" aria-label="Tool-call parser" aria-checked="true"></button></div><p class="setting-help" id="parserNote"></p></div><div class="setting-cluster" id="vllmControls"><div class="cluster-head"><h3>Scheduling</h3><span>vLLM · tuning</span></div>
-              <div class="field"><div class="field-head"><span class="label" id="batchLabel">Tokens per batch</span><span class="hint">Auto leaves the server default</span></div><div class="choice-row" id="batchChoices" role="group" aria-labelledby="batchLabel"></div></div>
-              <div class="field"><div class="field-head"><span class="label" id="seqLabel">Sequences per step</span><span class="hint">Auto leaves the server default</span></div><div class="choice-row" id="seqChoices" role="group" aria-labelledby="seqLabel"></div></div>
+            <div class="setting-cluster" id="ornithServing" hidden><div class="cluster-head"><h3>Model behavior</h3><span>Ornith 1.5</span></div><div class="toggle-row"><div><strong>Reasoning parser</strong><small>Separate reasoning from the final answer</small></div><button type="button" class="toggle" id="reasoning" role="switch" aria-label="Reasoning parser" aria-checked="true"></button></div><div class="toggle-row"><div><strong>Tool-call parser</strong><small>Expose model tool calls in the API</small></div><button type="button" class="toggle" id="tools" role="switch" aria-label="Tool-call parser" aria-checked="true"></button></div><p class="setting-help" id="parserNote"></p></div><div class="setting-cluster" id="vllmControls"><div class="cluster-head"><h3>Scheduling</h3></div>
+              <div class="field"><div class="field-head"><span class="label" id="batchLabel">Tokens per batch</span></div><div class="choice-row" id="batchChoices" role="group" aria-labelledby="batchLabel"></div></div>
+              <div class="field"><div class="field-head"><span class="label" id="seqLabel">Sequences per step</span></div><div class="choice-row" id="seqChoices" role="group" aria-labelledby="seqLabel"></div></div>
               <div class="toggle-row"><div><strong>Chunked prefill</strong><small>Split long prompts across scheduler steps</small></div><button type="button" class="toggle" id="chunked" role="switch" aria-label="Chunked prefill" aria-checked="false"></button></div>
               <div class="toggle-row"><div><strong>Eager execution</strong><small>Useful when debugging; may reduce throughput</small></div><button type="button" class="toggle" id="eager" role="switch" aria-label="Eager execution" aria-checked="false"></button></div>
               <details class="advanced" id="memoryDetails"><summary>Memory and precision <span>Cache, offload, dtype</span></summary><div class="advanced-body"><div class="field"><div class="field-head"><span class="label" id="offloadLabel">CPU weight offload per GPU</span></div><div class="choice-row" id="offloadChoices" role="group" aria-labelledby="offloadLabel"></div><p class="setting-help">Moves some weights through system RAM each step; speed depends on the CPU–GPU link.</p></div><div class="field"><div class="field-head"><span class="label" id="kvMemoryLabel">KV cache allocation</span></div><div class="choice-row" id="kvMemoryChoices" role="group" aria-labelledby="kvMemoryLabel"></div><p class="setting-help">A fixed cache allocation replaces the GPU memory target below.</p></div><div class="field"><div class="field-head"><span class="label" id="dtypeLabel">Compute dtype</span></div><div class="choice-row" id="dtypeChoices" role="group" aria-labelledby="dtypeLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="kvLabel">KV cache dtype</span></div><div class="choice-row" id="kvChoices" role="group" aria-labelledby="kvLabel"></div><p class="setting-help">FP8 cache needs hardware and checkpoint support; verify quality for your workload.</p></div></div></details><details class="advanced" id="requestDetails"><summary>Request behavior <span>Priority and logs</span></summary><div class="advanced-body"><div class="toggle-row"><div><strong>Priority scheduling</strong><small>Serve requests by priority instead of arrival order</small></div><button type="button" class="toggle" id="priority" role="switch" aria-label="Priority scheduling" aria-checked="false"></button></div><div class="toggle-row"><div><strong>Request logging</strong><small>Log request information at the server's log level</small></div><button type="button" class="toggle" id="requestLogs" role="switch" aria-label="Request logging" aria-checked="false"></button></div></div></details>
@@ -2356,7 +2356,7 @@
   </div>
   <!-- ▸ html: themes dialog -->
   <dialog id="themeDialog" aria-labelledby="themeTitle">
-    <div class="dialog-head"><div><h2 id="themeTitle">Themes</h2><p>Same tool, different surface. Your choice is remembered in this browser.</p></div><button class="close" type="button" id="themeClose" aria-label="Close themes">×</button></div>
+    <div class="dialog-head"><div><h2 id="themeTitle">Themes</h2></div><button class="close" type="button" id="themeClose" aria-label="Close themes">×</button></div>
     <div class="dialog-body"><div class="theme-grid" id="themeGrid" role="group" aria-label="Theme"></div></div>
   </dialog>
   <!-- ▸ html: tracker dialog -->
@@ -5078,7 +5078,7 @@
           { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0', label: 'Host', target: 'hostChoices' },
           { flag: '--port', value: 'runtime.port', label: 'Port', target: 'hostChoices' },
           { flag: '--runner', literal: 'pooling', when: { or: [{ eq: ['model.architecture', 'embedding'] }, { eq: ['model.architecture', 'reranker'] }] }, label: 'Model type', target: 'archChoices' },
-          { flag: '--max-model-len', value: 'runtime.context_tokens', label: 'Context', target: 'contextField' },
+          { flag: '--max-model-len', value: 'runtime.context_tokens', when: { neq: ['model.architecture', 'speech'] }, label: 'Context', target: 'contextField' },
           { flag: '--tensor-parallel-size', value: 'runtime.parallel_devices', label: 'Devices', target: 'parallelField' },
           { flag: '--kv-cache-memory-bytes', value: 'runtime.kv_cache_gb', format: 'bytes', when: { truthy: 'runtime.kv_cache_gb' }, label: 'KV cache', target: 'kvMemoryChoices' },
           { flag: '--gpu-memory-utilization', value: 'runtime.gpu_memory_percent', format: 'fraction', when: { falsy: 'runtime.kv_cache_gb' }, label: 'GPU memory', target: 'memoryField' },
@@ -5088,7 +5088,7 @@
           { flag: '--enable-log-requests', when: { truthy: 'runtime.request_logging' }, label: 'Request logging', target: 'requestLogs' },
           { flag: '--quantization', value: 'runtime.quantization', format: 'lower_sh', when: { and: [{ falsy: 'model.build' }, { neq: ['runtime.quantization', 'Native / auto'] }] }, label: 'Weight format', target: 'quantChoices' },
           { flag: '--trust-remote-code', when: { truthy: 'runtime.trust_model_code' }, label: 'Model code', target: 'trust' },
-          { flag: '--enable-prefix-caching', when: { truthy: 'runtime.prefix_cache' }, label: 'Prefix cache', target: 'prefix' },
+          { flag: '--enable-prefix-caching', when: { and: [{ truthy: 'runtime.prefix_cache' }, { neq: ['model.architecture', 'speech'] }] }, label: 'Prefix cache', target: 'prefix' },
           { flag: '--served-model-name', value: 'model.served_name', format: 'sh', when: { truthy: 'model.ornith_profile' }, label: 'Served name', target: 'modelFocus', targetIf: { when: { truthy: 'model.ornith_size' }, target: 'checkpointField' } },
           { flag: '--reasoning-parser', literal: 'qwen3', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.reasoning_parser' }] }, label: 'Reasoning', target: 'reasoning' },
           { flag: '--enable-auto-tool-choice', when: { and: [{ truthy: 'model.ornith_profile' }, { truthy: 'runtime.tool_call_parser' }] }, label: 'Tool calls', target: 'tools', group: 'tools' },
@@ -5433,6 +5433,7 @@
       var unsupported = unsupportedNote();
       document.body.setAttribute('data-launch', unsupported ? 'none' : 'yes');
       document.body.setAttribute('data-diffusion', String(diffusionKind()));
+      document.body.setAttribute('data-nocontext', String(diffusionKind() || state.kind === 'audio')); // images and speech have no token window
       if (unsupported) out = unsupported;
       document.body.setAttribute('data-view', state.tab);
       if (state.tab === 'all' && !unsupported) renderAllFlags(config, out);
@@ -5473,7 +5474,7 @@
         format(),
         state.server === 'mlx' ? 'MLX default' : Number(val('context')).toLocaleString() + ' tokens',
       ];
-      if (diffusionKind()) badges = badges.slice(0, 2); // a weight format and a token window mean nothing for images
+      if (diffusionKind() || state.kind === 'audio') badges = badges.slice(0, 2); // a weight format and a token window mean nothing for images or speech
       $('summary').innerHTML = badges
         .map(function (x) {
           return '<span>' + esc(x) + '</span>';
@@ -5791,10 +5792,7 @@
           var label = document.createElement('span');
           var name = document.createElement('strong');
           name.textContent = t.name;
-          var note = document.createElement('small');
-          note.textContent = t.note;
           label.appendChild(name);
-          label.appendChild(note);
           card.appendChild(pv);
           card.appendChild(label);
           card.onclick = function () {
