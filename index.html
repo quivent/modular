@@ -2189,6 +2189,130 @@
         grid-template-columns: 1fr 1fr;
       }
     }
+    /* ▸ css: design — one calm system on top of the layers above */
+    /* Type: 15 / 13 / 12. Space: multiples of 8. Shape: pills for choices, 14px for surfaces. Colour comes only from the
+       theme's role variables, so every theme gets the same quiet structure. */
+    body { font-size: 15px; line-height: 1.5; }
+    .page { max-width: 1240px; padding: 0 clamp(20px, 5vw, 64px); }
+    .top { height: 72px; border-bottom: 0; }
+    .intro { padding: 40px 0 24px; border-bottom: 0; }
+    .intro h1 { font: 800 clamp(30px, 3.7vw, 46px)/1.1 var(--font-display); letter-spacing: -0.055em; max-width: 1000px; }
+    .workspace { padding: 24px 0 96px; grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.8fr); gap: clamp(40px, 5vw, 72px); }
+
+    .group { padding-bottom: 48px; margin-bottom: 48px; border-bottom: 1px solid var(--line2); }
+    .group-head { align-items: baseline; gap: 14px; margin-bottom: 28px; }
+    .group-head h2 { font: 800 24px var(--font-display); letter-spacing: -0.045em; margin: 0; }
+    .group-head p { display: none; }
+    .number { font: 500 13px var(--mono); color: var(--accent-text-soft); min-width: 0; padding: 0; }
+    .body-indent { margin-left: 0; }
+    .field { margin: 0 0 32px; }
+    .field-head { margin-bottom: 12px; }
+    .field label, .field .label { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+    .count { font-size: 13px; }
+
+    /* choices: one pill shape everywhere */
+    .choice-row, .choice-grid { gap: 8px; }
+    .choice, .choice-grid .choice {
+      min-width: 0; min-height: 40px; padding: 9px 18px; border-radius: var(--r-pill);
+      border: 1px solid var(--line); background: var(--white); color: var(--ink-2);
+      font-size: 14px; font-weight: 600; letter-spacing: -0.005em; transition: background .12s, border-color .12s, color .12s;
+    }
+    .choice:hover { border-color: var(--accent-line); background: var(--tint); }
+    .choice[aria-pressed='true'] { background: var(--green); border-color: var(--green-line); color: var(--on-green); }
+    .arch-sub { margin-top: 20px; }
+    .arch-sub-label { display: block; margin-bottom: 12px; font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0; text-transform: none; }
+
+    /* the chosen model leads the section */
+    .model-focus { border: 0; padding: 0; margin: 0 0 40px; }
+    .model-focus-label { display: none; }
+    .model-focus strong { font: 800 clamp(26px, 3vw, 34px)/1.15 var(--font-display); letter-spacing: -0.05em; }
+    .model-focus strong small { font: 500 15px var(--font-body); letter-spacing: 0; color: var(--soft); margin-left: 12px; }
+    .model-focus .selected-ref { margin-top: 10px; font-size: 13px; }
+    .model-focus .selected-ref code { font: 13px var(--mono); color: var(--muted); }
+
+    /* catalog: a family is a name and its sizes */
+    #modelList { display: block; margin: 8px 0 8px; }
+    #modelList .family-row { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 8px 24px; align-items: center; padding: 10px 0; border: 0; }
+    #modelList .family-label strong { font: 700 14px var(--font-display); letter-spacing: -0.02em; color: var(--ink-1); }
+    #modelList .family-label small { display: none; }
+    #modelList .family-models { display: flex; flex-wrap: wrap; gap: 8px; }
+    #modelList .model-choice { display: block; }
+    #modelList .model-option { min-height: 40px; padding: 8px 18px; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--white); text-align: center; }
+    #modelList .model-option strong { font: 600 14px var(--font-body); }
+    #modelList .model-option small { display: none; }
+    #modelList .model-option:hover { border-color: var(--accent-line); background: var(--tint); }
+    #modelList .model-option.active, #modelList .model-option[aria-pressed='true'] { background: var(--green); border-color: var(--green-line); color: var(--on-green); }
+    #modelList .model-option.active:after, #modelList .model-option[aria-pressed='true']:after { content: none; }
+
+    /* engines: seven names, one line about the chosen one */
+    .server-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .server { min-height: 40px; padding: 9px 18px; border-radius: var(--r-pill); display: inline-flex; align-items: center; background: var(--white); }
+    .server strong { margin: 0; font-size: 14px; font-weight: 600; }
+    .server small { display: none; }
+    .server.active { background: var(--green); border-color: var(--green-line); box-shadow: none; color: var(--on-green); }
+    .server.active:after { content: none; }
+    .inline-note { border: 0; background: none; padding: 0; margin: 14px 0 0; font-size: 14px; color: var(--muted); }
+    #quantField { margin-top: 32px !important; }
+
+    /* controls that open: quiet lines, not boxes */
+    details.advanced { border: 0; border-top: 1px solid var(--line2); border-radius: 0; background: none; margin: 0; }
+    details.advanced > summary { padding: 18px 0; font-size: 15px; font-weight: 600; color: var(--ink-2); }
+    details.advanced > summary span { font-size: 13px; font-weight: 400; color: var(--soft); }
+    details.advanced > summary, .flag-details > summary { justify-content: flex-start; gap: 0; }
+    details.advanced > summary:before, .flag-details > summary:before { margin-right: 14px; font-size: 20px; width: 14px; text-align: center; color: var(--accent-text-soft); }
+    details.advanced > summary span, .flag-details > summary span { margin-left: auto; font: 13px var(--font-body); color: var(--soft); }
+    .flag-details { margin-top: 8px; border-top: 1px solid var(--line2); }
+    .flag-details > summary { padding: 18px 0; font-size: 15px; font-weight: 600; }
+    details.advanced[open] > summary { padding-bottom: 8px; }
+    .advanced-body { padding: 8px 0 24px; }
+    .setting-cluster { border: 0; background: none; padding: 0; margin: 0 0 32px; }
+    .cluster-head h3 { font: 700 14px var(--font-display); color: var(--ink-1); letter-spacing: -0.02em; margin: 0 0 20px; }
+    .fit-note { border: 0; background: var(--tint); border-radius: 14px; padding: 14px 18px; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+    .setting-help, .hint { font-size: 13px; }
+    .toggle-row strong { font-size: 15px; font-weight: 600; }
+    .toggle-row small { font-size: 13px; }
+    .toggle { width: 42px; height: 26px; }
+    .toggle:after { width: 20px; height: 20px; top: 3px; left: 3px; }
+    .toggle[aria-checked='true']:after { transform: translateX(16px); }
+    .control { min-height: 46px; border-radius: 12px; font-size: 14px; padding: 11px 14px; }
+    .control.mono { font-size: 13px; }
+    .secondary, .primary { border-radius: var(--r-pill); font-size: 14px; font-weight: 600; padding: 10px 20px; min-height: 40px; }
+
+    /* the configuration panel */
+    .preview { border-radius: 20px; border-color: var(--line2); box-shadow: 0 24px 64px var(--shadow-1); top: 24px; }
+    .preview-top { padding: 28px 28px 22px; border-bottom: 0; }
+    .preview-top h2 { font: 800 20px var(--font-display); letter-spacing: -0.045em; margin: 0 0 6px; }
+    .preview-top p { font-size: 13px; }
+    .output-mode { display: flex; gap: 4px; margin: 0 28px 16px; padding: 4px; background: var(--tint); border-radius: var(--r-pill); }
+    .output-mode .choice { flex: 1; min-height: 34px; padding: 6px 8px; border: 0; background: transparent; font-size: 13px; color: var(--muted); }
+    .output-mode .choice:hover { background: transparent; color: var(--ink-1); }
+    .output-mode .choice[aria-pressed='true'] { background: var(--white); color: var(--ink); box-shadow: 0 1px 3px var(--shadow-1); }
+    .preview-content { padding: 0 28px 8px; }
+    .code { font-size: 13px; line-height: 1.7; border-radius: 14px; }
+    .flags-all { border-radius: 14px; border: 0; background: var(--tint); }
+    .flag-line { padding: 10px 0; }
+    .flag-name { font-size: 13px; }
+    .flag-value { font-size: 13px; }
+    .flag-section h4 { font-size: 12px; }
+    .preview-actions { margin: 16px 0 8px; }
+    .preview-bottom { padding: 8px 28px 28px; border-top: 0; }
+    .mini-heading { font-size: 12px; margin: 20px 0 10px; }
+    .summary span { font-size: 13px; padding: 6px 12px; border-radius: var(--r-pill); }
+    .checks { font-size: 14px; }
+    .foot { font-size: 13px; padding: 32px 0 48px; border-top: 0; }
+
+    @media (max-width: 1000px) {
+      .workspace { grid-template-columns: minmax(0, 1fr); gap: 56px; }
+      .preview { position: static; }
+    }
+    @media (max-width: 640px) {
+      .intro { padding-top: 24px; }
+      .group { padding-bottom: 40px; margin-bottom: 40px; }
+      #modelList .family-row { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 8px 0; }
+      .preview-top, .preview-bottom { padding-left: 20px; padding-right: 20px; }
+      .output-mode { margin-left: 20px; margin-right: 20px; }
+      .preview-content { padding: 0 20px 8px; }
+    }
   </style>
 </head>
 <body>
@@ -2203,21 +2327,21 @@
           <section class="group" aria-labelledby="model-title"><div class="group-head"><span class="number">01</span><div><h2 id="model-title">Model</h2></div></div><div class="body-indent">
             <div class="model-focus" id="modelFocus" aria-live="polite"><div class="model-focus-label">Selected</div><strong id="selectedModelName">Qwen3 8B</strong><div class="selected-ref"><span id="modelRefLabel">Hugging Face</span><code id="modelRefDisplay">Qwen/Qwen3-8B</code></div></div>
             <div class="field" id="architectureField"><div class="field-head"><span class="label" id="architectureLabel">Kind of model</span></div><div class="choice-grid" id="archChoices" role="group" aria-labelledby="architectureLabel"></div><div class="arch-sub" id="archSub" hidden><span class="arch-sub-label" id="archSubLabel">Design</span><div class="choice-row" id="archDesign" role="group" aria-labelledby="archSubLabel"></div></div></div>
-            <div class="model-section-title"><strong>Catalog</strong><span id="catalogCount">15 models</span></div><div class="model-list" id="modelList" aria-label="Available models"></div><div class="field" id="checkpointField" hidden><div class="field-head"><span class="label" id="checkpointLabel">Checkpoint</span></div><div class="choice-row" id="checkpointChoices" role="group" aria-labelledby="checkpointLabel"></div></div><div class="default-row"><span id="defaultStatus">Default: Qwen3 8B</span><button type="button" id="setDefault" aria-pressed="false">Use selected as default</button></div>
+            <div class="model-list" id="modelList" aria-label="Available models"></div><div class="field" id="checkpointField" hidden><div class="field-head"><span class="label" id="checkpointLabel">Checkpoint</span></div><div class="choice-row" id="checkpointChoices" role="group" aria-labelledby="checkpointLabel"></div></div>
             <details class="advanced" id="hfProfile"><summary>Hugging Face profile</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="hfNamespace">Username or profile link</label></div><div class="paste-row"><input id="hfNamespace" class="control mono" spellcheck="false" autocomplete="off" placeholder="huggingface.co/your-name"><button type="button" class="secondary" id="pasteProfile">Paste</button><button type="button" class="primary" id="loadProfile">Load</button></div><p class="setting-help" id="hfStatus" role="status">Public models only.</p></div></div></details><div id="hfModelList" class="model-list" aria-label="Models from Hugging Face profile" hidden></div>
             <input id="source" type="hidden" value="huggingface"><input id="architecture" type="hidden" value="text"><input id="modelRef" type="hidden" value="Qwen/Qwen3-8B"><details class="advanced" id="customModel"><summary>Model reference</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="modelLink">Link, tag, or path</label></div><div class="paste-row"><input id="modelLink" class="control mono" spellcheck="false" autocomplete="off" placeholder="Hugging Face link, Ollama tag, or path"><button type="button" class="secondary" id="pasteModel">Paste</button></div></div><div class="field"><div class="field-head"><span class="label" id="sourceLabel">Source</span></div><div class="choice-row" id="sourceChoices" role="group" aria-labelledby="sourceLabel"></div></div><div class="toggle-row" id="customOrnithRow" hidden><div><strong>Ornith 1.5 serving profile</strong><small>Use its reasoning and tool parsers; check your variant’s chat template</small></div><button type="button" class="toggle" id="customOrnith" role="switch" aria-label="Use Ornith 1.5 serving profile" aria-checked="false"></button></div></div></details>
           </div></section>
-          <section class="group" aria-labelledby="runtime-title"><div class="group-head"><span class="number">02</span><div><h2 id="runtime-title">Engines <small class="count" id="engineCount">7</small></h2><p>Choose a serving runtime.</p></div></div><div class="body-indent">
+          <section class="group" aria-labelledby="runtime-title"><div class="group-head"><span class="number">02</span><div><h2 id="runtime-title">Engines</h2></div></div><div class="body-indent">
             <div class="server-list" id="serverList" role="group" aria-label="Inference server"></div>
             <p class="inline-note" id="serverNote"></p>
             <div class="field" id="quantField" style="margin-top:24px"><div class="field-head"><span class="label" id="quantLabel">Weight format / quantization</span></div><div class="choice-row" id="quantChoices" role="group" aria-labelledby="quantLabel"></div><input id="quant" type="hidden" value="Native / auto"></div>
             <div class="field" id="customQuantField" hidden><div class="field-head"><label for="customQuant">Custom format or quantization</label></div><input id="customQuant" class="control mono" placeholder="e.g. a server-specific format"></div>
             <div class="field" id="templateField" hidden><div class="field-head"><label for="commandTemplate">Command template</label></div><input id="commandTemplate" class="control mono" value="my-server --model {{model}} --port {{port}}" spellcheck="false"><p class="hint" style="margin:7px 0 0">Variables: {{model}}, {{port}}, {{host}}, {{context}}, {{quant}}. Quote values in your template as needed.</p></div>
           </div></section>
-          <section class="group" aria-labelledby="settings-title"><div class="group-head"><span class="number">03</span><div><h2 id="settings-title">Configuration</h2><p>Set capacity first. Open a group when the workload asks for it.</p></div></div><div class="body-indent">
+          <section class="group" aria-labelledby="settings-title"><div class="group-head"><span class="number">03</span><div><h2 id="settings-title">Configuration</h2></div></div><div class="body-indent">
             <div class="field" id="contextField"><div class="field-head"><span class="label" id="contextLabel">Context window</span></div><div class="choice-row" id="contextChoices" role="group" aria-labelledby="contextLabel"></div><input id="context" type="hidden" value="8192"></div>
             <div class="field" id="customContextField" hidden><div class="field-head"><label for="customContext">Custom context window</label><output id="contextDisplay">8,192 tokens</output></div><input id="customContext" class="range" type="range" min="512" max="262144" step="512" value="8192"><div class="range-ends"><span>512</span><span>262K</span></div></div>
-            <div class="setting-cluster hardware-cluster"><div class="cluster-head"><h3>Hardware</h3></div><div class="field"><div class="field-head"><span class="label" id="gpuCardLabel">GPU</span></div><div class="choice-row" id="gpuCardChoices" role="group" aria-labelledby="gpuCardLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="gpuVramLabel">Memory per GPU</span></div><div class="choice-row" id="gpuVramChoices" role="group" aria-labelledby="gpuVramLabel"></div></div><div class="field" id="gpuCountField"><div class="field-head"><span class="label" id="gpuCountLabel">GPUs</span></div><div class="choice-row" id="gpuCountChoices" role="group" aria-labelledby="gpuCountLabel"></div></div><div class="field" id="parallelField" hidden><div class="field-head"><span class="label" id="parallelLabel">Tensor parallel</span></div><div class="choice-row" id="parallelChoices" role="group" aria-labelledby="parallelLabel"></div></div><input id="parallel" type="hidden" value="1"><p class="fit-note" id="fitNote"></p></div>
+            <div class="setting-cluster hardware-cluster"><div class="field"><div class="field-head"><span class="label" id="gpuCardLabel">GPU</span></div><div class="choice-row" id="gpuCardChoices" role="group" aria-labelledby="gpuCardLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="gpuVramLabel">Memory per GPU</span></div><div class="choice-row" id="gpuVramChoices" role="group" aria-labelledby="gpuVramLabel"></div></div><div class="field" id="gpuCountField"><div class="field-head"><span class="label" id="gpuCountLabel">GPUs</span></div><div class="choice-row" id="gpuCountChoices" role="group" aria-labelledby="gpuCountLabel"></div></div><div class="field" id="parallelField" hidden><div class="field-head"><span class="label" id="parallelLabel">Tensor parallel</span></div><div class="choice-row" id="parallelChoices" role="group" aria-labelledby="parallelLabel"></div></div><input id="parallel" type="hidden" value="1"><p class="fit-note" id="fitNote"></p></div>
             <div class="setting-cluster" id="ornithServing" hidden><div class="cluster-head"><h3>Model behavior</h3><span>Ornith 1.5</span></div><div class="toggle-row"><div><strong>Reasoning parser</strong><small>Separate reasoning from the final answer</small></div><button type="button" class="toggle" id="reasoning" role="switch" aria-label="Reasoning parser" aria-checked="true"></button></div><div class="toggle-row"><div><strong>Tool-call parser</strong><small>Expose model tool calls in the API</small></div><button type="button" class="toggle" id="tools" role="switch" aria-label="Tool-call parser" aria-checked="true"></button></div><p class="setting-help" id="parserNote"></p></div><div class="setting-cluster" id="vllmControls"><div class="cluster-head"><h3>Scheduling</h3><span>vLLM · tuning</span></div>
               <div class="field"><div class="field-head"><span class="label" id="batchLabel">Tokens per batch</span><span class="hint">Auto leaves the server default</span></div><div class="choice-row" id="batchChoices" role="group" aria-labelledby="batchLabel"></div></div>
               <div class="field"><div class="field-head"><span class="label" id="seqLabel">Sequences per step</span><span class="hint">Auto leaves the server default</span></div><div class="choice-row" id="seqChoices" role="group" aria-labelledby="seqLabel"></div></div>
@@ -3390,7 +3514,6 @@
     }
     /* ▸ js: render — engines */
     function renderServers() {
-      $('engineCount').textContent = servers.length; // the heading counts the real list
       $('serverList').innerHTML = servers
         .map(function (s) {
           return (
@@ -3427,8 +3550,8 @@
             renderOutput();
           };
         });
-      $('serverNote').textContent = server().note;
-      $('serverNote').hidden = !server().note;
+      $('serverNote').textContent = server().sub + (server().note ? ' · ' + server().note : ''); // one line about the chosen engine
+      $('serverNote').hidden = false;
     }
     /* ▸ js: render — quantization & checkpoint */
     function renderQuant() {
@@ -3848,7 +3971,6 @@
       $('modelList').innerHTML = filtered.length
         ? familyRows(Object.keys(groups))
         : '<p class="empty">No models here yet.</p>';
-      $('catalogCount').textContent = filtered.length + (filtered.length === 1 ? ' model' : ' models');
       document.querySelectorAll('[data-model]').forEach(function (button) {
         button.onclick = function () {
           setModel(Number(button.dataset.model));
@@ -5199,12 +5321,11 @@
       $('selectedModelName').textContent = state.customModel
         ? config.model.reference.split('/').pop() || 'Custom model'
         : models[state.model].name + (availableBuilds() ? ' · ' + state.build : '');
-      $('defaultStatus').textContent =
-        'Default: ' + (models[state.defaultModel] ? models[state.defaultModel].name : 'None');
-      $('setDefault').setAttribute(
-        'aria-pressed',
-        String(!state.customModel && state.defaultModel === state.model),
-      );
+      if (!state.customModel && models[state.model].detail) {
+        var kindNote = document.createElement('small'); // what kind of model it is, beside its name
+        kindNote.textContent = models[state.model].detail;
+        $('selectedModelName').appendChild(kindNote);
+      }
       $('output').textContent = out;
       $('copy').textContent = copyLabel();
       $('copy').disabled = !!unsupported;
@@ -5373,12 +5494,6 @@
       state.customOrnith = !state.customOrnith;
       this.setAttribute('aria-checked', String(state.customOrnith));
       renderOrnithServing();
-      renderOutput();
-    };
-    $('setDefault').onclick = function () {
-      if (state.customModel) return;
-      state.defaultModel = state.model;
-      persistUserPrefs();
       renderOutput();
     };
     $('saveConfig').onclick = saveCurrentConfig;

@@ -41,7 +41,7 @@ export default async function (t) {
     // ── engines ──
     t.equal(await $(() => [...document.querySelectorAll('#serverList .server strong')].map((x) => x.textContent)), ['vLLM', 'SGLang', 'TensorRT', 'TGI', 'llama.cpp', 'Ollama', 'MLX'], 'seven engines, no "Other server"');
     t.equal(await $(() => !!document.getElementById('portChoices')), false, 'there is no port selector');
-    t.equal(await $(() => [document.getElementById('engineCount').textContent, String(document.querySelectorAll('#serverList .server').length)]), ['7', '7'], 'the Engines heading counts the engines actually listed');
+    t.equal(await $(() => document.querySelectorAll('#serverList .server').length), 7, 'seven engines are listed');
 
     // ── GPU cards, then memory ──
     t.equal(await $(() => [...document.querySelectorAll('.hardware-cluster .label')].map((x) => x.textContent).slice(0, 2)), ['GPU', 'Memory per GPU'], 'the card comes first, memory under it');
