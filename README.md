@@ -158,7 +158,7 @@ The first screen is a working, cautious starting point. Every default is a decis
 
 Docker output listens inside the container and publishes only on your loopback, so the safe default works there too.
 
-**All flags** lists every flag of the selected engine, straight from that engine’s own documentation. The flags your configuration sets are highlighted with their values; the rest show the documented default. Copy command copies the runnable command. `python3 tools/flags.py` re-reads the docs.
+**All flags** lists every flag of the selected engine, straight from that engine’s own documentation. The flags your configuration sets are highlighted with their values; the rest show the documented default. Copy command copies the runnable command. The librarian (`python3 -m librarian`) keeps these lists current: it re-reads an engine’s docs when the engine publishes a release, files the safe changes, and holds anything risky for a person.
 
 <br>
 

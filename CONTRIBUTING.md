@@ -55,9 +55,12 @@ the end so saved favorites (which remember a position) stay valid. Give it a `ki
 (`gib`, the size of the files on Hugging Face) to `MEMORY_SHAPES`. `python3 tools/scan.py` reads
 Hugging Face and suggests what is new; it never edits the catalog.
 
-**Refresh the flag lists.** `python3 tools/flags.py` re-reads each engine's own documentation and
-rewrites `catalog/flags/<engine>.json`. Run the tests afterwards: they check the counts and that
-every flag the app generates still exists in the docs.
+**Refresh the flag lists.** Don't edit them by hand: the librarian does it (`python3 -m librarian --help`).
+It reads an engine's documentation when the engine publishes a release (`python3 -m librarian serve`, or
+`poll` once), files additions and description changes, holds back anything that could change what the app
+generates (`inbox`, then `apply` or `dismiss`), runs the tests, and commits locally. It never pushes or
+deploys, and it leaves alone any file you have uncommitted changes in. `python3 tools/flags.py` is the
+extractor it uses. The page carries its own copy of the lists: before a deploy run `python3 -m librarian gate`.
 
 **Add an engine.** Add it to `servers` and `portDefaults` (region `js: data`), write its branch in
 `command()` and `flagRows()`, add a parser for its documentation to `tools/flags.py`, and cover it in

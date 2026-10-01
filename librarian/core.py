@@ -324,6 +324,10 @@ class Librarian:
                 if not ok:
                     return "undone, the tests failed:\n" + info
                 self.note(kind="approved", engine=item["engine"], item=ident, commit=info)
+                state = self.state()
+                state["seen"][item["engine"]] = item["release"]
+                state["ran"][item["engine"]] = dt.datetime.now().isoformat(timespec="seconds")
+                self.save_state(state)
             item["status"] = "applied" if apply else "dismissed"
             write_atomic(p, json.dumps(item, indent=1, ensure_ascii=False) + "\n")
             return f"{ident}: {item['status']}"
