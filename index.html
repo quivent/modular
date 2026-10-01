@@ -1780,6 +1780,15 @@
       color: var(--muted);
       font: 400 11px/1.55 var(--font-body);
     }
+    .flag-line.has-help {
+      cursor: pointer;
+    }
+    .flag-line.has-help:hover .flag-name {
+      color: var(--accent-text);
+    }
+    .flag-help[hidden] {
+      display: none;
+    }
     .flag-choices {
       color: var(--soft);
       font: 400 10px/1.6 var(--mono);
@@ -4736,12 +4745,16 @@
     }
     function flagLine(flag, value, isSet, config) {
       var shown = isSet ? value : flag.default; // other spellings (-tp, --no-…) are the same flag: not repeated
+      var help = flagHelpText(flag),
+        folded = help && !flag.notice; // the explanation opens on a click (or shows on hover); the page stays quiet
       return (
-        '<div class="flag-line' + (isSet ? ' set' : '') + '"><div class="flag-head"><code class="flag-name">' +
+        '<div class="flag-line' + (isSet ? ' set' : '') + (folded ? ' has-help' : '') + '"' +
+        (folded ? ' tabindex="0" role="button" aria-expanded="false" title="' + esc(help) + '"' : '') +
+        '><div class="flag-head"><code class="flag-name">' +
         esc(flag.name) + '</code>' +
         (shown ? '<code class="flag-value' + (isSet ? '' : ' is-default') + '">' + esc(shown) + '</code>' : (flag.value ? '<code class="flag-value is-default">' + esc(flag.value) + '</code>' : '')) +
         '</div>' +
-        (flagHelpText(flag) ? '<p class="flag-help">' + esc(flagHelpText(flag)) + '</p>' : '') +
+        (help ? '<p class="flag-help"' + (folded ? ' hidden' : '') + '>' + esc(help) + '</p>' : '') +
         (flag.choices && flag.choices.length ? '<p class="flag-choices">' + esc(flag.choices.join('  ·  ')) + '</p>' : '') +
         '</div>'
       );
@@ -4777,7 +4790,7 @@
             html += '<section class="flag-section"><h4>Set by your configuration</h4>';
             setBy.forEach(function (v, f) { html += flagLine(f, v, true, config); });
             extra.forEach(function (pair) {
-              html += flagLine({ name: pair[0], aliases: [], help: 'Not in the documentation list above.' }, pair[1], true, config);
+              html += flagLine({ name: pair[0], aliases: [], help: 'Not in the documentation list above.', notice: true }, pair[1], true, config);
             });
             html += '</section>';
           }
@@ -5358,6 +5371,23 @@
       renderOutput();
     };
     $('saveConfig').onclick = saveCurrentConfig;
+    // A flag's explanation is folded away until it is asked for.
+    function toggleFlagHelp(line) {
+      var open = line.getAttribute('aria-expanded') !== 'true';
+      line.setAttribute('aria-expanded', String(open));
+      line.querySelector('.flag-help').hidden = !open;
+    }
+    $('allFlags').onclick = function (event) {
+      var line = event.target.closest('.flag-line.has-help');
+      if (line) toggleFlagHelp(line);
+    };
+    $('allFlags').onkeydown = function (event) {
+      var line = event.target.closest && event.target.closest('.flag-line.has-help');
+      if (line && event.target === line && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        toggleFlagHelp(line);
+      }
+    };
     // The floating Copy mirrors the real one and steps aside when the real one is visible.
     $('copyFloat').onclick = function () {
       $('copy').onclick();

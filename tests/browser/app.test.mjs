@@ -94,6 +94,22 @@ export default async function (t) {
     }
     t.equal(flags.trtllm.setNames.slice(0, 5), ['--host', '--port', '--tensor_parallel_size', '--max_seq_len', '--free_gpu_memory_fraction'], 'TensorRT-LLM: --tp_size is matched to its documented name');
     t.equal(flags.sglang.setNames.slice(0, 6), ['--model-path', '--host', '--port', '--context-length', '--tensor-parallel-size', '--mem-fraction-static'], 'SGLang: the command uses documented names, and `python -m` is not read as a flag');
+    // ── flag explanations stay folded until asked for ──
+    await pick('#serverList .server strong', 'vLLM');
+    const fold = await $(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      await wait(300);
+      const box = document.getElementById('allFlags');
+      const line = box.querySelector('.flag-line.has-help');
+      if (!line) return { none: true };
+      const visible = () => !line.querySelector('.flag-help').hidden && line.querySelector('.flag-help').offsetHeight > 0;
+      const before = visible(), title = !!line.title;
+      line.click();
+      const open = visible();
+      line.click();
+      return { before, title, open, closed: !visible(), shownOnLoad: [...box.querySelectorAll('.flag-help')].filter((h) => !h.hidden && !h.textContent.startsWith('Not in the documentation')).length };
+    });
+    t.equal(fold, { before: false, title: true, open: true, closed: true, shownOnLoad: 0 }, 'no explanation is on the page until a flag is clicked; hovering shows it as a tooltip');
     t.equal((await browser.errors()).length, 0, 'no page errors during any of it');
   } finally {
     await browser.close();
