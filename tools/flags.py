@@ -3,6 +3,7 @@
 
     python3 tools/flags.py              # all engines
     python3 tools/flags.py vllm         # one engine
+    python3 tools/flags.py --out DIR vllm   # write there instead of catalog/flags (the librarian stages this way)
 
 Writes catalog/flags/<engine>.json: { engine, source, fetched, sections: [ { title, flags: [ {
 name, aliases, negation, choices, default, help } ] } ] }. Nothing is filtered or summarized: the page
@@ -248,5 +249,10 @@ def trtllm():
 ENGINES = {"vllm": vllm, "trtllm": trtllm, "sglang": sglang, "llama": llamacpp, "tgi": tgi, "ollama": ollama, "mlx": mlx}
 
 if __name__ == "__main__":
-    for name in sys.argv[1:] or ENGINES:
+    args = sys.argv[1:]
+    if "--out" in args:
+        i = args.index("--out")
+        OUT = pathlib.Path(args[i + 1])
+        del args[i : i + 2]
+    for name in args or ENGINES:
         ENGINES[name]()

@@ -99,6 +99,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--shapes", type=int, default=20, help="read config.json for this many top new models")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--out", help="write the scan here instead of catalog/scan-latest.json")
     args = ap.parse_args()
     watch = json.loads((ROOT / "catalog" / "watch.json").read_text())
     curation = json.loads((ROOT / "catalog" / "curation.json").read_text())["models"]
@@ -180,7 +181,7 @@ def main():
 
     out = {"scanned_at": now.isoformat(timespec="seconds"), "labs": labs, "trending": trending,
            "curated": curated, "shapes": {k: v for k, v in shapes.items() if v}}
-    (ROOT / "catalog" / "scan-latest.json").write_text(json.dumps(out, indent=1) + "\n")
+    (pathlib.Path(args.out) if args.out else ROOT / "catalog" / "scan-latest.json").write_text(json.dumps(out, indent=1) + "\n")
 
     if not args.quiet:
         print("\n== curated models (suggested status) ==")

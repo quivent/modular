@@ -1,0 +1,15 @@
+{
+  "_comment": "What the librarian watches. An engine's flags are re-read when its repository publishes a release. Edit freely: it only ever reads this file.",
+  "poll_minutes": 60,
+  "default_cooldown_hours": 24,
+  "engines": {
+    "vllm":   { "repo": "vllm-project/vllm" },
+    "sglang": { "repo": "sgl-project/sglang" },
+    "trtllm": { "repo": "NVIDIA/TensorRT-LLM" },
+    "tgi":    { "repo": "huggingface/text-generation-inference" },
+    "llama":  { "repo": "ggml-org/llama.cpp", "cooldown_hours": 168 },
+    "ollama": { "repo": "ollama/ollama" },
+    "mlx":    { "repo": "ml-explore/mlx-lm" }
+  },
+  "models": { "scan_every_hours": 24 }
+}
