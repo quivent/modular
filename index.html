@@ -2411,6 +2411,8 @@
       {
         name: 'Ornith 1.5 · 9B',
         ref: 'ornith-ai/Ornith-1.5-9B',
+        released: '2026-08-18',
+        license: 'mit',
         kind: 'language', group: 'Ornith', family: 'Ornith 1.5',
         arch: 'vision',
         size: '9B',
@@ -2422,6 +2424,8 @@
       {
         name: 'Ornith 1.5 · 35B-A3B',
         ref: 'ornith-ai/Ornith-1.5-35B-A3B',
+        released: '2026-08-18',
+        license: 'mit',
         kind: 'language', group: 'Ornith', family: 'Ornith 1.5',
         arch: 'moe',
         size: '35B',
@@ -2433,6 +2437,8 @@
       {
         name: 'Ornith 1.5 · 397B',
         ref: 'ornith-ai/Ornith-1.5-397B',
+        released: '2026-08-18',
+        license: 'mit',
         kind: 'language', group: 'Ornith', family: 'Ornith 1.5',
         arch: 'moe',
         size: '397B',
@@ -2444,6 +2450,8 @@
       {
         name: 'Qwen3 32B',
         ref: 'Qwen/Qwen3-32B',
+        released: '2025-04-27',
+        license: 'apache-2.0',
         gguf: 'unsloth/Qwen3-32B-GGUF',
         mlx: 'mlx-community/Qwen3-32B-4bit',
         retired: true, kind: 'language', group: 'Qwen', family: 'Qwen',
@@ -2455,6 +2463,8 @@
       {
         name: 'DeepSeek R1 Distill 32B',
         ref: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-32B',
+        released: '2025-01-20',
+        license: 'mit',
         gguf: 'unsloth/DeepSeek-R1-Distill-Qwen-32B-GGUF',
         mlx: 'mlx-community/DeepSeek-R1-Distill-Qwen-32B-4bit',
         retired: true, kind: 'language', group: 'DeepSeek', family: 'DeepSeek',
@@ -2465,6 +2475,8 @@
       {
         name: 'Llama 3.3 70B Instruct',
         ref: 'meta-llama/Llama-3.3-70B-Instruct',
+        released: '2024-11-26',
+        license: 'llama3.3',
         gguf: 'unsloth/Llama-3.3-70B-Instruct-GGUF',
         mlx: 'mlx-community/Llama-3.3-70B-Instruct-4bit',
         retired: true, kind: 'language', group: 'Llama', family: 'Llama',
@@ -2475,6 +2487,8 @@
       {
         name: 'Gemma 3 27B',
         ref: 'google/gemma-3-27b-it',
+        released: '2025-03-01',
+        license: 'gemma',
         gguf: 'unsloth/gemma-3-27b-it-GGUF',
         mlx: 'mlx-community/gemma-3-27b-it-qat-4bit',
         retired: true, kind: 'language', group: 'Gemma', family: 'Gemma',
@@ -2485,6 +2499,8 @@
       {
         name: 'Qwen2.5 VL 7B',
         ref: 'Qwen/Qwen2.5-VL-7B-Instruct',
+        released: '2025-01-26',
+        license: 'apache-2.0',
         gguf: 'unsloth/Qwen2.5-VL-7B-Instruct-GGUF',
         mlx: 'mlx-community/Qwen2.5-VL-7B-Instruct-4bit',
         retired: true, kind: 'language', group: 'Qwen', family: 'Qwen',
@@ -2495,6 +2511,8 @@
       {
         name: 'Mixtral 8x7B',
         ref: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+        released: '2023-12-10',
+        license: 'apache-2.0',
         mlx: 'mlx-community/Mixtral-8x7B-Instruct-v0.1-4bit',
         retired: true, kind: 'language', group: 'Mistral', family: 'Mixtral',
         arch: 'moe',
@@ -2502,18 +2520,19 @@
         icon: 'M',
       },
       { name: 'Phi-4', ref: 'microsoft/phi-4', retired: true, kind: 'language', group: 'Phi', family: 'Phi', arch: 'text', size: '14B', icon: 'Φ' },
-      { name: 'BGE M3', ref: 'BAAI/bge-m3', retired: true, kind: 'embedding', group: 'BGE', family: 'BGE', arch: 'embedding', size: '568M', icon: 'B' },
+      { name: 'BGE M3', ref: 'BAAI/bge-m3', retired: true, kind: 'retrieval', group: 'BGE', family: 'BGE', arch: 'embedding', size: '568M', icon: 'B' },
       {
         name: 'BGE Reranker v2 M3',
         ref: 'BAAI/bge-reranker-v2-m3',
-        retired: true, kind: 'reranker', group: 'BGE', family: 'BGE',
+        released: '2024-03-15',
+        license: 'apache-2.0',
+        retired: true, kind: 'retrieval', group: 'BGE', family: 'BGE',
         arch: 'reranker',
         size: '568M',
         icon: 'B',
       },
       {
         name: 'Whisper large v3',
-        detail: 'Speech to text · 1.5B',
         ref: 'openai/whisper-large-v3',
         retired: true, kind: 'audio', group: 'Whisper', role: 'speech-to-text', family: 'Whisper',
         arch: 'speech',
@@ -2522,7 +2541,6 @@
       },
       {
         name: 'Stable Diffusion XL',
-        detail: 'Text to image · 2.6B',
         ref: 'stabilityai/stable-diffusion-xl-base-1.0',
         retired: true, kind: 'image', group: 'Stable Diffusion', family: 'Stable Diffusion',
         arch: 'diffusion',
@@ -2532,6 +2550,8 @@
       {
         name: 'Qwen3.8 27B',
         ref: 'Qwen/Qwen3.8-27B',
+        released: '2026-08-05',
+        license: 'apache-2.0',
         gguf: 'unsloth/Qwen3.8-27B-GGUF',
         mlx: 'mlx-community/Qwen3.8-27B-4bit',
         family: 'Qwen3.8',
@@ -2547,6 +2567,8 @@
       {
         name: 'Qwen3.8 Flash-Next',
         ref: 'Qwen/Qwen3.8-Flash-Next',
+        released: '2026-08-24',
+        license: 'other',
         gguf: 'unsloth/Qwen3.8-Flash-Next-GGUF',
         mlx: 'mlx-community/Qwen3.8-Flash-Next-4bit',
         family: 'Qwen3.8',
@@ -2563,6 +2585,8 @@
       {
         name: 'Qwen3.8 2.4T-A95B',
         ref: 'Qwen/Qwen3.8-2.4T-A95B',
+        released: '2026-08-08',
+        license: 'other',
         gguf: 'unsloth/Qwen3.8-2.4T-A95B-GGUF',
         family: 'Qwen3.8',
         kind: 'language',
@@ -2577,6 +2601,8 @@
       {
         name: 'Gemma 4 31B',
         ref: 'google/gemma-4-31B-it',
+        released: '2026-03-11',
+        license: 'apache-2.0',
         gguf: 'unsloth/gemma-4-31B-it-qat-GGUF',
         mlx: 'mlx-community/gemma-4-31b-it-4bit',
         family: 'Gemma 4',
@@ -2592,6 +2618,8 @@
       {
         name: 'Gemma 4 26B-A4B',
         ref: 'google/gemma-4-26B-A4B-it',
+        released: '2026-03-11',
+        license: 'apache-2.0',
         gguf: 'unsloth/gemma-4-26B-A4B-it-qat-GGUF',
         mlx: 'mlx-community/gemma-4-26b-a4b-it-4bit',
         family: 'Gemma 4',
@@ -2608,6 +2636,8 @@
       {
         name: 'Gemma 4 12B',
         ref: 'google/gemma-4-12B-it',
+        released: '2026-05-23',
+        license: 'apache-2.0',
         gguf: 'unsloth/gemma-4-12b-it-GGUF',
         mlx: 'mlx-community/gemma-4-12B-it-qat-4bit',
         family: 'Gemma 4',
@@ -2623,6 +2653,8 @@
       {
         name: 'Gemma 4 E4B',
         ref: 'google/gemma-4-E4B-it',
+        released: '2026-03-02',
+        license: 'apache-2.0',
         gguf: 'ggml-org/gemma-4-E4B-it-GGUF',
         mlx: 'mlx-community/gemma-4-e4b-it-4bit',
         family: 'Gemma 4',
@@ -2638,6 +2670,8 @@
       {
         name: 'DeepSeek V4.1 Flash',
         ref: 'deepseek-ai/DeepSeek-V4.1-Flash',
+        released: '2026-09-10',
+        license: 'mit',
         mlx: 'mlx-community/DeepSeek-V4.1-Flash-MLX-4bit',
         family: 'DeepSeek V4',
         kind: 'language',
@@ -2653,6 +2687,8 @@
       {
         name: 'DeepSeek V4 Pro',
         ref: 'deepseek-ai/DeepSeek-V4-Pro-0813',
+        released: '2026-08-13',
+        license: 'mit',
         gguf: 'unsloth/DeepSeek-V4-Pro-0813-GGUF',
         family: 'DeepSeek V4',
         kind: 'language',
@@ -2667,6 +2703,8 @@
       {
         name: 'GLM-5.3',
         ref: 'zai-org/GLM-5.3',
+        released: '2026-08-25',
+        license: 'other',
         gguf: 'unsloth/GLM-5.3-GGUF',
         mlx: 'mlx-community/GLM-5.3-4bit',
         family: 'GLM-5.3',
@@ -2682,6 +2720,8 @@
       {
         name: 'GLM-5.3 Flash',
         ref: 'zai-org/GLM-5.3-Flash',
+        released: '2026-08-25',
+        license: 'mit',
         gguf: 'unsloth/GLM-5.3-Flash-GGUF',
         mlx: 'mlx-community/GLM-5.3-Flash-4bit',
         family: 'GLM-5.3',
@@ -2698,6 +2738,8 @@
       {
         name: 'gpt-oss 120B',
         ref: 'openai/gpt-oss-120b',
+        released: '2025-08-04',
+        license: 'apache-2.0',
         gguf: 'ggml-org/gpt-oss-120b-GGUF',
         mlx: 'mlx-community/gpt-oss-120b-4bit',
         family: 'gpt-oss',
@@ -2713,6 +2755,8 @@
       {
         name: 'gpt-oss 20B',
         ref: 'openai/gpt-oss-20b',
+        released: '2025-08-04',
+        license: 'apache-2.0',
         gguf: 'unsloth/gpt-oss-20b-GGUF',
         family: 'gpt-oss',
         kind: 'language',
@@ -2727,6 +2771,8 @@
       {
         name: 'Kimi K3',
         ref: 'moonshotai/Kimi-K3',
+        released: '2026-06-13',
+        license: 'other',
         gguf: 'unsloth/Kimi-K3-GGUF',
         family: 'Kimi',
         kind: 'language',
@@ -2742,6 +2788,8 @@
       {
         name: 'Nemotron 3 Ultra',
         ref: 'nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16',
+        released: '2026-06-03',
+        license: 'other',
         family: 'Nemotron',
         kind: 'language',
         group: 'Nemotron',
@@ -2755,6 +2803,8 @@
       {
         name: 'Nemotron 3.5 Lightning',
         ref: 'nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16',
+        released: '2026-08-01',
+        license: 'other',
         family: 'Nemotron',
         kind: 'language',
         group: 'Nemotron',
@@ -2768,6 +2818,8 @@
       {
         name: 'Granite 4.2 30B',
         ref: 'ibm-granite/granite-4.2-30b',
+        released: '2026-08-07',
+        license: 'apache-2.0',
         gguf: 'ibm-granite/granite-4.2-30b-GGUF',
         family: 'Granite 4.2',
         kind: 'language',
@@ -2781,6 +2833,8 @@
       {
         name: 'Granite 4.2 8B',
         ref: 'ibm-granite/granite-4.2-8b',
+        released: '2026-08-07',
+        license: 'apache-2.0',
         gguf: 'ibm-granite/granite-4.2-8b-GGUF',
         family: 'Granite 4.2',
         kind: 'language',
@@ -2794,6 +2848,8 @@
       {
         name: 'Mistral Medium 3.5',
         ref: 'mistralai/Mistral-Medium-3.5-128B',
+        released: '2026-03-31',
+        license: 'other',
         gguf: 'unsloth/Mistral-Medium-3.5-128B-GGUF',
         mlx: 'mlx-community/Mistral-Medium-3.5-128B-4bit',
         family: 'Mistral',
@@ -2809,6 +2865,8 @@
       {
         name: 'Mistral Small 4',
         ref: 'mistralai/Mistral-Small-4-119B-2603',
+        released: '2026-01-23',
+        license: 'apache-2.0',
         gguf: 'unsloth/Mistral-Small-4-119B-2603-GGUF',
         mlx: 'mlx-community/Mistral-Small-4-119B-2603-4bit',
         family: 'Mistral',
@@ -2825,6 +2883,8 @@
       {
         name: 'Ministral 3 14B',
         ref: 'mistralai/Ministral-3-14B-Instruct-2512',
+        released: '2025-10-31',
+        license: 'apache-2.0',
         gguf: 'mistralai/Ministral-3-14B-Instruct-2512-GGUF',
         mlx: 'mlx-community/Ministral-3-14B-Instruct-2512-4bit',
         family: 'Mistral',
@@ -2840,6 +2900,8 @@
       {
         name: 'Ministral 3 8B',
         ref: 'mistralai/Ministral-3-8B-Instruct-2512',
+        released: '2025-10-31',
+        license: 'apache-2.0',
         gguf: 'mistralai/Ministral-3-8B-Instruct-2512-GGUF',
         mlx: 'mlx-community/Ministral-3-8B-Instruct-2512-4bit',
         family: 'Mistral',
@@ -2855,6 +2917,8 @@
       {
         name: 'Llama 4 Scout',
         ref: 'meta-llama/Llama-4-Scout-17B-16E-Instruct',
+        released: '2025-04-02',
+        license: 'other',
         gguf: 'unsloth/Llama-4-Scout-17B-16E-Instruct-GGUF',
         mlx: 'mlx-community/Llama-4-Scout-17B-16E-Instruct-4bit',
         family: 'Llama 4',
@@ -2871,138 +2935,179 @@
       {
         name: 'FLUX.2 dev',
         ref: 'black-forest-labs/FLUX.2-dev',
+        released: '2025-11-22',
+        license: 'other',
+        nvfp4: { flag: '--transformer-weights-path', ref: 'black-forest-labs/FLUX.2-dev-NVFP4' },
+        traits: ['generate', 'edit'],
         family: 'FLUX.2',
         kind: 'image',
         group: 'FLUX.2',
         label: 'dev',
         arch: 'diffusion',
         size: '32B',
-        detail: 'Image generation and editing · 32B',
         icon: 'F',
       },
       {
         name: 'FLUX.2 klein 9B',
         ref: 'black-forest-labs/FLUX.2-klein-9B',
+        released: '2026-01-14',
+        license: 'other',
+        traits: ['generate', 'edit'],
         family: 'FLUX.2',
         kind: 'image',
         group: 'FLUX.2',
         label: 'klein 9B',
         arch: 'diffusion',
         size: '9.1B',
-        detail: 'Image generation and editing',
         icon: 'F',
       },
       {
         name: 'FLUX.2 klein 4B',
         ref: 'black-forest-labs/FLUX.2-klein-4B',
+        released: '2026-01-14',
+        license: 'apache-2.0',
+        traits: ['generate', 'edit'],
         family: 'FLUX.2',
         kind: 'image',
         group: 'FLUX.2',
         label: 'klein 4B',
         arch: 'diffusion',
         size: '3.9B',
-        detail: 'Image generation and editing',
         icon: 'F',
       },
       {
         name: 'FLUX.1 dev',
         ref: 'black-forest-labs/FLUX.1-dev',
+        released: '2024-07-31',
+        license: 'other',
+        nvfp4: { flag: '--transformer-path', ref: 'lmsys/flux1-dev-modelopt-nvfp4-sglang-transformer' },
+        traits: ['generate'],
         family: 'FLUX.1',
         kind: 'image',
         group: 'FLUX.1',
         label: 'dev',
         arch: 'diffusion',
         size: '12B',
-        detail: 'Text to image · 12B',
+        icon: 'F',
+      },
+      {
+        name: 'FLUX.1 schnell',
+        ref: 'black-forest-labs/FLUX.1-schnell',
+        released: '2024-07-31',
+        license: 'apache-2.0',
+        traits: ['generate'],
+        family: 'FLUX.1',
+        kind: 'image',
+        group: 'FLUX.1',
+        label: 'schnell',
+        arch: 'diffusion',
+        size: '12B',
+        unlisted: true,
         icon: 'F',
       },
       {
         name: 'Qwen-Image 2.1',
         ref: 'Qwen/Qwen-Image-2.1',
+        released: '2026-09-14',
+        license: 'other',
+        traits: ['generate', 'edit'],
         family: 'Qwen-Image',
         kind: 'image',
         group: 'Qwen-Image',
         label: 'Qwen-Image 2.1',
         arch: 'diffusion',
         size: '7.1B',
-        detail: 'Text to image · 7.1B',
         icon: 'Q',
       },
       {
         name: 'Z-Image Turbo',
         ref: 'Tongyi-MAI/Z-Image-Turbo',
+        released: '2025-11-25',
+        license: 'apache-2.0',
+        traits: ['generate'],
         family: 'Z-Image',
         kind: 'image',
         group: 'Z-Image',
         label: 'Z-Image Turbo',
         arch: 'diffusion',
         size: '6.2B',
-        detail: 'Text to image · 6.2B',
         icon: 'Z',
       },
       {
         name: 'Wan 2.2 · Text to video',
         ref: 'Wan-AI/Wan2.2-T2V-A14B-Diffusers',
+        released: '2025-07-28',
+        license: 'apache-2.0',
+        traits: ['t2v'],
         family: 'Wan 2.2',
         kind: 'video',
         group: 'Wan 2.2',
         label: 'Text to video',
         arch: 'diffusion',
         size: '14B',
-        detail: '14B',
         icon: 'W',
       },
       {
         name: 'Wan 2.2 · Image to video',
         ref: 'Wan-AI/Wan2.2-I2V-A14B-Diffusers',
+        released: '2025-07-28',
+        license: 'apache-2.0',
+        traits: ['i2v'],
         family: 'Wan 2.2',
         kind: 'video',
         group: 'Wan 2.2',
         label: 'Image to video',
         arch: 'diffusion',
         size: '14B',
-        detail: '14B',
         icon: 'W',
       },
       {
         name: 'Wan 2.2 · Text + image to video',
         ref: 'Wan-AI/Wan2.2-TI2V-5B-Diffusers',
+        released: '2025-07-28',
+        license: 'apache-2.0',
+        traits: ['t2v', 'i2v'],
         family: 'Wan 2.2',
         kind: 'video',
         group: 'Wan 2.2',
         label: 'Text + image to video',
         arch: 'diffusion',
         size: '5B',
-        detail: '5B',
         icon: 'W',
       },
       {
         name: 'LTX-2.5',
         ref: 'Lightricks/LTX-2.5-Diffusers',
+        released: '2026-07-26',
+        license: 'other',
+        traits: ['t2v', 'i2v'],
         family: 'LTX-2.5',
         kind: 'video',
         group: 'LTX-2.5',
         label: 'LTX-2.5',
         arch: 'diffusion',
         size: '19B',
-        detail: 'Text to video · 19B',
         icon: 'L',
       },
       {
         name: 'MiniMax-H3',
         ref: 'MiniMaxAI/MiniMax-H3',
+        released: '2026-07-28',
+        license: 'other',
+        traits: ['t2v', 'i2v'],
         family: 'MiniMax-H3',
         kind: 'video',
         group: 'MiniMax-H3',
         label: 'MiniMax-H3',
         arch: 'diffusion',
         size: '33B',
-        detail: 'Text + image to video · 33B',
         icon: 'M',
       },
       {
         name: 'Whisper large v3 turbo',
         ref: 'openai/whisper-large-v3-turbo',
+        released: '2024-10-01',
+        license: 'mit',
         family: 'Whisper',
         kind: 'audio',
         group: 'Whisper',
@@ -3010,12 +3115,13 @@
         label: 'large v3 turbo',
         arch: 'speech',
         size: '810M',
-        detail: 'Speech to text · 810M',
         icon: 'W',
       },
       {
         name: 'Qwen3-ASR 1.7B',
         ref: 'Qwen/Qwen3-ASR-1.7B',
+        released: '2026-01-28',
+        license: 'apache-2.0',
         family: 'Qwen3-ASR',
         kind: 'audio',
         group: 'Qwen3-ASR',
@@ -3023,12 +3129,13 @@
         label: 'Qwen3-ASR 1.7B',
         arch: 'speech',
         size: '2.4B',
-        detail: 'Speech to text',
         icon: 'Q',
       },
       {
         name: 'Voxtral Mini 4B Realtime',
         ref: 'mistralai/Voxtral-Mini-4B-Realtime-2602',
+        released: '2026-01-21',
+        license: 'apache-2.0',
         family: 'Voxtral',
         kind: 'audio',
         group: 'Voxtral',
@@ -3036,12 +3143,13 @@
         label: 'Mini 4B Realtime',
         arch: 'speech',
         size: '4.4B',
-        detail: 'Speech to text',
         icon: 'V',
       },
       {
         name: 'Nemotron 3.5 ASR Streaming',
         ref: 'nvidia/nemotron-3.5-asr-streaming-0.6b',
+        released: '2026-05-15',
+        license: 'other',
         family: 'Nemotron ASR',
         kind: 'audio',
         group: 'Nemotron ASR',
@@ -3049,12 +3157,13 @@
         label: '3.5 Streaming',
         arch: 'speech',
         size: '640M',
-        detail: 'Speech to text · 640M',
         icon: 'N',
       },
       {
         name: 'Qwen3-TTS 1.7B',
         ref: 'Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice',
+        released: '2026-01-21',
+        license: 'apache-2.0',
         omni: true,
         family: 'Qwen3-TTS',
         kind: 'audio',
@@ -3063,12 +3172,12 @@
         label: 'Qwen3-TTS 1.7B',
         arch: 'speech',
         size: '1.9B',
-        detail: 'Text to speech',
         icon: 'Q',
       },
       {
         name: 'OmniVoice',
         ref: 'k2-fsa/OmniVoice',
+        released: '2026-03-30',
         omni: true,
         trust: true,
         family: 'OmniVoice',
@@ -3078,12 +3187,13 @@
         label: 'OmniVoice',
         arch: 'speech',
         size: '610M',
-        detail: 'Text to speech · 610M',
         icon: 'O',
       },
       {
         name: 'Kokoro 82M',
         ref: 'hexgrad/Kokoro-82M',
+        released: '2024-12-26',
+        license: 'apache-2.0',
         family: 'Kokoro',
         kind: 'audio',
         group: 'Kokoro',
@@ -3091,12 +3201,13 @@
         label: 'Kokoro 82M',
         arch: 'speech',
         size: '',
-        detail: 'Text to speech',
         icon: 'K',
       },
       {
         name: 'ACE-Step 1.5',
         ref: 'ACE-Step/Ace-Step1.5',
+        released: '2026-01-23',
+        license: 'mit',
         family: 'ACE-Step',
         kind: 'audio',
         group: 'ACE-Step',
@@ -3104,12 +3215,13 @@
         label: 'ACE-Step 1.5',
         arch: 'speech',
         size: '',
-        detail: 'Music and audio',
         icon: 'A',
       },
       {
         name: 'Stable Audio 3 medium',
         ref: 'stabilityai/stable-audio-3-medium',
+        released: '2026-05-17',
+        license: 'other',
         family: 'Stable Audio',
         kind: 'audio',
         group: 'Stable Audio',
@@ -3117,103 +3229,189 @@
         label: '3 medium',
         arch: 'speech',
         size: '2.3B',
-        detail: 'Music and audio · 2.3B',
         icon: 'S',
       },
       {
         name: 'Qwen3-VL-Embedding 8B',
         ref: 'Qwen/Qwen3-VL-Embedding-8B',
+        released: '2026-01-07',
+        license: 'apache-2.0',
         family: 'Qwen3-VL-Embedding',
-        kind: 'embedding',
+        kind: 'retrieval',
         group: 'Qwen3-VL-Embedding',
         label: '8B',
         arch: 'embedding',
         size: '8.1B',
-        detail: 'Embeddings',
         icon: 'Q',
       },
       {
         name: 'Qwen3-VL-Embedding 2B',
         ref: 'Qwen/Qwen3-VL-Embedding-2B',
+        released: '2026-01-07',
+        license: 'apache-2.0',
         family: 'Qwen3-VL-Embedding',
-        kind: 'embedding',
+        kind: 'retrieval',
         group: 'Qwen3-VL-Embedding',
         label: '2B',
         arch: 'embedding',
         size: '2.1B',
-        detail: 'Embeddings',
         icon: 'Q',
       },
       {
         name: 'Nemotron 3 Embed 8B',
         ref: 'nvidia/Nemotron-3-Embed-8B-BF16',
+        released: '2026-07-14',
+        license: 'other',
         family: 'Nemotron Embed',
-        kind: 'embedding',
+        kind: 'retrieval',
         group: 'Nemotron Embed',
         label: '8B',
         arch: 'embedding',
         size: '8B',
-        detail: 'Embeddings',
         icon: 'N',
       },
       {
         name: 'Nemotron 3 Embed 1B',
         ref: 'nvidia/Nemotron-3-Embed-1B-BF16',
+        released: '2026-07-14',
+        license: 'other',
         family: 'Nemotron Embed',
-        kind: 'embedding',
+        kind: 'retrieval',
         group: 'Nemotron Embed',
         label: '1B',
         arch: 'embedding',
         size: '1.1B',
-        detail: 'Embeddings',
         icon: 'N',
+      },
+      {
+        name: 'jina-embeddings-v5 omni small',
+        ref: 'jinaai/jina-embeddings-v5-omni-small',
+        released: '2026-04-01',
+        license: 'cc-by-nc-4.0',
+        family: 'jina-embeddings-v5',
+        kind: 'retrieval',
+        group: 'jina-embeddings-v5',
+        label: 'omni small',
+        arch: 'embedding',
+        size: '1.6B',
+        icon: 'J',
+      },
+      {
+        name: 'jina-embeddings-v5 omni nano',
+        ref: 'jinaai/jina-embeddings-v5-omni-nano',
+        released: '2026-04-01',
+        license: 'cc-by-nc-4.0',
+        family: 'jina-embeddings-v5',
+        kind: 'retrieval',
+        group: 'jina-embeddings-v5',
+        label: 'omni nano',
+        arch: 'embedding',
+        size: '1.0B',
+        icon: 'J',
+      },
+      {
+        name: 'Granite Embedding R2 311M',
+        ref: 'ibm-granite/granite-embedding-311m-multilingual-r2',
+        released: '2026-04-20',
+        license: 'apache-2.0',
+        family: 'Granite Embedding R2',
+        kind: 'retrieval',
+        group: 'Granite Embedding R2',
+        label: '311M',
+        arch: 'embedding',
+        size: '311M',
+        icon: 'G',
+      },
+      {
+        name: 'Granite Embedding R2 97M',
+        ref: 'ibm-granite/granite-embedding-97m-multilingual-r2',
+        released: '2026-04-20',
+        license: 'apache-2.0',
+        family: 'Granite Embedding R2',
+        kind: 'retrieval',
+        group: 'Granite Embedding R2',
+        label: '97M',
+        arch: 'embedding',
+        size: '97M',
+        icon: 'G',
+      },
+      {
+        name: 'LFM2.5 Embedding 350M',
+        ref: 'LiquidAI/LFM2.5-Embedding-350M',
+        released: '2026-05-05',
+        license: 'other',
+        family: 'LFM2.5 Embedding',
+        kind: 'retrieval',
+        group: 'LFM2.5 Embedding',
+        label: '350M',
+        arch: 'embedding',
+        size: '350M',
+        icon: 'L',
       },
       {
         name: 'Qwen3-VL-Reranker 8B',
         ref: 'Qwen/Qwen3-VL-Reranker-8B',
+        released: '2026-01-07',
+        license: 'apache-2.0',
         family: 'Qwen3-VL-Reranker',
-        kind: 'reranker',
+        kind: 'retrieval',
         group: 'Qwen3-VL-Reranker',
         label: '8B',
         arch: 'reranker',
         size: '8.8B',
-        detail: 'Reranker',
         icon: 'Q',
       },
       {
         name: 'Qwen3-VL-Reranker 2B',
         ref: 'Qwen/Qwen3-VL-Reranker-2B',
+        released: '2026-01-07',
+        license: 'apache-2.0',
         family: 'Qwen3-VL-Reranker',
-        kind: 'reranker',
+        kind: 'retrieval',
         group: 'Qwen3-VL-Reranker',
         label: '2B',
         arch: 'reranker',
         size: '2.1B',
-        detail: 'Reranker',
         icon: 'Q',
       },
       {
         name: 'jina-reranker-v3',
         ref: 'jinaai/jina-reranker-v3',
+        released: '2025-09-18',
+        license: 'cc-by-nc-4.0',
+        retired: true,
         family: 'jina',
-        kind: 'reranker',
+        kind: 'retrieval',
         group: 'jina',
         label: 'jina-reranker-v3',
         arch: 'reranker',
         size: '600M',
-        detail: 'Reranker · 600M',
+        icon: 'J',
+      },
+      {
+        name: 'jina-reranker v3.5',
+        ref: 'jinaai/jina-reranker-v3.5',
+        released: '2026-07-14',
+        license: 'cc-by-nc-4.0',
+        family: 'jina-reranker',
+        kind: 'retrieval',
+        group: 'jina-reranker',
+        label: 'v3.5',
+        arch: 'reranker',
+        size: '600M',
         icon: 'J',
       },
       {
         name: 'Llama Nemotron Rerank 1B',
         ref: 'nvidia/llama-nemotron-rerank-1b-v2',
+        released: '2025-10-16',
+        license: 'other',
         family: 'Nemotron Rerank',
-        kind: 'reranker',
+        kind: 'retrieval',
         group: 'Nemotron Rerank',
         label: 'Rerank 1B v2',
         arch: 'reranker',
         size: '1.2B',
-        detail: 'Reranker',
         icon: 'N',
       },
     ];
@@ -3298,7 +3496,7 @@
       favorites: [],
       recent: [],
       kind: 'language',
-      design: [], // which of Dense / Mixture of experts / Multimodal are switched on; none on shows every model
+      facets: { language: [], image: [], video: [], audio: [], retrieval: [] }, // the toggles switched on, per kind; none on shows every model
       role: 'speech-to-text',
       kindLast: {},
       defaultModel: 4,
@@ -3378,10 +3576,11 @@
       }
       if (currentCard() && currentCard().mac) state.hardware = 'single';
     }
-    // Repos Hugging Face asks you to sign in and accept a license for (read from the API, 2026-09-30).
+    // Repos Hugging Face asks you to sign in and accept a license for (read from the API, 2026-10-01).
     var HF_GATED = {
       'Lightricks/LTX-2.5-Diffusers': 1,
       'black-forest-labs/FLUX.1-dev': 1,
+      'black-forest-labs/FLUX.1-schnell': 1,
       'black-forest-labs/FLUX.2-dev': 1,
       'black-forest-labs/FLUX.2-klein-9B': 1,
       'google/gemma-3-27b-it': 1,
@@ -3495,33 +3694,70 @@
       ['image', 'Image'],
       ['video', 'Video'],
       ['audio', 'Audio'],
-      ['embedding', 'Embeddings'],
-      ['reranker', 'Reranker'],
+      ['retrieval', 'Retrieval'],
     ];
-    var DESIGNS = [
-      ['text', 'Dense'],
-      ['moe', 'Mixture of experts'],
-      ['vision', 'Multimodal'],
-    ];
-    var AUDIO_ROLES = [
-      ['speech-to-text', 'Speech to text'],
-      ['text-to-speech', 'Text to speech'],
-      ['music', 'Music'],
-    ];
-    // What the exported spec calls each kind (unchanged from before).
-    function archForKind(kind) {
-      if (kind === 'language') return state.design.length === 1 ? state.design[0] : 'text'; // a custom model is one design
-      return { image: 'diffusion', video: 'diffusion', audio: 'speech', embedding: 'embedding', reranker: 'reranker' }[
-        kind
-      ];
+    // Every kind has the same second row: toggles that narrow the list, and nothing switched on shows every model.
+    // Toggles in the same group exclude each other (any one of them matches); toggles in different groups all have to match.
+    var FACET_LABEL = { language: 'Design', image: 'Capability', video: 'Input', audio: 'Task', retrieval: 'Task' };
+    var FACETS = {
+      language: [['text', 'Dense', 'shape'], ['moe', 'Mixture of experts', 'shape'], ['vision', 'Multimodal', 'mm']],
+      image: [['generate', 'Generation', 'gen'], ['edit', 'Editing', 'edit']],
+      video: [['t2v', 'Text to video', 't2v'], ['i2v', 'Image to video', 'i2v']],
+      audio: [['speech-to-text', 'Speech to text', 'task'], ['text-to-speech', 'Text to speech', 'task'], ['music', 'Music', 'task']],
+      retrieval: [['embedding', 'Embeddings', 'task'], ['reranker', 'Rerankers', 'task']],
+    };
+    // What a model is, in the terms of its kind's toggles.
+    function traitsOf(model) {
+      if (model.kind === 'language') return [model.moe ? 'moe' : 'text'].concat(model.multimodal ? ['vision'] : []);
+      if (model.kind === 'audio') return [model.role];
+      if (model.kind === 'retrieval') return [model.arch];
+      return model.traits || [];
     }
-    // Only some engines can serve some kinds of model. Choosing such a kind moves to one that can; leaving puts yours back.
-    var KIND_ENGINES = { image: ['sglang'], video: ['sglang'], audio: ['vllm'], embedding: ['vllm', 'sglang'], reranker: ['vllm'] };
+    function facetLabel(kind, key) {
+      var d = (FACETS[kind] || []).filter(function (x) { return x[0] === key; })[0];
+      return d ? d[1] : key;
+    }
+    // The line under a model's name: what it can do, then how big it is.
+    function modelDetail(model) {
+      if (model.kind === 'language') return model.detail || model.size || '';
+      return traitsOf(model).map(function (k) { return facetLabel(model.kind, k); }).concat(model.size ? [model.size] : []).join(' · ');
+    }
+    // The small name on a pill: the family is already the row's label, so it is not repeated.
+    function pillLabel(model) {
+      var fam = catalogGroup(model),
+        label = model.label || model.name;
+      if (label.toLowerCase().indexOf(fam.toLowerCase()) === 0) label = label.slice(fam.length).replace(/^[\s·:\-–]+/, '');
+      return label || model.size || model.name;
+    }
+    function matchesFacets(model) {
+      var defs = FACETS[model.kind] || [],
+        groups = {},
+        have = traitsOf(model);
+      (state.facets[model.kind] || []).forEach(function (key) {
+        var d = defs.filter(function (x) { return x[0] === key; })[0];
+        if (d) (groups[d[2]] = groups[d[2]] || []).push(key);
+      });
+      return Object.keys(groups).every(function (g) {
+        return groups[g].some(function (key) { return have.indexOf(key) !== -1; });
+      });
+    }
+    // What the exported spec calls each kind's model type; for a model typed in by hand it comes from the toggles.
+    function archForKind(kind) {
+      var picked = state.facets[kind] || [];
+      if (kind === 'language') return picked.length === 1 ? picked[0] : 'text';
+      if (kind === 'retrieval') return picked.indexOf('reranker') !== -1 && picked.indexOf('embedding') === -1 ? 'reranker' : 'embedding';
+      return { image: 'diffusion', video: 'diffusion', audio: 'speech' }[kind];
+    }
+    // Only some engines can serve some kinds of model. Choosing one moves to an engine that can; leaving puts yours back.
+    var ARCH_ENGINES = { diffusion: ['sglang'], speech: ['vllm'], embedding: ['vllm', 'sglang'], reranker: ['vllm'] };
+    function allowedEngines() {
+      return ARCH_ENGINES[val('architecture')] || null;
+    }
     function diffusionKind() {
-      return state.kind === 'image' || state.kind === 'video';
+      return val('architecture') === 'diffusion';
     }
     function fitEngineToKind() {
-      var allowed = KIND_ENGINES[state.kind];
+      var allowed = allowedEngines();
       if (allowed) {
         if (allowed.indexOf(state.server) === -1) {
           if (!state.engineBeforeKind) state.engineBeforeKind = state.server;
@@ -3533,35 +3769,27 @@
       }
     }
     function inCurrentKind(model) {
-      if (model.retired || model.kind !== state.kind) return false;
-      if (state.kind === 'language') {
-        // Dense and Mixture of experts exclude each other, so either one matches; Multimodal is a separate property and must match too.
-        var d = state.design,
-          shape = d.filter(function (x) { return x !== 'vision'; });
-        if (shape.length === 1 && shape[0] === 'text' && model.moe) return false;
-        if (shape.length === 1 && shape[0] === 'moe' && !model.moe) return false;
-        if (d.indexOf('vision') !== -1 && !model.multimodal) return false;
-      }
-      if (state.kind === 'audio') return model.role === state.role;
-      return true;
+      return !model.retired && model.kind === state.kind && matchesFacets(model);
     }
     function pickModel(kind) {
-      var last = state.kindLast[kind];
-      if (models[last] && !models[last].retired && models[last].kind === kind && (kind !== 'audio' || models[last].role === state.role))
-        return last;
+      var last = state.kindLast[kind],
+        usable = function (i) { return models[i] && !models[i].retired && models[i].kind === kind; };
+      if (usable(last) && matchesFacets(models[last])) return last;
+      var first = -1;
       for (var i = 0; i < models.length; i++)
-        if (!models[i].retired && models[i].kind === kind && (kind !== 'audio' || models[i].role === state.role)) return i;
-      return state.model;
+        if (usable(i)) {
+          if (matchesFacets(models[i])) return i;
+          if (first < 0) first = i;
+        }
+      return first >= 0 ? first : state.model;
     }
     // Keep the kind in step with the selected model (after a restore, a server sync, or first load).
     function syncKind() {
       if (!servers.some(function (x) { return x.id === state.server; })) state.server = 'vllm';
       var m = !state.customModel && models[state.model];
-      if (m) {
-        state.kind = m.kind;
-        if (m.role) state.role = m.role;
-      } else if (['language', 'image', 'video', 'audio', 'embedding', 'reranker'].indexOf(state.kind) === -1)
-        state.kind = 'language';
+      if (m) state.kind = m.kind;
+      else if (state.kind === 'embedding' || state.kind === 'reranker') state.kind = 'retrieval'; // two kinds became one
+      else if (['language', 'image', 'video', 'audio', 'retrieval'].indexOf(state.kind) === -1) state.kind = 'language';
     }
     function setKind(next) {
       if (!state.customModel && models[state.model]) state.kindLast[state.kind] = state.model;
@@ -3580,47 +3808,35 @@
       renderModelList();
       renderOutput();
     }
-    function setDesign(next) {
-      var at = state.design.indexOf(next); // each button switches itself on or off
-      if (at === -1) state.design = state.design.concat(next);
-      else state.design = state.design.filter(function (x) { return x !== next; });
-      if (state.customModel) $('architecture').value = archForKind('language');
-      renderArch();
-      renderModelList();
-      renderOutput();
-    }
-    function setRole(next) {
-      state.role = next;
-      if (!state.customModel && models[state.model].role !== next) {
-        setModel(pickModel('audio'));
-        return;
-      }
+    function setFacet(key) {
+      var now = state.facets[state.kind] || [],
+        at = now.indexOf(key); // each button switches itself on or off
+      state.facets[state.kind] = at === -1 ? now.concat(key) : now.filter(function (x) { return x !== key; });
+      if (state.customModel) $('architecture').value = archForKind(state.kind);
       renderArch();
       renderModelList();
       renderOutput();
     }
     function renderArch() {
-      var kind = state.kind;
-      choiceButtons('archChoices', MAIN_KINDS, kind, setKind);
-      $('archSub').hidden = !(kind === 'language' || kind === 'audio');
-      if (kind === 'language') {
-        $('archSubLabel').textContent = 'Design';
-        choiceButtons('archDesign', DESIGNS, null, setDesign);
-        $('archDesign')
-          .querySelectorAll('[data-choice]')
-          .forEach(function (button) {
-            button.setAttribute('aria-pressed', String(state.design.indexOf(button.dataset.choice) !== -1));
-          });
-      } else if (kind === 'audio') {
-        $('archSubLabel').textContent = 'Task';
-        choiceButtons('archDesign', AUDIO_ROLES, state.role, setRole);
-      }
+      choiceButtons('archChoices', MAIN_KINDS, state.kind, setKind);
+      $('archSubLabel').textContent = FACET_LABEL[state.kind];
+      choiceButtons(
+        'archDesign',
+        FACETS[state.kind].map(function (d) { return [d[0], d[1]]; }),
+        null,
+        setFacet,
+      );
+      $('archDesign')
+        .querySelectorAll('[data-choice]')
+        .forEach(function (button) {
+          button.setAttribute('aria-pressed', String((state.facets[state.kind] || []).indexOf(button.dataset.choice) !== -1));
+        });
     }
     /* ▸ js: render — engines */
     function renderServers() {
       $('serverList').innerHTML = servers
         .filter(function (s) {
-          return !KIND_ENGINES[state.kind] || KIND_ENGINES[state.kind].indexOf(s.id) !== -1;
+          return !allowedEngines() || allowedEngines().indexOf(s.id) !== -1;
         })
         .map(function (s) {
           return (
@@ -3997,7 +4213,6 @@
     function setModel(index) {
       state.model = index;
       state.kind = models[index].kind;
-      if (models[index].role) state.role = models[index].role;
       state.kindLast[state.kind] = index;
       state.customModel = false;
       state.customOrnith = false;
@@ -4074,9 +4289,9 @@
                     '" aria-pressed="' +
                     selected +
                     '"><strong>' +
-                    esc(model.label || model.ornith || model.name) +
+                    esc(model.ornith ? model.ornith : pillLabel(model)) +
                     '</strong><small>' +
-                    esc(model.detail || archNames[model.arch] + ' · ' + model.size) +
+                    esc(modelDetail(model)) +
                     '</small></button></div>'
                   );
                 })
@@ -4209,14 +4424,9 @@
               'automatic-speech-recognition': 'audio',
               'text-to-speech': 'audio',
               'text-to-audio': 'audio',
-              'feature-extraction': 'embedding',
-              'sentence-similarity': 'embedding',
-              'text-classification': 'reranker',
-            };
-            var roleByTask = {
-              'automatic-speech-recognition': 'speech-to-text',
-              'text-to-speech': 'text-to-speech',
-              'text-to-audio': 'music',
+              'feature-extraction': 'retrieval',
+              'sentence-similarity': 'retrieval',
+              'text-classification': 'retrieval',
             };
             $('modelLink').value = ref;
             applyModelLink();
@@ -4224,7 +4434,6 @@
               ? 'vision'
               : taskTypes[item.pipeline_tag] || val('architecture');
             state.kind = state.customOrnith ? 'language' : kindByTask[item.pipeline_tag] || 'language';
-            if (roleByTask[item.pipeline_tag]) state.role = roleByTask[item.pipeline_tag];
             renderArch();
             renderModelList();
             renderOutput();
@@ -4237,7 +4446,7 @@
     var SNAPSHOT_VERSION = 1; // one saved configuration
     var STORAGE_VERSION = 1; // the local-storage and server envelopes
     var storageLocked = {}; // keys a newer version wrote: read-only here
-    var NOT_PART_OF_A_SETUP = ['favorites', 'recent', 'defaultModel', 'kindLast', 'design']; // dropped from snapshots in v1
+    var NOT_PART_OF_A_SETUP = ['favorites', 'recent', 'defaultModel', 'kindLast', 'facets', 'design']; // dropped from snapshots in v1
     function catalogIndex(ref) {
       for (var i = 0; i < models.length; i++) if (models[i].ref === ref && !models[i].retired) return i;
       return -1;
@@ -5402,8 +5611,8 @@
     }
     // Models none of the engines serve, and that have no documented server of their own: say so instead of inventing a command.
     function unsupportedNote() {
-      var k = state.kind;
-      if (k === 'audio' && state.role !== 'speech-to-text' && !(models[state.model] && models[state.model].omni && !state.customModel))
+      var m = !state.customModel && models[state.model];
+      if (m && m.kind === 'audio' && m.role !== 'speech-to-text' && !m.omni)
         return (
           '# No server command is documented for this model.\n' +
           '# Follow its model card for how to run it.\n' +
@@ -5454,7 +5663,7 @@
       var unsupported = unsupportedNote();
       document.body.setAttribute('data-launch', unsupported ? 'none' : 'yes');
       document.body.setAttribute('data-diffusion', String(diffusionKind()));
-      document.body.setAttribute('data-nocontext', String(diffusionKind() || state.kind === 'audio')); // images and speech have no token window
+      document.body.setAttribute('data-nocontext', String(diffusionKind() || val('architecture') === 'speech')); // images and speech have no token window
       if (unsupported) out = unsupported;
       document.body.setAttribute('data-view', state.tab);
       if (state.tab === 'all' && !unsupported) renderAllFlags(config, out);
@@ -5470,9 +5679,9 @@
       $('selectedModelName').textContent = state.customModel
         ? config.model.reference.split('/').pop() || 'Custom model'
         : models[state.model].name + (availableBuilds() ? ' · ' + state.build : '');
-      if (!state.customModel && models[state.model].detail) {
+      if (!state.customModel && modelDetail(models[state.model])) {
         var kindNote = document.createElement('small'); // what kind of model it is, beside its name
-        kindNote.textContent = models[state.model].detail;
+        kindNote.textContent = modelDetail(models[state.model]);
         $('selectedModelName').appendChild(kindNote);
       }
       $('output').textContent = out;
@@ -5495,7 +5704,8 @@
         format(),
         state.server === 'mlx' ? 'MLX default' : Number(val('context')).toLocaleString() + ' tokens',
       ];
-      if (diffusionKind() || state.kind === 'audio') badges = badges.slice(0, 2); // a weight format and a token window mean nothing for images or speech
+      if (diffusionKind()) badges = badges.slice(0, 3); // a token window means nothing for images
+      else if (val('architecture') === 'speech') badges = badges.slice(0, 2);
       $('summary').innerHTML = badges
         .map(function (x) {
           return '<span>' + esc(x) + '</span>';

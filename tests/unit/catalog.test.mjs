@@ -7,14 +7,15 @@ export default async function (t) {
   vm.runInContext(region('js: data — catalog, engines, state').replace(/'use strict';/, '') + '\nthis.models = models; this.servers = servers; this.portDefaults = portDefaults;', ctx);
   const { models, servers, portDefaults } = ctx;
   const live = models.filter((m) => !m.retired);
-  const KINDS = ['language', 'image', 'video', 'audio', 'embedding', 'reranker'];
+  const KINDS = ['language', 'image', 'video', 'audio', 'retrieval'];
 
   const count = {};
   for (const m of models) count[m.ref] = (count[m.ref] || 0) + 1;
   t.equal(Object.keys(count).filter((r) => count[r] > 1), [], 'every reference is unique (a repeated one is listed here)');
   t.equal(models.filter((m) => !m.name || !m.ref || !m.kind || !(m.group || m.family) || !m.arch).map((m) => m.ref), [], 'every model has a name, reference, kind, group and architecture');
-  t.equal(live.filter((m) => KINDS.indexOf(m.kind) === -1).map((m) => m.ref), [], 'every kind is one of the six');
+  t.equal(live.filter((m) => KINDS.indexOf(m.kind) === -1).map((m) => m.ref), [], 'every kind is one of the five');
   t.equal(live.filter((m) => m.kind === 'audio' && ['speech-to-text', 'text-to-speech', 'music'].indexOf(m.role) === -1).map((m) => m.ref), [], 'every audio model has a role');
+  for (const task of ['embedding', 'reranker']) t.ok(live.filter((m) => m.kind === 'retrieval' && m.arch === task).length >= 3, `retrieval has at least three current ${task} models`);
   for (const kind of KINDS) t.ok(live.some((m) => m.kind === kind), `there are current models of kind ${kind}`);
   for (const role of ['speech-to-text', 'text-to-speech', 'music']) t.ok(live.some((m) => m.role === role), `the audio role ${role} has models (so it is never an empty tab)`);
   t.equal(live.filter((m) => m.kind === 'language' && m.moe === true && m.arch !== 'moe').map((m) => m.ref), [], 'a mixture-of-experts model has architecture moe');

@@ -10,13 +10,13 @@ export default async function (t) {
     const $ = (fn, arg) => browser.eval(fn, arg);
 
     // ── kinds, in one row, by output ──
-    t.equal(await $(() => [...document.querySelectorAll('#archChoices .choice')].map((b) => b.textContent.trim())), ['Language', 'Image', 'Video', 'Audio', 'Embeddings', 'Reranker'], 'one row of six kinds');
+    t.equal(await $(() => [...document.querySelectorAll('#archChoices .choice')].map((b) => b.textContent.trim())), ['Language', 'Image', 'Video', 'Audio', 'Retrieval'], 'one row of five kinds');
     t.equal(await $(() => [...document.querySelectorAll('#archDesign .choice')].map((b) => b.textContent.trim())), ['Dense', 'Mixture of experts', 'Multimodal'], 'language has the design filters, with no All button');
     const pick = (sel, text) => $(([s, x]) => [...document.querySelectorAll(s)].find((b) => b.textContent.trim() === x).click(), [sel, text]);
     const families = () => $(() => [...document.querySelectorAll('.family-row')].map((r) => r.querySelector('.family-label strong').textContent + ': ' + [...r.querySelectorAll('.model-option strong')].map((x) => x.textContent).join(' | ')));
 
     await pick('#archChoices .choice', 'Video');
-    t.equal(await families(), ['Wan 2.2: Text to video | Image to video | Text + image to video', 'LTX-2.5: LTX-2.5', 'MiniMax-H3: MiniMax-H3'], 'video shows Wan, click in for its variants');
+    t.equal(await families(), ['Wan 2.2: Text to video | Image to video | Text + image to video', 'LTX-2.5: 19B', 'MiniMax-H3: 33B'], 'video shows Wan, click in for its variants');
     t.equal(await $(() => document.getElementById('modelRefDisplay').textContent), 'Wan-AI/Wan2.2-T2V-A14B-Diffusers', 'choosing a kind selects a model of that kind');
     t.equal(await $(() => document.getElementById('output').textContent.split('\n').slice(0, 2).join(' ')), "sglang serve \\   --model-path 'Wan-AI/Wan2.2-T2V-A14B-Diffusers' \\", 'video gets a real command, through SGLang Diffusion');
     t.equal(await $(() => [document.getElementById('copy').textContent, document.getElementById('copy').disabled]), ['Copy command', false], 'and the command can be copied');

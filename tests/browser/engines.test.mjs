@@ -37,8 +37,16 @@ export default async function (t) {
     t.ok(r.checks.some((c) => /No GGUF build/.test(c)), 'a model with no GGUF build is flagged for llama.cpp', JSON.stringify(r.checks));
     // engines that cannot serve a kind of model are not offered for it
     const offered = async (kind) => { await click('#archChoices .choice', kind); await sleep(200); return $(() => [...document.querySelectorAll('#serverList .server strong')].map((x) => x.textContent)); };
-    t.equal(await offered('Embeddings'), ['vLLM', 'SGLang'], 'embedding models: the engines that serve them');
-    t.equal(await offered('Reranker'), ['vLLM'], 'rerankers: vLLM');
+    const retrieval = async (task, name) => {
+      await click('#archChoices .choice', 'Retrieval'); await sleep(150);
+      const on = await $(() => [...document.querySelectorAll('#archDesign .choice[aria-pressed=true]')].map((b) => b.textContent));
+      for (const label of on) await click('#archDesign .choice', label);
+      await click('#archDesign .choice', task); await sleep(200);
+      await $((x) => { const b = [...document.querySelectorAll('#modelList .model-option')].find((e) => e.textContent.trim().length); b && b.click(); }, name); await sleep(250);
+      return $(() => [...document.querySelectorAll('#serverList .server strong')].map((x) => x.textContent));
+    };
+    t.equal(await retrieval('Embeddings'), ['vLLM', 'SGLang'], 'embedding models: the engines that serve them');
+    t.equal(await retrieval('Rerankers'), ['vLLM'], 'rerankers: vLLM');
     t.equal(await offered('Audio'), ['vLLM'], 'speech to text: vLLM');
     t.equal(await offered('Language'), ['vLLM', 'SGLang', 'TensorRT', 'TGI', 'llama.cpp', 'Ollama', 'MLX'], 'and language models get all seven');
     await $(() => { const b = [...document.querySelectorAll('#modelList .model-option')].find((x) => x.textContent.trim().startsWith('27B')); b && b.click(); });
@@ -54,7 +62,8 @@ export default async function (t) {
     // text to speech: the two models vLLM-Omni documents get its command; the rest say plainly that nothing is documented
     await click('#archChoices .choice', 'Audio'); await sleep(150);
     await click('#archDesign .choice', 'Text to speech'); await sleep(250);
-    const pickModel = async (label) => { await $((x) => { const b = [...document.querySelectorAll('#modelList .model-option')].find((e) => e.textContent.trim().startsWith(x)); b && b.click(); }, label); await sleep(250); };
+    // a model is picked the way a person does: find its family row, take the first size in it
+    const pickModel = async (family) => { await $((x) => { const row = [...document.querySelectorAll('#modelList .family-row')].find((r) => r.querySelector('.family-label strong').textContent.startsWith(x)); row && row.querySelector('.model-option').click(); }, family); await sleep(250); };
     await pickModel('Qwen3-TTS');
     const qwenTts = (await read()).cmd.replace(/\s+/g, ' ');
     t.equal(qwenTts.split(' ').slice(0, 6), ['vllm', 'serve', "'Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice'", '\\', '--omni', '\\'], 'Qwen3-TTS: the documented vLLM-Omni command');
@@ -66,15 +75,16 @@ export default async function (t) {
     await pickModel('Kokoro');
     t.ok(/^# No server command is documented/.test((await read()).cmd), 'Kokoro: no documented server, so no invented command');
     await click('#archDesign .choice', 'Music'); await sleep(250);
+    await pickModel('ACE-Step');
     t.ok(/^# No server command is documented/.test((await read()).cmd), 'music models: the same');
     await click('#archChoices .choice', 'Language'); await sleep(200);
     // embedding and reranker models are not chat models: the engines are told
-    await click('#archChoices .choice', 'Embeddings'); await sleep(200);
+    await retrieval('Embeddings');
     await click('#serverList .server', 'vLLM'); await sleep(200);
     t.ok(/--runner pooling/.test((await read()).cmd), 'vLLM runs an embedding model as a pooling model');
     await click('#serverList .server', 'SGLang'); await sleep(200);
     t.ok(/--is-embedding/.test((await read()).cmd), 'SGLang is told it is an embedding model');
-    await click('#archChoices .choice', 'Reranker'); await sleep(200);
+    await retrieval('Rerankers');
     await click('#serverList .server', 'vLLM'); await sleep(200);
     t.ok(/--runner pooling/.test((await read()).cmd), 'and a reranker too');
     await click('#archChoices .choice', 'Language'); await sleep(200);
