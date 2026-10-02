@@ -77,6 +77,20 @@ export default async function (t) {
       const r = await b.eval(() => ({ count: document.getElementById('savedConfigCount').textContent }));
       t.equal(r, { count: '1' }, 'a fresh browser with empty storage shows it');
     }, { keepServerState: true });
+    // the theme is part of the saved state: chosen once, it follows you to another browser
+    await session(null, async (b) => { await sleep(500); });
+    t.equal((await (await fetch(server.base + '/api/state')).json()).preferences.theme, undefined, 'no theme is saved until one is chosen');
+    await session(null, async (b) => {
+      await sleep(400);
+      await b.eval(() => { document.getElementById('themeOpen').click(); [...document.querySelectorAll('.theme-card')].find((c) => c.textContent.startsWith('Windows')).click(); });
+      await sleep(900);
+    });
+    t.equal((await (await fetch(server.base + '/api/state')).json()).preferences.theme, 'windows', 'the chosen theme reaches the server');
+    await session(null, async (b) => {
+      await sleep(900);
+      const r = await b.eval(() => ({ theme: document.documentElement.getAttribute('data-theme'), kept: localStorage.getItem('modular.theme') }));
+      t.equal(r, { theme: 'windows', kept: 'windows' }, 'a browser with nothing stored comes up in it');
+    }, { keepServerState: true });
   } finally {
     await server.close();
   }

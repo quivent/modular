@@ -6250,7 +6250,14 @@
           localStorage.setItem('modular.theme', id);
         } catch (e) {}
         draw();
+        if (window.modularPushState) window.modularPushState(); // the choice is part of the saved state
       }
+      window.modularTheme = {
+        current: current,
+        set: function (id) {
+          if (THEMES.some(function (t) { return t.id === id; }) && id !== current()) apply(id);
+        },
+      };
       function draw() {
         var now = current();
         grid.textContent = '';
@@ -6522,7 +6529,7 @@
     })();
 
     /* ▸ js: saved state sync (server API) */
-    /* Saved state: mirrors favorites, default model, saved setups, and the profile name to the
+    /* Saved state: mirrors favorites, default model, saved setups, the theme and the profile name to the
            server's database. Local storage stays as the offline fallback and the first-run source. */
     (function () {
       if (!LOCAL_SERVER) return;
@@ -6532,10 +6539,15 @@
         return models[i] ? models[i].ref : null;
       }
       function payload() {
-        var profile = '';
+        var profile = '',
+          theme = '';
         try {
           profile = localStorage.getItem('modular.hfNamespace') || '';
+          theme = localStorage.getItem('modular.theme') || ''; // only a theme that was chosen, not the default nobody picked
         } catch (e) {}
+        var prefs = {};
+        if (profile) prefs.hfNamespace = profile;
+        if (theme) prefs.theme = theme;
         return {
           version: STORAGE_VERSION,
           favorites: state.favorites.map(ref).filter(Boolean),
@@ -6547,7 +6559,7 @@
               snapshot: c.snapshot,
             };
           }),
-          preferences: profile ? { hfNamespace: profile } : {},
+          preferences: prefs,
         };
       }
       function push() {
@@ -6578,6 +6590,7 @@
         }
         state.savedConfigs = upgradeConfigs(saved.configs);
         var profile = saved.preferences && saved.preferences.hfNamespace;
+        if (saved.preferences && saved.preferences.theme && window.modularTheme) window.modularTheme.set(saved.preferences.theme);
         try {
           if (profile) {
             localStorage.setItem('modular.hfNamespace', profile);
@@ -6616,6 +6629,7 @@
           else {
             apply(saved);
             ready = true;
+            if (!(saved.preferences && saved.preferences.theme)) push(); // a theme chosen before this was saved is saved now
           }
         })
         .catch(function () {});
