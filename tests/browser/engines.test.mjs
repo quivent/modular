@@ -132,6 +132,8 @@ export default async function (t) {
     await click('#outputModes .choice', 'Docker'); await sleep(200);
     t.ok(/vllm\/vllm-openai:nightly/.test((await read()).cmd), 'and the Docker tab uses that image');
     await click('#outputModes .choice', 'CLI'); await sleep(150);
+    await pickPill('Qwen3.8', '27B'); await sleep(200);
+    t.ok(!(await read()).checks.some((c) => /own vLLM image|general release/.test(c)), 'a recipe\'s recommended image is used in Docker but is not a warning: the PyPI release runs the model');
     await pickPill('Nemotron', '3 Ultra'); await sleep(200);
     t.ok(/^VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1 vllm serve /.test((await read()).cmd), 'required environment goes in front of the command');
     await click('#outputModes .choice', 'Docker'); await sleep(200);
