@@ -2152,9 +2152,10 @@
     :root[data-theme='windows'] .output-mode .choice[aria-pressed='true'] { background: #c0c0c0; color: #000; box-shadow: var(--bevel-in); font-weight: 700; }
     :root[data-theme='windows'] .preview-content { padding: 0 10px 6px; }
     :root[data-theme='windows'] .code, :root[data-theme='windows'] .flags-all { background: #fff; color: #000; border: 0; border-radius: 0; box-shadow: var(--bevel-in); font: 12px 'Courier New', monospace; margin: 0; padding: 6px; }
-    :root[data-theme='windows'] .flags-all { margin: 0; }
+    :root[data-theme='windows'] .flags-all { margin: 0; overflow-x: hidden; padding-top: 0; }
+    :root[data-theme='windows'] .flag-section:first-child h4 { margin-top: 0; }
     :root[data-theme='windows'] .flag-section h4 { color: #000080; font: 700 11px Tahoma, sans-serif; letter-spacing: 0; text-transform: none; }
-    :root[data-theme='windows'] .flag-line.set { background: #000080; border-radius: 0; margin: 0 -6px; padding: 3px 6px; }
+    :root[data-theme='windows'] .flag-line.set { background: #000080; border-radius: 0; margin: 0; padding: 3px 6px; }
     :root[data-theme='windows'] .flag-line.set :is(.flag-name, .flag-value, .flag-help, .flag-choices) { color: #fff; }
     :root[data-theme='windows'] .flag-name, :root[data-theme='windows'] .flag-value { font: 12px 'Courier New', monospace; font-weight: 700; }
     :root[data-theme='windows'] .flag-value { font-weight: 400; }
