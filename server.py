@@ -186,6 +186,26 @@ def put_state(data):
                          [(str(k)[:80], json.dumps(val)) for k, val in items.items()])
 
 
+def saved_theme():
+    """The theme saved in the state, if any. A browser that has never been here still opens in it."""
+    try:
+        with connect() as conn:
+            row = conn.execute("SELECT value FROM preferences WHERE key = 'theme'").fetchone()
+        value = json.loads(row[0]) if row else None
+        return value if isinstance(value, str) and re.fullmatch(r"[a-z]{1,20}", value) else None
+    except Exception:
+        return None
+
+
+def with_saved_theme(page):
+    """Put the saved theme on <html> before the page is sent, so the first paint is already right."""
+    theme = saved_theme()
+    marker = b'<html lang="en">'
+    if not theme or marker not in page:
+        return page
+    return page.replace(marker, b'<html lang="en" data-theme="' + theme.encode() + b'">', 1)
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "Modular"
 
@@ -285,9 +305,14 @@ class Handler(BaseHTTPRequestHandler):
                 or rel.parts[0] in PRIVATE or any(p.startswith(".") for p in rel.parts)):
             self.send_response(404); self.end_headers(); return
         data = target.read_bytes()
+        is_page = rel.parts == ("index.html",)
+        if is_page:
+            data = with_saved_theme(data)
         self.send_response(200)
         self.send_header("Content-Type", mimetypes.guess_type(target.name)[0] or "application/octet-stream")
         self.send_header("Content-Length", str(len(data)))
+        if is_page:
+            self.send_header("Cache-Control", "no-store")  # the page differs with the saved theme
         self.end_headers()
         self.wfile.write(data)
 

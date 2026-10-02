@@ -10,7 +10,8 @@
   <script>
     try {
       var savedTheme = localStorage.getItem('modular.theme');
-      if (savedTheme && /^[a-z]+$/.test(savedTheme) && savedTheme !== 'meadow')
+      // A theme the server already put on the page wins; this browser's own is for when there is none.
+      if (!document.documentElement.hasAttribute('data-theme') && savedTheme && /^[a-z]+$/.test(savedTheme) && savedTheme !== 'meadow')
         document.documentElement.setAttribute('data-theme', savedTheme);
     } catch (e) {}
   </script>
@@ -6255,7 +6256,12 @@
       window.modularTheme = {
         current: current,
         set: function (id) {
-          if (THEMES.some(function (t) { return t.id === id; }) && id !== current()) apply(id);
+          if (!THEMES.some(function (t) { return t.id === id; })) return;
+          if (id !== current()) apply(id);
+          else
+            try {
+              localStorage.setItem('modular.theme', id); // already showing it: keep this browser's own copy for when there is no server
+            } catch (e) {}
         },
       };
       function draw() {

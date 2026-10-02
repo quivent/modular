@@ -91,6 +91,15 @@ export default async function (t) {
       const r = await b.eval(() => ({ theme: document.documentElement.getAttribute('data-theme'), kept: localStorage.getItem('modular.theme') }));
       t.equal(r, { theme: 'windows', kept: 'windows' }, 'a browser with nothing stored comes up in it');
     }, { keepServerState: true });
+    // no flash: the server puts the saved theme on the page itself, so the first paint is already right
+    const html = await (await fetch(server.base + '/')).text();
+    t.ok(/<html lang="en" data-theme="windows">/.test(html), 'the page arrives already in the saved theme');
+    await session(null, async (b) => {
+      const early = await b.eval(() => new Promise((res) => { res(document.documentElement.getAttribute('data-theme')); }));
+      t.equal(early, 'windows', 'even in a browser that has never been here');
+    }, { keepServerState: true });
+    await fetch(server.base + '/api/state', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    t.ok(!/data-theme="/.test((await (await fetch(server.base + '/')).text()).slice(0, 200)), 'with nothing saved, the page is sent as it is');
   } finally {
     await server.close();
   }
