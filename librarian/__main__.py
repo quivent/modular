@@ -3,21 +3,21 @@
   status            what the desk has seen, and what is waiting for you
   plan ENGINE       read the source and show what would be filed and held. Changes nothing.
   event ENGINE [RELEASE]   handle one release now (reads the source, files the safe changes, holds the rest)
-  poll              look at every release feed once and handle whatever is new
+  poll              look at every release feed and documentation page once; re-read whatever changed
   inbox             what is waiting for a person        show ID    the details
   apply ID          approve a held change: it is filed, tested, committed        dismiss ID    set it aside
   models            run the Hugging Face scan and note what is worth a look
   sync              rebuild the page's copy of the flag lists from the data files (safe: touches only the generated block)
   gate              before a deploy: in step, or brought into step, or a clear message
   install / uninstall   run it by itself: start at login, restart if it stops (macOS)
-  serve [--port N] [--no-poll]   run the listener: POST /event (GitHub release webhook), and a look at the feeds every hour
+  serve [--port N] [--no-poll]   run the listener: POST /event (GitHub or Hugging Face webhooks), and a look at the feeds and pages every hour
 
 It commits locally and never pushes or deploys. It will not touch index.html or catalog/flags while they have
 uncommitted changes of yours.
 """
 import json, pathlib, sys
 
-from . import feeds, models, serve, service
+from . import feeds, models, serve, service, triggers
 from .core import Librarian, classify, diff, profile_flags, validate
 
 BEAT = pathlib.Path(__file__).resolve().parent / "beat.json"
@@ -37,6 +37,7 @@ def main(argv):
             print(f"{engine:<7} {d['count']:>4} flags  read {d['fetched']}  release {d.get('release', '-'):<14} last looked {s['ran'].get(engine, 'never')}")
         live = service.running()
         print(f"\nlistening: {'yes, on port 8431, ' + str(live['queued']) + ' queued' if live else 'no  (python3 -m librarian install)'}")
+        print("wakes on: release feeds · documentation page changes · webhooks (GitHub, Hugging Face)")
         print(f"waiting for you: {len(lib.items())}   (python3 -m librarian inbox)")
         return 0
     if cmd == "plan":
@@ -53,8 +54,9 @@ def main(argv):
         print(lib.handle(rest[0], rest[1] if len(rest) > 1 else None, force=True)["said"])
         return 0
     if cmd == "poll":
-        for e in serve.poll(lib, beat):
-            print(lib.handle(e["engine"], e["release"])["said"])
+        events = triggers.poll(lib, beat)
+        print(f"{len(events)} engine(s) to re-read" + (": " + ", ".join(f"{e['engine']} ({e['why']})" for e in events) if events else ""))
+        triggers.process(lib, events)
         return 0
     if cmd == "inbox":
         for i in lib.items():

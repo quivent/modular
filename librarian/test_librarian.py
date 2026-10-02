@@ -1,7 +1,7 @@
 """Tests for the librarian. They work on a throwaway copy of the repository, never the real one."""
 import copy, json, pathlib, shutil, subprocess, tempfile, unittest, urllib.request
 
-from . import feeds, models, serve, service
+from . import feeds, models, serve, service, triggers
 from .core import ROOT, Librarian, apply_ops, classify, diff, flags_of, validate
 
 
@@ -244,6 +244,93 @@ class World(unittest.TestCase):
         self.assertEqual(handled, [("sglang", "v7")])
         status = json.load(urllib.request.urlopen(url + "/status"))
         self.assertEqual(status["open"], 0)
+
+
+class Triggers(Shelf):
+    """What wakes the librarian: a new release, a changed page, or neither."""
+    ATOM = b"""<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>v9.0.0</title><link href="https://github.com/o/r/releases/tag/v9.0.0"/></entry></feed>"""
+    BEAT = {"default_cooldown_hours": 24, "models": {"scan_every_hours": 24}, "engines": {"vllm": {"repo": "o/r"}}}
+
+    def pages(self, changed):
+        calls = []
+        def probe(url, previous):
+            calls.append(url)
+            fp = {"sha": "new" if changed else "same"}
+            return (changed or not previous), (previous if not changed and previous else fp)
+        return probe, calls
+
+    def test_a_new_release_wakes_the_desk_and_a_changed_page_wakes_it_between_releases(self):
+        data = self.data()
+        probe, calls = self.pages(changed=False)
+        ev = triggers.poll(self.lib, self.BEAT, fetch=lambda u: self.ATOM, probe=probe)
+        self.assertEqual([(e["engine"], e["why"], e["release"]) for e in ev], [("vllm", "release", "v9.0.0")])
+        self.assertEqual(calls, [data["source"]], "it looked at the page the data came from")
+        # the same release has been handled; the page is unchanged -> nothing to do
+        self.lib.handle("vllm", "v9.0.0", force=True)
+        s = self.lib.state(); s["ran"]["vllm"] = "2000-01-01T00:00:00"; self.lib.save_state(s)
+        self.lib.remember({data["source"]: {"sha": "same"}})
+        probe, _ = self.pages(changed=False)
+        self.assertEqual(triggers.poll(self.lib, self.BEAT, fetch=lambda u: self.ATOM, probe=probe), [])
+        # no new release, but the page changed: a docs-only change is caught
+        probe, _ = self.pages(changed=True)
+        ev = triggers.poll(self.lib, self.BEAT, fetch=lambda u: self.ATOM, probe=probe)
+        self.assertEqual([(e["engine"], e["why"], e["release"]) for e in ev], [("vllm", "page", None)])
+
+    def test_an_engine_read_recently_is_left_alone(self):
+        s = self.lib.state(); s["ran"]["vllm"] = dt_now_iso(); self.lib.save_state(s)
+        probe, calls = self.pages(changed=True)
+        self.assertEqual(triggers.poll(self.lib, self.BEAT, fetch=lambda u: self.ATOM, probe=probe), [])
+        self.assertEqual(calls, [], "and not even asked about")
+
+    def test_what_a_page_looked_like_is_kept_only_once_the_read_it_caused_is_dealt_with(self):
+        fp = {"https://x/": {"sha": "abc"}}
+        self.lib.handle = lambda engine, release=None, force=False: {"said": "x", "outcome": "deferred"}
+        triggers.process(self.lib, [{"engine": "vllm", "release": None, "fingerprints": fp}], log=lambda *_: None)
+        self.assertEqual(self.lib.state()["fingerprints"], {}, "a busy tree means we try again")
+        self.lib.handle = lambda engine, release=None, force=False: {"said": "x", "outcome": "unchanged"}
+        triggers.process(self.lib, [{"engine": "vllm", "release": None, "fingerprints": fp}], log=lambda *_: None)
+        self.assertEqual(self.lib.state()["fingerprints"], fp)
+
+    def test_the_pages_a_data_file_came_from_are_recorded_as_a_safe_change(self):
+        staged = self.data(); staged["sources"] = ["https://a/", "https://b/"]
+        self.world["vllm"] = staged
+        r = self.lib.handle("vllm", None, force=True)
+        self.assertEqual(r["outcome"], "filed")
+        self.assertEqual(self.data()["sources"], ["https://a/", "https://b/"])
+        self.assertEqual(triggers.sources_of(self.lib, "vllm"), ["https://a/", "https://b/"])
+        self.assertEqual(len(flags_of(self.data())), self.count, "and no flag was touched")
+
+    def test_probe_asks_cheaply_and_notices_a_change(self):
+        import http.server, threading
+        state = {"body": b"one", "etag": '"1"'}
+        class H(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                if self.headers.get("If-None-Match") == state["etag"]:
+                    self.send_response(304); self.end_headers(); return
+                self.send_response(200); self.send_header("ETag", state["etag"]); self.send_header("Content-Length", str(len(state["body"]))); self.end_headers(); self.wfile.write(state["body"])
+            def log_message(self, *a): pass
+        srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        self.addCleanup(srv.server_close); self.addCleanup(srv.shutdown)
+        url = f"http://127.0.0.1:{srv.server_address[1]}/"
+        changed, fp = feeds.probe(url, {})
+        self.assertTrue(changed, "a page never seen is treated as changed")
+        changed, fp2 = feeds.probe(url, fp)
+        self.assertFalse(changed, "unchanged: the server answers 304 and nothing is downloaded")
+        state.update(body=b"two", etag='"2"')
+        changed, fp3 = feeds.probe(url, fp2)
+        self.assertTrue(changed)
+        self.assertNotEqual(fp3["sha"], fp["sha"])
+
+    def test_hugging_face_webhooks_wake_the_models_desk(self):
+        self.assertEqual(feeds.from_hf_webhook({"event": {"action": "update", "scope": "repo.content"}, "repo": {"type": "model", "name": "a/b"}}), {"models": True})
+        self.assertIsNone(feeds.from_hf_webhook({"event": {"action": "update"}, "repo": {"type": "dataset", "name": "a/b"}}))
+        self.assertIsNone(feeds.from_hf_webhook({"hello": 1}))
+
+
+def dt_now_iso():
+    import datetime
+    return datetime.datetime.now().isoformat(timespec="seconds")
 
 
 if __name__ == "__main__":

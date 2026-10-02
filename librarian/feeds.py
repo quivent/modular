@@ -1,5 +1,5 @@
 """Reading the world: release feeds, webhooks, and the model scan. Nothing here edits a file."""
-import hashlib, hmac, json, urllib.parse, urllib.request
+import hashlib, hmac, json, urllib.error, urllib.parse, urllib.request
 import xml.etree.ElementTree as ET
 
 ATOM = "{http://www.w3.org/2005/Atom}"
@@ -44,3 +44,33 @@ def signed(secret, body, header):
     """True when a webhook body carries the right GitHub signature for the shared secret."""
     want = "sha256=" + hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
     return hmac.compare_digest(want, header or "")
+
+
+def probe(url, previous, timeout=30):
+    """Has a page changed since we last looked? A conditional request first (cheap when the site supports it), then a hash.
+
+    Returns (changed, fingerprint). A page never seen before counts as changed: we cannot say it is the same.
+    """
+    headers = {"User-Agent": "modular-librarian"}
+    if previous.get("etag"):
+        headers["If-None-Match"] = previous["etag"]
+    if previous.get("modified"):
+        headers["If-Modified-Since"] = previous["modified"]
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=timeout) as r:
+            body = r.read()
+            fp = {"etag": r.headers.get("ETag"), "modified": r.headers.get("Last-Modified"), "sha": hashlib.sha256(body).hexdigest()}
+    except urllib.error.HTTPError as e:
+        if e.code == 304:
+            e.close()
+            return False, previous
+        raise
+    return fp["sha"] != previous.get("sha"), fp
+
+
+def from_hf_webhook(payload):
+    """A Hugging Face webhook about a model repository, as an event. None for anything else."""
+    repo = payload.get("repo") or {}
+    if repo.get("type") == "model" and payload.get("event"):
+        return {"models": True}
+    return None

@@ -56,8 +56,8 @@ the end so saved favorites (which remember a position) stay valid. Give it a `ki
 Hugging Face and suggests what is new; it never edits the catalog.
 
 **Refresh the flag lists.** Don't edit them by hand: the librarian does it (`python3 -m librarian --help`).
-It reads an engine's documentation when the engine publishes a release (`python3 -m librarian serve`, or
-`poll` once), files additions and description changes, holds back anything that could change what the app
+It reads an engine's documentation when the engine publishes a release or when a page it reads changes
+(`python3 -m librarian serve`, or `poll` once), files additions and description changes, holds back anything that could change what the app
 generates (`inbox`, then `apply` or `dismiss`), runs the tests, and commits locally. It never pushes or
 deploys, and it leaves alone any file you have uncommitted changes in. `python3 tools/flags.py` is the
 extractor it uses. The page carries its own copy of the lists: before a deploy run `python3 -m librarian gate`.

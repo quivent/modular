@@ -15,10 +15,16 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "catalog" / "flags"
 
 
+READ = []  # every page fetched for the engine being extracted: the librarian watches exactly these
+
+
 def fetch(url):
     req = urllib.request.Request(url, headers={"User-Agent": "modular-flag-extractor"})
     with urllib.request.urlopen(req, timeout=60) as r:
-        return r.read().decode("utf-8", "replace")
+        body = r.read().decode("utf-8", "replace")
+    if url not in READ:
+        READ.append(url)
+    return body
 
 
 def text(fragment):
@@ -34,7 +40,8 @@ def write(engine, source, sections, extra=None):
         s["title"] = clean(s["title"])
     n = sum(len(s["flags"]) for s in sections)
     data = {"engine": engine, "source": source, "fetched": dt.date.today().isoformat(), "count": n,
-            "sections": [s for s in sections if s["flags"]]}
+            "sources": list(READ), "sections": [s for s in sections if s["flags"]]}
+    READ.clear()
     if extra:
         data.update(extra)
     OUT.mkdir(parents=True, exist_ok=True)

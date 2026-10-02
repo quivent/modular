@@ -82,6 +82,8 @@ def diff(current, staged):
     for name, (section, flag) in now.items():
         if name not in new:
             ops.append({"op": "remove", "name": name, "section": section, "flag": flag})
+    if staged.get("sources") and staged["sources"] != current.get("sources"):
+        ops.append({"op": "meta", "field": "sources", "to": staged["sources"]})  # which pages the data came from
     return ops
 
 
@@ -101,7 +103,7 @@ def profile_flags(root):
 def classify(ops, guarded_names):
     safe, held = [], []
     for op in ops:
-        if op["op"] == "add":
+        if op["op"] in ("add", "meta"):
             safe.append(op)
         elif op["op"] == "remove":
             held.append({**op, "why": "a flag we hold is gone from the source: renamed, removed, or the page changed"})
@@ -129,6 +131,8 @@ def apply_ops(current, ops, release=None, when=None):
             flag = by_name().get(op["name"])
             if flag is not None:
                 flag[op["field"]] = op["to"]
+        elif op["op"] == "meta":
+            data[op["field"]] = op["to"]
         elif op["op"] == "remove":
             for s in data["sections"]:
                 s["flags"] = [f for f in s["flags"] if f["name"] != op["name"]]
@@ -166,7 +170,10 @@ class Librarian:
 
     def state(self):
         p = self.var / "state.json"
-        return json.loads(p.read_text()) if p.exists() else {"seen": {}, "ran": {}, "models": {}}
+        state = json.loads(p.read_text()) if p.exists() else {}
+        for key in ("seen", "ran", "models", "fingerprints"):
+            state.setdefault(key, {})
+        return state
 
     def save_state(self, state):
         write_atomic(self.var / "state.json", json.dumps(state, indent=1) + "\n")
@@ -297,6 +304,15 @@ class Librarian:
             self.save_state(state)
             result.update(outcome="filed" if safe else ("held" if held else "unchanged"), said=f"{engine} {release or ''}: " + ", ".join(said))
             return result
+
+    def remember(self, fingerprints):
+        """Keep what a page looked like when we last read from it."""
+        if not fingerprints:
+            return
+        with LOCK:
+            state = self.state()
+            state["fingerprints"].update(fingerprints)
+            self.save_state(state)
 
     # – the inbox –
     def items(self, status="open"):

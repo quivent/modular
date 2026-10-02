@@ -2,33 +2,10 @@
 
 One worker does one thing at a time, so two events can never write the same file together.
 """
-import datetime as dt, json, os, queue, threading
+import datetime as dt, hmac, json, os, queue, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import feeds, models
-
-
-def cooling(lib, beat, engine, now=None):
-    last = lib.state()["ran"].get(engine)
-    hours = beat["engines"][engine].get("cooldown_hours", beat.get("default_cooldown_hours", 24))
-    if not last:
-        return False
-    return (now or dt.datetime.now()) - dt.datetime.fromisoformat(last) < dt.timedelta(hours=hours)
-
-
-def poll(lib, beat, fetch=feeds.get, now=None):
-    """Look at every watched feed; return events for engines whose newest release we have not handled."""
-    events = []
-    seen = lib.state()["seen"]
-    for engine, spec in beat["engines"].items():
-        try:
-            tags = feeds.releases(spec["repo"], fetch)
-        except Exception as e:
-            lib.note(kind="feed-error", engine=engine, error=str(e)[:200])
-            continue
-        if tags and tags[0] != seen.get(engine) and not cooling(lib, beat, engine, now):
-            events.append({"engine": engine, "release": tags[0]})
-    return events
+from . import feeds, models, triggers
 
 
 class Listener:
@@ -54,8 +31,9 @@ class Listener:
 
             def do_POST(self):
                 body = self.rfile.read(min(int(self.headers.get("Content-Length") or 0), 1_000_000))
-                secret = os.environ.get("LIBRARIAN_SECRET")
-                if secret and not feeds.signed(secret, body, self.headers.get("X-Hub-Signature-256")):
+                secret = os.environ.get("LIBRARIAN_SECRET")  # GitHub signs the body; Hugging Face sends the secret itself
+                if secret and not (feeds.signed(secret, body, self.headers.get("X-Hub-Signature-256"))
+                                   or hmac.compare_digest(self.headers.get("X-Webhook-Secret") or "", secret)):
                     return self.reply(401, {"error": "bad signature"})
                 if self.path == "/poll":
                     listener.q.put({"poll": True})
@@ -66,8 +44,12 @@ class Listener:
                     payload = json.loads(body or b"{}")
                 except ValueError:
                     return self.reply(400, {"error": "expected JSON"})
-                event = feeds.from_webhook(payload, listener.beat) if "repository" in payload else (
-                    {"engine": payload.get("engine"), "release": payload.get("release")} if payload.get("engine") in listener.beat["engines"] else None)
+                if "repository" in payload:
+                    event = feeds.from_webhook(payload, listener.beat)
+                elif "repo" in payload:
+                    event = feeds.from_hf_webhook(payload)
+                else:
+                    event = {"engine": payload.get("engine"), "release": payload.get("release")} if payload.get("engine") in listener.beat["engines"] else None
                 if not event:
                     return self.reply(202, {"ignored": True})
                 listener.q.put(event)
@@ -90,10 +72,15 @@ class Listener:
             except queue.Empty:
                 continue
             try:
-                for e in (poll(self.lib, self.beat) if event.get("poll") else [event]):
-                    self.log(self.lib.handle(e["engine"], e.get("release"))["said"])
-                if event.get("poll") and self.lib.state()["models"].get("ran", "") < (dt.datetime.now() - dt.timedelta(hours=self.beat["models"]["scan_every_hours"])).isoformat():
-                    models.run(self.lib)
+                if event.get("models"):
+                    if triggers.models_due(self.lib, 1):  # a burst of Hugging Face events is one scan
+                        models.run(self.lib)
+                elif event.get("poll"):
+                    triggers.process(self.lib, triggers.poll(self.lib, self.beat), self.log)
+                    if triggers.models_due(self.lib, self.beat["models"]["scan_every_hours"]):
+                        models.run(self.lib)
+                else:
+                    triggers.process(self.lib, [event], self.log)
             except Exception as e:  # one bad event must not stop the desk
                 self.lib.note(kind="error", error=str(e)[:300])
                 self.log(f"error: {e}")
