@@ -4,6 +4,7 @@
   "default_cooldown_hours": 24,
   "engines": {
     "vllm":   { "repo": "vllm-project/vllm" },
+    "vllm-omni": { "repo": "vllm-project/vllm-omni" },
     "sglang": { "repo": "sgl-project/sglang" },
     "sglang-diffusion": { "repo": "sgl-project/sglang" },
     "trtllm": { "repo": "NVIDIA/TensorRT-LLM" },

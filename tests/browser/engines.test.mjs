@@ -51,6 +51,23 @@ export default async function (t) {
     await click('#archChoices .choice', 'Language'); await sleep(200);
     await click('#serverList .server', 'vLLM'); await sleep(200);
     t.ok(/--max-model-len/.test((await read()).cmd), 'a language model still gets its context length');
+    // text to speech: the two models vLLM-Omni documents get its command; the rest say plainly that nothing is documented
+    await click('#archChoices .choice', 'Audio'); await sleep(150);
+    await click('#archDesign .choice', 'Text to speech'); await sleep(250);
+    const pickModel = async (label) => { await $((x) => { const b = [...document.querySelectorAll('#modelList .model-option')].find((e) => e.textContent.trim().startsWith(x)); b && b.click(); }, label); await sleep(250); };
+    await pickModel('Qwen3-TTS');
+    const qwenTts = (await read()).cmd.replace(/\s+/g, ' ');
+    t.equal(qwenTts.split(' ').slice(0, 6), ['vllm', 'serve', "'Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice'", '\\', '--omni', '\\'], 'Qwen3-TTS: the documented vLLM-Omni command');
+    t.ok(/--port 8000/.test(qwenTts) && !/--trust-remote-code/.test(qwenTts), 'with a port, and without model code it does not need');
+    await pickModel('OmniVoice');
+    t.ok(/--omni/.test((await read()).cmd) && /--trust-remote-code/.test((await read()).cmd), 'OmniVoice: the same, with the model code its documentation asks for');
+    const omniFlags = await $(() => { const names = [...document.querySelectorAll('#allFlags .flag-name')].map((x) => x.textContent); return { omni: names.filter((n) => n === '--omni').length, port: names.filter((n) => n === '--port').length, vllm: names.includes('--tensor-parallel-size'), total: names.length }; });
+    t.ok(omniFlags.omni === 1 && omniFlags.port === 1 && omniFlags.vllm && omniFlags.total > 380, 'its flag list is Omni\'s and vLLM\'s together, each flag once', JSON.stringify(omniFlags));
+    await pickModel('Kokoro');
+    t.ok(/^# No server command is documented/.test((await read()).cmd), 'Kokoro: no documented server, so no invented command');
+    await click('#archDesign .choice', 'Music'); await sleep(250);
+    t.ok(/^# No server command is documented/.test((await read()).cmd), 'music models: the same');
+    await click('#archChoices .choice', 'Language'); await sleep(200);
     // embedding and reranker models are not chat models: the engines are told
     await click('#archChoices .choice', 'Embeddings'); await sleep(200);
     await click('#serverList .server', 'vLLM'); await sleep(200);

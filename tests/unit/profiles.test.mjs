@@ -11,7 +11,8 @@ export default async function (t) {
   t.ok(Object.keys(profiles).length >= 1, 'there is at least one engine profile');
   for (const [engine, profile] of Object.entries(profiles)) {
     const docs = JSON.parse(readFileSync(join(ROOT, 'catalog', 'flags', engine + '.json'), 'utf8'));
-    const known = new Set(docs.sections.flatMap((s) => s.flags.flatMap((f) => [f.name, ...(f.aliases || []), ...(f.negation ? [f.negation] : [])])));
+    const sections = [...docs.sections, ...(profile.inherits ? JSON.parse(readFileSync(join(ROOT, 'catalog', 'flags', profile.inherits + '.json'), 'utf8')).sections : [])];
+    const known = new Set(sections.flatMap((s) => s.flags.flatMap((f) => [f.name, ...(f.aliases || []), ...(f.negation ? [f.negation] : [])])));
     const missing = profile.rules.map((r) => r.flag).filter((f) => !known.has(f));
     t.equal(missing, [], `${engine}: every flag in the profile is in the documentation (${profile.rules.length} rules, read ${docs.fetched})`);
     t.equal(profile.rules.filter((r) => !r.flag || (r.value && r.literal !== undefined)).length, 0, `${engine}: every rule has a flag, and takes a value or a literal, not both`);

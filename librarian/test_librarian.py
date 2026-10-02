@@ -1,7 +1,7 @@
 """Tests for the librarian. They work on a throwaway copy of the repository, never the real one."""
 import copy, json, pathlib, shutil, subprocess, tempfile, unittest, urllib.request
 
-from . import feeds, models, serve
+from . import feeds, models, serve, service
 from .core import ROOT, Librarian, apply_ops, classify, diff, flags_of, validate
 
 
@@ -210,6 +210,16 @@ class World(unittest.TestCase):
         found = dict(models.notable(scan, set()))
         self.assertEqual(sorted(found), ["a/old=retired", "new=lab/big"])
         self.assertEqual(models.notable(scan, set(found)), [])
+
+    def test_the_login_agent_starts_serve_from_this_folder_and_keeps_it_running(self):
+        a = service.agent(ROOT, python="/usr/bin/python3", path="/opt/homebrew/bin:/usr/bin")
+        self.assertEqual(a["ProgramArguments"][1:5], ["-m", "librarian", "serve", "--port"])
+        self.assertEqual(a["WorkingDirectory"], str(ROOT))
+        self.assertTrue(a["RunAtLoad"] and a["KeepAlive"])
+        self.assertIn("/opt/homebrew/bin", a["EnvironmentVariables"]["PATH"])  # it must find node and git
+        self.assertTrue(a["StandardOutPath"].endswith("librarian/var/librarian.log"))
+        import plistlib
+        self.assertEqual(plistlib.loads(plistlib.dumps(a))["Label"], "com.modular.librarian")
 
     def test_the_listener_hands_events_to_the_desk_one_at_a_time(self):
         tmp = pathlib.Path(tempfile.mkdtemp(prefix="librarian-listen-"))

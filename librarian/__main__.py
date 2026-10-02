@@ -9,6 +9,7 @@
   models            run the Hugging Face scan and note what is worth a look
   sync              rebuild the page's copy of the flag lists from the data files (safe: touches only the generated block)
   gate              before a deploy: in step, or brought into step, or a clear message
+  install / uninstall   run it by itself: start at login, restart if it stops (macOS)
   serve [--port N] [--no-poll]   run the listener: POST /event (GitHub release webhook), and a look at the feeds every hour
 
 It commits locally and never pushes or deploys. It will not touch index.html or catalog/flags while they have
@@ -16,7 +17,7 @@ uncommitted changes of yours.
 """
 import json, pathlib, sys
 
-from . import feeds, models, serve
+from . import feeds, models, serve, service
 from .core import Librarian, classify, diff, profile_flags, validate
 
 BEAT = pathlib.Path(__file__).resolve().parent / "beat.json"
@@ -34,7 +35,9 @@ def main(argv):
         for engine in beat["engines"]:
             d = lib.load(engine)
             print(f"{engine:<7} {d['count']:>4} flags  read {d['fetched']}  release {d.get('release', '-'):<14} last looked {s['ran'].get(engine, 'never')}")
-        print(f"\nwaiting for you: {len(lib.items())}   (python3 -m librarian inbox)")
+        live = service.running()
+        print(f"\nlistening: {'yes, on port 8431, ' + str(live['queued']) + ' queued' if live else 'no  (python3 -m librarian install)'}")
+        print(f"waiting for you: {len(lib.items())}   (python3 -m librarian inbox)")
         return 0
     if cmd == "plan":
         engine = rest[0]
@@ -70,6 +73,10 @@ def main(argv):
         item = models.run(lib)
         print(item["summary"] if item else "nothing new")
         return 0
+    if cmd in ("install", "uninstall"):
+        ok, said = service.install(lib.root) if cmd == "install" else service.uninstall()
+        print(said)
+        return 0 if ok else 1
     if cmd == "sync":
         ok, said = lib.sync()
         print(said)

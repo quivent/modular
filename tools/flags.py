@@ -45,7 +45,15 @@ def write(engine, source, sections, extra=None):
 
 # ── vLLM: mkdocs page, one <h4> per flag inside <h3> sections ─────────────────────────────
 def vllm():
-    url = "https://docs.vllm.ai/en/latest/cli/serve/"
+    return mkdocs_argparse("vllm", "https://docs.vllm.ai/en/latest/cli/serve/")
+
+
+# vLLM-Omni (text-to-speech and other multi-stage models) publishes its `vllm serve --omni` reference the same way.
+def vllm_omni():
+    return mkdocs_argparse("vllm-omni", "https://docs.vllm.ai/projects/vllm-omni/en/latest/cli/serve/")
+
+
+def mkdocs_argparse(engine, url):
     page = fetch(url)
     body = page[page.find("<article") : page.find("</article>")] or page
     sections, current = [], None
@@ -76,7 +84,7 @@ def vllm():
                 flag["help"] = (flag["help"] + " " + t).strip()
         current["flags"].append(flag)
     # drop the page's own non-flag headings (title, "JSON CLI Arguments" keeps its --json-arg)
-    return write("vllm", url, sections)
+    return write(engine, url, sections)
 
 
 # ── SGLang: docs tables with Argument | Description | Defaults | Options ────────────────────────
@@ -290,7 +298,7 @@ def sglang_diffusion():
     return write("sglang-diffusion", url, list(sections.values()))
 
 
-ENGINES = {"vllm": vllm, "trtllm": trtllm, "sglang": sglang, "llama": llamacpp, "tgi": tgi, "ollama": ollama, "mlx": mlx, "sglang-diffusion": sglang_diffusion}
+ENGINES = {"vllm": vllm, "trtllm": trtllm, "sglang": sglang, "llama": llamacpp, "tgi": tgi, "ollama": ollama, "mlx": mlx, "sglang-diffusion": sglang_diffusion, "vllm-omni": vllm_omni}
 
 if __name__ == "__main__":
     args = sys.argv[1:]

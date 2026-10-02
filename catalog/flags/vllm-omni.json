@@ -1,0 +1,753 @@
+{
+ "engine": "vllm-omni",
+ "source": "https://docs.vllm.ai/projects/vllm-omni/en/latest/cli/serve/",
+ "fetched": "2026-10-01",
+ "count": 91,
+ "sections": [
+  {
+   "title": "OmniConfig",
+   "flags": [
+    {
+     "name": "--omni",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--enable-sleep-mode",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--task-type",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--forced-aligner",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--forced-aligner-config",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--forced-aligner-device",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--deploy-config",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--strategy-config",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--stage-overrides",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--async-chunk",
+     "aliases": [],
+     "negation": "--no-async-chunk",
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--stage-id",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--replica-id",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--stage-init-timeout",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--init-timeout",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--shm-threshold-bytes",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--log-stats",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--log-file",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--batch-timeout",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--worker-backend",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--ray-address",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--omni-master-address",
+     "aliases": [
+      "-oma"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--omni-master-port",
+     "aliases": [
+      "-omp"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--omni-replica-address",
+     "aliases": [
+      "-ora"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--omni-dp-size-local",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--omni-lb-policy",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--omni-heartbeat-timeout",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--num-gpus",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--model-class-name",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-load-format",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--lora-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--lora-backend",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--lora-scale",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-compile-granularity",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-compile-dynamic",
+     "aliases": [],
+     "negation": "--no-diffusion-compile-dynamic",
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--fa-deterministic",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusers-load-kwargs",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusers-call-kwargs",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--custom-pipeline-args",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--usp",
+     "aliases": [
+      "--ulysses-degree"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--ulysses-mode",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--ulysses-a2a-permute",
+     "aliases": [],
+     "negation": "--no-ulysses-a2a-permute",
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--ring",
+     "aliases": [
+      "--ring-degree"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--allgather-degree",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-quantization-config",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--force-cutlass-fp8",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--use-hsdp",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--hsdp-shard-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--hsdp-replicate-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-attention-backend",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--fastvideo-vsa-topk",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-attention-config",
+     "aliases": [
+      "-dac"
+     ],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--cache-backend",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--cache-config",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--video-output-transport",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--enable-cache-dit-summary",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--step-execution",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--request-batch-max-wait-ms",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--vae-use-slicing",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--vae-use-tiling",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--vae-fast-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--disable-multithread-weight-load",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--enable-broadcast-weight-load",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--num-weight-load-threads",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-offload-config",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--enable-cpu-offload",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--enable-layerwise-offload",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--enable-distributed-layerwise-offload",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--dlo-use-allgather",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--dlo-no-use-allgather",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--dlo-resident-layers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--host-weight-runtime-mode",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--host-weight-runtime-root",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--dlo-host-registration-limit-gib",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--boundary-ratio",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--flow-shift",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-kv-cache-dtype",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-kv-cache-skip-steps",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-kv-cache-skip-layers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--cfg-parallel-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--vae-patch-parallel-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--text-encoder-tp-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--vae-parallel-mode",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--default-sampling-params",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--max-generated-image-size",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--diffusion-streaming-output",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--tts-max-instructions-length",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--robot-openpi-idle-timeout",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--enable-diffusion-pipeline-profiler",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--enable-ar-profiler",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--enable-orch-monitor",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--auxiliary-text-encoder",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    }
+   ]
+  }
+ ]
+}
