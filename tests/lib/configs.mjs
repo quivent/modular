@@ -33,6 +33,7 @@ function makeRandomConfigs(engine, count, seed0) {
     c.model.ornith_profile = pick([true, false]);
     c.model.served_name = pick(['Ornith-1.5-9B', "o'k"]);
     c.model.reference = pick(['Qwen/Qwen3.8-27B', 'org/name', "weird'name", '']);
+    c.model.recipe_args = null; c.model.recipe_env = null; c.model.recipe_image = null; // the recorded commands predate recipes: they are tested without them
     out.push(c);
   }
   return out;

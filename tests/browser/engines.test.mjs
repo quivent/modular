@@ -106,7 +106,7 @@ export default async function (t) {
     await pickPill('Qwen3.8', '27B');
     const docker = async (engine) => { await click('#serverList .server', engine); await sleep(250); const has = await click('#outputModes .choice', 'Docker'); await sleep(200); return has ? (await read()).cmd : null; };
     const dv = await docker('vLLM');
-    t.ok(/--runtime nvidia --gpus all --ipc=host/.test(dv) && /vllm\/vllm-openai:latest/.test(dv) && /--model 'Qwen\/Qwen3\.8-27B'/.test(dv) && /--host '0\.0\.0\.0'/.test(dv), 'vLLM: the documented image and flags, listening on every interface inside the container', dv.split('\n')[0]);
+    t.ok(/--runtime nvidia --gpus all --ipc=host/.test(dv) && /vllm\/vllm-openai:qwen38/.test(dv) && /--model 'Qwen\/Qwen3\.8-27B'/.test(dv) && /--host '0\.0\.0\.0'/.test(dv), 'vLLM: the documented flags, the model\'s own image from its recipe, listening on every interface inside the container', dv.split('\n')[0]);
     const ds = await docker('SGLang');
     t.ok(/--shm-size 32g --ipc=host/.test(ds) && /lmsysorg\/sglang:latest/.test(ds) && /sglang serve/.test(ds) && !/launch_server/.test(ds), 'SGLang: its image, shared memory, and the current sglang serve', ds.split('\n')[0]);
     const dt = await docker('TGI');
@@ -116,6 +116,29 @@ export default async function (t) {
     const doll = await docker('Ollama');
     t.ok(/ollama\/ollama/.test(doll) && /docker exec ollama ollama pull 'hf\.co\/unsloth\/Qwen3\.8-27B-GGUF'/.test(doll), 'Ollama: start the container, then pull the model into it', doll);
     t.equal([await docker('TensorRT'), await docker('MLX')], [null, null], 'TensorRT-LLM and MLX publish no one-line Docker command, so they offer none');
+    await click('#serverList .server', 'vLLM'); await click('#outputModes .choice', 'All flags'); await sleep(150);
+    // the model's vLLM recipe: required flags, environment, image and prerequisites
+    await click('#archChoices .choice', 'Language'); await sleep(200);
+    await click('#serverList .server', 'vLLM');
+    await pickPill('Mistral', 'Medium'); await click('#outputModes .choice', 'CLI'); await sleep(200);
+    const mis = await read();
+    t.ok(/--tokenizer_mode mistral/.test(mis.cmd) && /--config_format mistral/.test(mis.cmd) && /--load_format mistral/.test(mis.cmd), 'Mistral: the three format flags its recipe requires', mis.cmd);
+    t.ok(mis.checks.some((c) => /Before launching: uv pip install -U "mistral_common/.test(c)), 'and the package it needs first', JSON.stringify(mis.checks));
+    await pickPill('Qwen3.8', 'Flash-Next'); await sleep(200);
+    const fn = await read();
+    t.equal((fn.cmd.match(/--gpu-memory-utilization/g) || []).length, 1, 'a flag the page already sets is not repeated when the recipe also names it');
+    t.ok(/--no-enable-flashinfer-autotune/.test(fn.cmd) && /--max-num-seqs 256/.test(fn.cmd), 'and the ones it does not set are added');
+    t.ok(fn.checks.some((c) => /needs the vLLM nightly build \(0\.29\.0 or newer\).*vllm\/vllm-openai:nightly/.test(c)), 'Flash-Next: told it needs the nightly build, and which image', JSON.stringify(fn.checks));
+    await click('#outputModes .choice', 'Docker'); await sleep(200);
+    t.ok(/vllm\/vllm-openai:nightly/.test((await read()).cmd), 'and the Docker tab uses that image');
+    await click('#outputModes .choice', 'CLI'); await sleep(150);
+    await pickPill('Nemotron', '3 Ultra'); await sleep(200);
+    t.ok(/^VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1 vllm serve /.test((await read()).cmd), 'required environment goes in front of the command');
+    await click('#outputModes .choice', 'Docker'); await sleep(200);
+    t.ok(/ -e VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1 /.test((await read()).cmd), 'and becomes -e in a container');
+    await click('#outputModes .choice', 'CLI'); await sleep(150);
+    await pickPill('Mistral', 'Medium'); await click('#serverList .server', 'SGLang'); await sleep(250);
+    t.ok(!/tokenizer_mode|VLLM_/.test((await read()).cmd), 'a recipe is vLLM\'s: other engines do not get its flags');
     await click('#serverList .server', 'vLLM'); await click('#outputModes .choice', 'All flags'); await sleep(150);
     // a speech model has its own, fixed window: a text context length and a prefix cache do not belong in its command
     await click('#archChoices .choice', 'Audio'); await sleep(200);

@@ -2498,26 +2498,26 @@
 {"BAAI/bge-m3":{"heads":16,"kvHeads":16,"maxCtx":8194,"kv":{"full":[24,16,64]},"arch":["XLMRobertaModel"],"type":"xlm-roberta","custom":false}}
 {"BAAI/bge-reranker-v2-m3":{"billions":0.57,"gib":2.1,"heads":16,"kvHeads":16,"maxCtx":8194,"kv":{"full":[24,16,64]},"arch":["XLMRobertaForSequenceClassification"],"type":"xlm-roberta","custom":false}}
 {"LiquidAI/LFM2.5-Embedding-350M":{"billions":0.35,"gib":0.7,"heads":16,"kvHeads":8,"maxCtx":128000,"arch":["Lfm2BidirectionalModel"],"type":"lfm2","custom":true}}
-{"Qwen/Qwen2.5-VL-7B-Instruct":{"billions":8.29,"gib":15.4,"heads":28,"kvHeads":4,"maxCtx":128000,"kv":{"full":[28,4,128]},"arch":["Qwen2_5_VLForConditionalGeneration"],"type":"qwen2_5_vl","custom":false}}
-{"Qwen/Qwen3-32B":{"billions":32.76,"gib":61,"heads":64,"kvHeads":8,"maxCtx":40960,"kv":{"full":[64,8,128]},"arch":["Qwen3ForCausalLM"],"type":"qwen3","custom":false}}
-{"Qwen/Qwen3-8B":{"billions":8.19,"gib":15.3,"heads":32,"kvHeads":8,"maxCtx":40960,"kv":{"full":[36,8,128]},"arch":["Qwen3ForCausalLM"],"type":"qwen3","custom":false}}
-{"Qwen/Qwen3-ASR-1.7B":{"billions":2.35,"gib":4.4,"arch":["Qwen3ASRForConditionalGeneration"],"type":"qwen3_asr","custom":false}}
-{"Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice":{"billions":1.92,"gib":3.6,"arch":["Qwen3TTSForConditionalGeneration"],"type":"qwen3_tts","custom":false}}
+{"Qwen/Qwen2.5-VL-7B-Instruct":{"billions":8.29,"gib":15.4,"heads":28,"kvHeads":4,"maxCtx":128000,"kv":{"full":[28,4,128]},"arch":["Qwen2_5_VLForConditionalGeneration"],"type":"qwen2_5_vl","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Qwen/Qwen2.5-VL-7B-Instruct.yaml","minVllm":"0.10.2"}}}
+{"Qwen/Qwen3-32B":{"billions":32.76,"gib":61,"heads":64,"kvHeads":8,"maxCtx":40960,"kv":{"full":[64,8,128]},"arch":["Qwen3ForCausalLM"],"type":"qwen3","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Qwen/Qwen3-32B.yaml","minVllm":"0.8.5"}}}
+{"Qwen/Qwen3-8B":{"billions":8.19,"gib":15.3,"heads":32,"kvHeads":8,"maxCtx":40960,"kv":{"full":[36,8,128]},"arch":["Qwen3ForCausalLM"],"type":"qwen3","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Qwen/Qwen3-8B.yaml","minVllm":"0.8.5"}}}
+{"Qwen/Qwen3-ASR-1.7B":{"billions":2.35,"gib":4.4,"arch":["Qwen3ASRForConditionalGeneration"],"type":"qwen3_asr","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Qwen/Qwen3-ASR-1.7B.yaml","minVllm":"0.16.0","deps":[{"note":"Audio extras — required for ASR input pre-processing (librosa, soundfile)","command":"uv pip install -U \"vllm[audio]\""}]}}}
+{"Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice":{"billions":1.92,"gib":3.6,"arch":["Qwen3TTSForConditionalGeneration"],"type":"qwen3_tts","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice.yaml","minVllm":"0.20.0","args":["--omni"],"deps":[{"note":"vLLM-Omni provides the TTS serving backend and the `--omni` serve path. See the installation guide for pre-built wheels or building from source.","command":"uv pip install git+https://github.com/vllm-project/vllm-omni.git"}]}}}
 {"Qwen/Qwen3-VL-Embedding-2B":{"billions":2.13,"gib":4,"heads":16,"kvHeads":8,"maxCtx":262144,"kv":{"full":[28,8,128]},"arch":["Qwen3VLForConditionalGeneration"],"type":"qwen3_vl","custom":false}}
 {"Qwen/Qwen3-VL-Embedding-8B":{"billions":8.14,"gib":15.2,"heads":32,"kvHeads":8,"maxCtx":262144,"kv":{"full":[36,8,128]},"arch":["Qwen3VLForConditionalGeneration"],"type":"qwen3_vl","custom":false}}
 {"Qwen/Qwen3-VL-Reranker-2B":{"billions":2.13,"gib":4,"heads":16,"kvHeads":8,"maxCtx":262144,"kv":{"full":[28,8,128]},"arch":["Qwen3VLForConditionalGeneration"],"type":"qwen3_vl","custom":false}}
 {"Qwen/Qwen3-VL-Reranker-8B":{"billions":8.77,"gib":16.3,"heads":32,"kvHeads":8,"maxCtx":262144,"kv":{"full":[36,8,128]},"arch":["Qwen3VLForConditionalGeneration"],"type":"qwen3_vl","custom":false}}
-{"Qwen/Qwen3.8-2.4T-A95B":{"billions":2446.18,"gib":4556.4,"heads":64,"kvHeads":4,"maxCtx":262144,"kv":{"full":[23,4,256]},"arch":["Qwen3_5MoeForCausalLM"],"type":"qwen3_5_moe_text","custom":false}}
-{"Qwen/Qwen3.8-27B":{"billions":27.78,"gib":51.7,"heads":24,"kvHeads":4,"maxCtx":262144,"kv":{"full":[16,4,256]},"arch":["Qwen3_5ForConditionalGeneration"],"type":"qwen3_5","custom":false}}
-{"Qwen/Qwen3.8-Flash-Next":{"billions":180,"gib":335.3,"heads":24,"kvHeads":2,"maxCtx":262144,"kv":{"full":[12,2,256]},"arch":["Qwen4ExpForConditionalGeneration"],"type":"qwen4_exp","custom":false}}
+{"Qwen/Qwen3.8-2.4T-A95B":{"billions":2446.18,"gib":4556.4,"heads":64,"kvHeads":4,"maxCtx":262144,"kv":{"full":[23,4,256]},"arch":["Qwen3_5MoeForCausalLM"],"type":"qwen3_5_moe_text","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Qwen/Qwen3.8-2.4T-A95B.yaml","minVllm":"nightly","nightly":true,"image":"vllm/vllm-openai:qwen38","env":{"VLLM_ENGINE_READY_TIMEOUT_S":"3600"},"deps":[{"note":"config.json declares transformers_version 5.4.0; older releases do not know this model_type.","command":"uv pip install -U \"transformers>=5.4.0\""}]}}}
+{"Qwen/Qwen3.8-27B":{"billions":27.78,"gib":51.7,"heads":24,"kvHeads":4,"maxCtx":262144,"kv":{"full":[16,4,256]},"arch":["Qwen3_5ForConditionalGeneration"],"type":"qwen3_5","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Qwen/Qwen3.8-27B.yaml","minVllm":"0.17.0","image":"vllm/vllm-openai:qwen38","deps":[{"note":"Matches the transformers version config.json was written by (5.8.0), for the Qwen3-VL processor classes. vLLM parses the config with its own Qwen3_5Config.","command":"uv pip install -U \"transformers>=5.8.0\""}]}}}
+{"Qwen/Qwen3.8-Flash-Next":{"billions":180,"gib":335.3,"heads":24,"kvHeads":2,"maxCtx":262144,"kv":{"full":[12,2,256]},"arch":["Qwen4ExpForConditionalGeneration"],"type":"qwen4_exp","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Qwen/Qwen3.8-Flash-Next.yaml","minVllm":"0.29.0","nightly":true,"pip":false,"image":"vllm/vllm-openai:nightly","args":["--max-num-seqs","256","--gpu-memory-utilization","0.90","--enable-prefix-caching","--no-enable-flashinfer-autotune"]}}}
 {"deepseek-ai/DeepSeek-R1-Distill-Qwen-32B":{"billions":32.76,"gib":61,"heads":40,"kvHeads":8,"maxCtx":131072,"kv":{"full":[64,8,128]},"arch":["Qwen2ForCausalLM"],"type":"qwen2","custom":false}}
-{"deepseek-ai/DeepSeek-V4-Pro-0813":{"billions":1650.5,"gib":831.4,"heads":128,"kvHeads":1,"maxCtx":1048576,"arch":["DeepseekV4ForCausalLM"],"type":"deepseek_v4","custom":false,"quant":"fp8"}}
-{"deepseek-ai/DeepSeek-V4.1-Flash":{"billions":763.21,"gib":475.3,"heads":64,"kvHeads":1,"maxCtx":1048576,"arch":["DeepseekV41ForCausalLM"],"type":"deepseek_v41","custom":false,"quant":"fp8"}}
+{"deepseek-ai/DeepSeek-V4-Pro-0813":{"billions":1650.5,"gib":831.4,"heads":128,"kvHeads":1,"maxCtx":1048576,"arch":["DeepseekV4ForCausalLM"],"type":"deepseek_v4","custom":false,"quant":"fp8","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/deepseek-ai/DeepSeek-V4-Pro.yaml","minVllm":"0.20.0","args":["--trust-remote-code","--kv-cache-dtype","fp8","--block-size","256"]}}}
+{"deepseek-ai/DeepSeek-V4.1-Flash":{"billions":763.21,"gib":475.3,"heads":64,"kvHeads":1,"maxCtx":1048576,"arch":["DeepseekV41ForCausalLM"],"type":"deepseek_v41","custom":false,"quant":"fp8","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/deepseek-ai/DeepSeek-V4.1-Flash.yaml","minVllm":"0.30.0","nightly":true,"pip":false,"args":["--tokenizer-mode","deepseek_v41"],"env":{"VLLM_ENGINE_READY_TIMEOUT_S":"3600"}}}}
 {"google/gemma-3-27b-it":{"billions":27.43,"gib":51.1,"heads":32,"kvHeads":16,"kv":{"full":[62,16,128]},"arch":["Gemma3ForConditionalGeneration"],"type":"gemma3","custom":false}}
-{"google/gemma-4-12B-it":{"billions":11.96,"gib":22.3,"heads":16,"kvHeads":8,"maxCtx":262144,"kv":{"full":[8,1,512],"slide":[40,8,256,1024]},"arch":["Gemma4UnifiedForConditionalGeneration"],"type":"gemma4_unified","custom":false}}
-{"google/gemma-4-26B-A4B-it":{"billions":25.81,"gib":48.1,"heads":16,"kvHeads":8,"maxCtx":262144,"kv":{"full":[5,2,512],"slide":[25,8,256,1024]},"arch":["Gemma4ForConditionalGeneration"],"type":"gemma4","custom":false}}
-{"google/gemma-4-31B-it":{"billions":31.27,"gib":58.3,"heads":32,"kvHeads":16,"maxCtx":262144,"kv":{"full":[10,4,512],"slide":[50,16,256,1024]},"arch":["Gemma4ForConditionalGeneration"],"type":"gemma4","custom":false}}
-{"google/gemma-4-E4B-it":{"billions":8,"gib":14.9,"heads":8,"kvHeads":2,"maxCtx":131072,"kv":{"full":[7,2,512],"slide":[35,2,256,512]},"arch":["Gemma4ForConditionalGeneration"],"type":"gemma4","custom":false}}
+{"google/gemma-4-12B-it":{"billions":11.96,"gib":22.3,"heads":16,"kvHeads":8,"maxCtx":262144,"kv":{"full":[8,1,512],"slide":[40,8,256,1024]},"arch":["Gemma4UnifiedForConditionalGeneration"],"type":"gemma4_unified","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Google/gemma-4-12B-it.yaml","minVllm":"0.23.0","image":"vllm/vllm-openai:gemma4-unified","deps":[{"note":"Audio extras — only needed when serving the audio modality","command":"uv pip install \"vllm[audio]\""}]}}}
+{"google/gemma-4-26B-A4B-it":{"billions":25.81,"gib":48.1,"heads":16,"kvHeads":8,"maxCtx":262144,"kv":{"full":[5,2,512],"slide":[25,8,256,1024]},"arch":["Gemma4ForConditionalGeneration"],"type":"gemma4","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Google/gemma-4-26B-A4B-it.yaml","minVllm":"0.25.0"}}}
+{"google/gemma-4-31B-it":{"billions":31.27,"gib":58.3,"heads":32,"kvHeads":16,"maxCtx":262144,"kv":{"full":[10,4,512],"slide":[50,16,256,1024]},"arch":["Gemma4ForConditionalGeneration"],"type":"gemma4","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Google/gemma-4-31B-it.yaml","minVllm":"0.19.1","deps":[{"note":"Audio extras — only needed when serving the audio modality","command":"uv pip install \"vllm[audio]\""}]}}}
+{"google/gemma-4-E4B-it":{"billions":8,"gib":14.9,"heads":8,"kvHeads":2,"maxCtx":131072,"kv":{"full":[7,2,512],"slide":[35,2,256,512]},"arch":["Gemma4ForConditionalGeneration"],"type":"gemma4","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/Google/gemma-4-E4B-it.yaml","minVllm":"0.19.1","deps":[{"note":"Audio extras — needed to serve the audio modality","command":"uv pip install \"vllm[audio]\""}]}}}
 {"hexgrad/Kokoro-82M":{"arch":[],"custom":false}}
 {"ibm-granite/granite-4.2-30b":{"billions":29.28,"gib":54.5,"heads":32,"kvHeads":8,"maxCtx":131072,"kv":{"full":[64,8,128]},"arch":["GraniteForCausalLM"],"type":"granite","custom":false}}
 {"ibm-granite/granite-4.2-8b":{"billions":8.79,"gib":16.4,"heads":32,"kvHeads":8,"maxCtx":131072,"kv":{"full":[40,8,128]},"arch":["GraniteForCausalLM"],"type":"granite","custom":false}}
@@ -2528,32 +2528,32 @@
 {"jinaai/jina-reranker-v3":{"billions":0.6,"gib":1.1,"heads":16,"kvHeads":8,"maxCtx":131072,"kv":{"full":[28,8,128]},"arch":["JinaForRanking"],"type":"qwen3","custom":true}}
 {"jinaai/jina-reranker-v3.5":{"billions":0.6,"gib":1.1,"heads":16,"kvHeads":8,"maxCtx":131072,"kv":{"full":[12,8,128],"slide":[16,8,128,1024]},"arch":["JinaForRanking"],"type":"qwen3","custom":true}}
 {"k2-fsa/OmniVoice":{"billions":0.61,"gib":2.3,"arch":["OmniVoice"],"type":"omnivoice","custom":false}}
-{"meta-llama/Llama-3.3-70B-Instruct":{"billions":70.55,"gib":131.4,"heads":64,"kvHeads":8,"maxCtx":131072,"kv":{"full":[80,8,128]},"arch":["LlamaForCausalLM"],"type":"llama","custom":false}}
-{"meta-llama/Llama-4-Scout-17B-16E-Instruct":{"billions":108.64,"gib":202.4,"heads":40,"arch":["Llama4ForConditionalGeneration"],"type":"llama4"}}
+{"meta-llama/Llama-3.3-70B-Instruct":{"billions":70.55,"gib":131.4,"heads":64,"kvHeads":8,"maxCtx":131072,"kv":{"full":[80,8,128]},"arch":["LlamaForCausalLM"],"type":"llama","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/meta-llama/Llama-3.3-70B-Instruct.yaml","minVllm":"0.12.0"}}}
+{"meta-llama/Llama-4-Scout-17B-16E-Instruct":{"billions":108.64,"gib":202.4,"heads":40,"arch":["Llama4ForConditionalGeneration"],"type":"llama4","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/meta-llama/Llama-4-Scout-17B-16E-Instruct.yaml","minVllm":"0.12.0"}}}
 {"microsoft/phi-4":{"billions":14.66,"gib":27.3,"heads":40,"kvHeads":10,"maxCtx":16384,"kv":{"full":[40,10,128]},"arch":["Phi3ForCausalLM"],"type":"phi3","custom":false}}
-{"mistralai/Ministral-3-14B-Instruct-2512":{"billions":13.95,"gib":14.6,"heads":32,"kvHeads":8,"maxCtx":262144,"kv":{"full":[40,8,128]},"arch":["Mistral3ForConditionalGeneration"],"type":"mistral3","custom":false,"quant":"fp8"}}
-{"mistralai/Ministral-3-8B-Instruct-2512":{"billions":8.92,"gib":9.7,"heads":32,"kvHeads":8,"maxCtx":262144,"kv":{"full":[34,8,128]},"arch":["Mistral3ForConditionalGeneration"],"type":"mistral3","custom":false,"quant":"fp8"}}
-{"mistralai/Mistral-Medium-3.5-128B":{"billions":127.7,"gib":124.4,"heads":96,"kvHeads":8,"maxCtx":262144,"kv":{"full":[88,8,128]},"arch":["Mistral3ForConditionalGeneration"],"type":"mistral3","custom":false,"quant":"fp8"}}
-{"mistralai/Mistral-Small-4-119B-2603":{"billions":119.4,"gib":112.6,"heads":32,"kvHeads":32,"maxCtx":1048576,"kv":{"mla":[36,320]},"arch":["Mistral3ForConditionalGeneration"],"type":"mistral3","custom":false,"quant":"fp8"}}
+{"mistralai/Ministral-3-14B-Instruct-2512":{"billions":13.95,"gib":14.6,"heads":32,"kvHeads":8,"maxCtx":262144,"kv":{"full":[40,8,128]},"arch":["Mistral3ForConditionalGeneration"],"type":"mistral3","custom":false,"quant":"fp8","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/mistralai/Ministral-3-14B-Instruct-2512.yaml","minVllm":"0.11.0","args":["--tokenizer_mode","mistral","--config_format","mistral","--load_format","mistral"]}}}
+{"mistralai/Ministral-3-8B-Instruct-2512":{"billions":8.92,"gib":9.7,"heads":32,"kvHeads":8,"maxCtx":262144,"kv":{"full":[34,8,128]},"arch":["Mistral3ForConditionalGeneration"],"type":"mistral3","custom":false,"quant":"fp8","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/mistralai/Ministral-3-14B-Instruct-2512.yaml","minVllm":"0.11.0","args":["--tokenizer_mode","mistral","--config_format","mistral","--load_format","mistral"]}}}
+{"mistralai/Mistral-Medium-3.5-128B":{"billions":127.7,"gib":124.4,"heads":96,"kvHeads":8,"maxCtx":262144,"kv":{"full":[88,8,128]},"arch":["Mistral3ForConditionalGeneration"],"type":"mistral3","custom":false,"quant":"fp8","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/mistralai/Mistral-Medium-3.5-128B.yaml","minVllm":"0.18.0","args":["--tokenizer_mode","mistral","--config_format","mistral","--load_format","mistral"],"deps":[{"note":"Mistral tokenizer / chat-template runtime — Mistral 3.5 needs >= 1.11.1 (auto-installed by vLLM nightly, pin if you hit an older cached wheel)","command":"uv pip install -U \"mistral_common>=1.11.1\""}]}}}
+{"mistralai/Mistral-Small-4-119B-2603":{"billions":119.4,"gib":112.6,"heads":32,"kvHeads":32,"maxCtx":1048576,"kv":{"mla":[36,320]},"arch":["Mistral3ForConditionalGeneration"],"type":"mistral3","custom":false,"quant":"fp8","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/mistralai/Mistral-Small-4-119B-2603.yaml","minVllm":"0.20.0","args":["--max-model-len","262144"],"deps":[{"note":"Mistral tokenizer / chat-template runtime — Mistral Small 4 needs >= 1.11.0 (vLLM 0.20.1+ bundles it, pin explicitly if you hit an older cached wheel)","command":"uv pip install -U \"mistral_common>=1.11.0\""},{"note":"Transformers v5 silences YaRN warnings and is required for the latest Mistral 4 chat template","command":"uv pip install -U transformers"}]}}}
 {"mistralai/Mixtral-8x7B-Instruct-v0.1":{"billions":46.7,"gib":87,"heads":32,"kvHeads":8,"maxCtx":32768,"kv":{"full":[32,8,128]},"arch":["MixtralForCausalLM"],"type":"mixtral","custom":false}}
-{"mistralai/Voxtral-Mini-4B-Realtime-2602":{"billions":4.43,"gib":8.3,"heads":32,"kvHeads":8,"maxCtx":131072,"kv":{"full":[26,8,128]},"arch":["VoxtralRealtimeForConditionalGeneration"],"type":"voxtral_realtime","custom":false}}
-{"moonshotai/Kimi-K3":{"billions":2779.93,"gib":1453.7,"heads":96,"kvHeads":96,"maxCtx":1048576,"kv":{"mla":[24,576]},"arch":["KimiK3ForConditionalGeneration"],"type":"kimi_k3","custom":true}}
-{"nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16":{"billions":560.52,"gib":1044.1,"heads":64,"kvHeads":2,"maxCtx":262144,"kv":{"full":[12,2,128]},"arch":["NemotronHForCausalLM"],"type":"nemotron_h","custom":false}}
-{"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16":{"billions":31.58,"gib":61.3,"heads":32,"kvHeads":2,"maxCtx":262144,"kv":{"full":[6,2,128]},"arch":["NemotronHForCausalLM"],"type":"nemotron_h","custom":false}}
+{"mistralai/Voxtral-Mini-4B-Realtime-2602":{"billions":4.43,"gib":8.3,"heads":32,"kvHeads":8,"maxCtx":131072,"kv":{"full":[26,8,128]},"arch":["VoxtralRealtimeForConditionalGeneration"],"type":"voxtral_realtime","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/mistralai/Voxtral-Mini-4B-Realtime-2602.yaml","minVllm":"0.20.0","args":["--tokenizer-mode","mistral","--compilation_config","{\"cudagraph_mode\": \"PIECEWISE\"}"],"env":{"VLLM_DISABLE_COMPILE_CACHE":"1"},"deps":[{"note":"mistral-common's audio extras bundle soxr/librosa/soundfile plus the Voxtral Realtime tokenizer (>= 1.9.0)","command":"uv pip install -U \"mistral-common[audio]>=1.9.0\""},{"note":"Transformers v5 silences a barrage of warnings emitted when serving Voxtral on v4 (see vllm-project/vllm#34642)","command":"uv pip install -U transformers"}]}}}
+{"moonshotai/Kimi-K3":{"billions":2779.93,"gib":1453.7,"heads":96,"kvHeads":96,"maxCtx":1048576,"kv":{"mla":[24,576]},"arch":["KimiK3ForConditionalGeneration"],"type":"kimi_k3","custom":true,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/moonshotai/Kimi-K3.yaml","minVllm":"0.29.0","args":["--trust-remote-code","--gpu-memory-utilization","0.95"]}}}
+{"nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16":{"billions":560.52,"gib":1044.1,"heads":64,"kvHeads":2,"maxCtx":262144,"kv":{"full":[12,2,128]},"arch":["NemotronHForCausalLM"],"type":"nemotron_h","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16.yaml","minVllm":"0.22.0","image":"vllm/vllm-openai:v0.28.0","args":["--served-model-name","nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B","--trust-remote-code","--kv-cache-dtype","fp8","--max-num-seqs","16","--max-model-len","262144","--gpu-memory-utilization","0.90","--max-num-batched-tokens","32768","--enable-flashinfer-autotune","--async-scheduling","--mamba-backend","triton","--mamba-ssm-cache-dtype","float32"],"env":{"VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS":"1"}}}}
+{"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16":{"billions":31.58,"gib":61.3,"heads":32,"kvHeads":2,"maxCtx":262144,"kv":{"full":[6,2,128]},"arch":["NemotronHForCausalLM"],"type":"nemotron_h","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16.yaml","minVllm":"0.27.1","image":"vllm/vllm-openai:v0.28.0","args":["--mamba-backend","flashinfer","--mamba-cache-mode","align","--enable-prefix-caching","--max-num-batched-tokens","16384"],"deps":[{"note":"Required by the BF16 variant, which sets VLLM_USE_FASTOKENS=1; vLLM does not bundle it yet (vllm-project/vllm#47859)","command":"uv pip install \"fastokens>=0.2.0\""}]}}}
 {"nvidia/Nemotron-3-Embed-1B-BF16":{"billions":1.14,"gib":2.1,"heads":24,"kvHeads":8,"maxCtx":262144,"kv":{"full":[16,8,128]},"arch":["Ministral3Model"],"type":"ministral3","custom":false}}
 {"nvidia/Nemotron-3-Embed-8B-BF16":{"billions":7.95,"gib":14.8,"heads":32,"kvHeads":8,"maxCtx":262144,"kv":{"full":[34,8,128]},"arch":["Ministral3Model"],"type":"ministral3","custom":false}}
 {"nvidia/llama-nemotron-rerank-1b-v2":{"billions":1.24,"gib":2.3,"heads":32,"kvHeads":8,"maxCtx":131072,"kv":{"full":[16,8,64]},"arch":["LlamaBidirectionalForSequenceClassification"],"type":"llama_bidirec","custom":true}}
 {"nvidia/nemotron-3.5-asr-streaming-0.6b":{"billions":0.64,"gib":2.4,"arch":["Nemotron3_5AsrForRNNT"],"type":"nemotron3_5_asr","custom":false}}
-{"openai/gpt-oss-120b":{"billions":116.83,"gib":60.8,"heads":64,"kvHeads":8,"maxCtx":131072,"kv":{"full":[18,8,64],"slide":[18,8,64,128]},"arch":["GptOssForCausalLM"],"type":"gpt_oss","custom":false,"quant":"mxfp4"}}
-{"openai/gpt-oss-20b":{"billions":20.91,"gib":12.8,"heads":64,"kvHeads":8,"maxCtx":131072,"kv":{"full":[12,8,64],"slide":[12,8,64,128]},"arch":["GptOssForCausalLM"],"type":"gpt_oss","custom":false,"quant":"mxfp4"}}
-{"openai/whisper-large-v3":{"billions":1.54,"gib":8.6,"arch":["WhisperForConditionalGeneration"],"type":"whisper","custom":false}}
+{"openai/gpt-oss-120b":{"billions":116.83,"gib":60.8,"heads":64,"kvHeads":8,"maxCtx":131072,"kv":{"full":[18,8,64],"slide":[18,8,64,128]},"arch":["GptOssForCausalLM"],"type":"gpt_oss","custom":false,"quant":"mxfp4","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/openai/gpt-oss-120b.yaml","minVllm":"0.10.1"}}}
+{"openai/gpt-oss-20b":{"billions":20.91,"gib":12.8,"heads":64,"kvHeads":8,"maxCtx":131072,"kv":{"full":[12,8,64],"slide":[12,8,64,128]},"arch":["GptOssForCausalLM"],"type":"gpt_oss","custom":false,"quant":"mxfp4","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/openai/gpt-oss-20b.yaml","minVllm":"0.10.1"}}}
+{"openai/whisper-large-v3":{"billions":1.54,"gib":8.6,"arch":["WhisperForConditionalGeneration"],"type":"whisper","custom":false,"recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/openai/whisper-large-v3.yaml","minVllm":"0.7.0"}}}
 {"openai/whisper-large-v3-turbo":{"billions":0.81,"gib":1.5,"arch":["WhisperForConditionalGeneration"],"type":"whisper","custom":false}}
 {"ornith-ai/Ornith-1.5-35B-A3B":{"billions":35.95,"gib":67,"heads":16,"kvHeads":2,"maxCtx":262144,"kv":{"full":[10,2,256]},"arch":["Qwen3_5MoeForConditionalGeneration"],"type":"qwen3_5_moe","custom":false}}
 {"ornith-ai/Ornith-1.5-397B":{"billions":403.4,"gib":751.4,"heads":32,"kvHeads":2,"maxCtx":262144,"kv":{"full":[15,2,256]},"arch":["Qwen3_5MoeForConditionalGeneration"],"type":"qwen3_5_moe","custom":false}}
 {"ornith-ai/Ornith-1.5-9B":{"billions":9.65,"gib":18,"heads":16,"kvHeads":4,"maxCtx":262144,"kv":{"full":[8,4,256]},"arch":["Qwen3_5ForConditionalGeneration"],"type":"qwen3_5","custom":false}}
 {"stabilityai/stable-audio-3-medium":{"billions":2.31,"gib":8.6,"arch":[]}}
-{"zai-org/GLM-5.3":{"billions":753.33,"gib":703.7,"heads":64,"kvHeads":64,"maxCtx":1048576,"kv":{"mla":[78,576]},"arch":["GlmMoeDsaForCausalLM"],"type":"glm_moe_dsa","custom":false,"quant":"fp8"}}
-{"zai-org/GLM-5.3-Flash":{"billions":321.32,"gib":305.8,"heads":64,"kvHeads":64,"maxCtx":1048576,"kv":{"mla":[11,512]},"arch":["Glm5NextForConditionalGeneration"],"type":"glm5_next","custom":false,"quant":"fp8"}}
+{"zai-org/GLM-5.3":{"billions":753.33,"gib":703.7,"heads":64,"kvHeads":64,"maxCtx":1048576,"kv":{"mla":[78,576]},"arch":["GlmMoeDsaForCausalLM"],"type":"glm_moe_dsa","custom":false,"quant":"fp8","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/zai-org/GLM-5.3.yaml","minVllm":"0.29.0","args":["--kv-cache-dtype","fp8_e4m3"]}}}
+{"zai-org/GLM-5.3-Flash":{"billions":321.32,"gib":305.8,"heads":64,"kvHeads":64,"maxCtx":1048576,"kv":{"mla":[11,512]},"arch":["Glm5NextForConditionalGeneration"],"type":"glm5_next","custom":false,"quant":"fp8","recipe":{"source":"https://github.com/vllm-project/recipes/blob/main/models/zai-org/GLM-5.3-Flash.yaml","minVllm":"0.29.0","nightly":true,"pip":false,"image":"vllm/vllm-openai:nightly","env":{"VLLM_ENGINE_READY_TIMEOUT_S":"3600"}}}}
 </script>
 <!-- end of generated facts -->
   <script>
@@ -4887,6 +4887,13 @@
       var c = flagCollection(engine === 'ollama' ? 'llama' : engine);
       return c && c.support;
     }
+    // The vLLM recipe for the chosen model, when one applies to this setup.
+    function recipeOf() {
+      var facts = !state.customModel && MEMORY_SHAPES[val('modelRef')];
+      if (!facts || !facts.recipe || state.server !== 'vllm' || val('architecture') === 'diffusion') return null;
+      if (models[state.model] && models[state.model].omni) return null;
+      return facts.recipe;
+    }
     function trustRequired() {
       var facts = !state.customModel && MEMORY_SHAPES[val('modelRef')];
       return !!facts && val('architecture') !== 'diffusion' && !(state.server === 'vllm' && models[state.model] && models[state.model].omni) && needsTrust(supportFor(state.server), facts);
@@ -4902,6 +4909,9 @@
           ornith_profile: ornithProfileActive(),
           ornith_size: selectedOrnith() ? models[state.model].ornith : null,
           build: availableBuilds() ? state.build : null,
+          recipe_args: (recipeOf() || {}).args || null, // what the model's vLLM recipe requires on every launch
+          recipe_env: (recipeOf() || {}).env || null,
+          recipe_image: (recipeOf() || {}).image || null,
           omni: (!state.customModel && models[state.model] && models[state.model].omni) || false, // served through vLLM-Omni
           nvfp4_flag: (!state.customModel && models[state.model] && models[state.model].nvfp4 && models[state.model].nvfp4.flag) || null, // where an image model's NVFP4 weights go
           nvfp4_ref: (!state.customModel && models[state.model] && models[state.model].nvfp4 && models[state.model].nvfp4.ref) || null,
@@ -5057,7 +5067,16 @@
         .map(function (line) {
           return line.trim().replace(/ \\$/, '');
         });
-      if (c.runtime.server === 'vllm') args[0] = args[0].replace(/^vllm serve /, '--model ');
+      var envFlags = '';
+      if (c.runtime.server === 'vllm') {
+        // required environment travels in front of the command; in a container it becomes -e flags
+        var lead = args[0].match(/^((?:[A-Z][A-Z0-9_]*=(?:'[^']*'|\S+) )+)(vllm serve .*)$/);
+        if (lead) {
+          envFlags = lead[1].trim().split(/ (?=[A-Z][A-Z0-9_]*=)/).map(function (e) { return ' -e ' + e; }).join('');
+          args[0] = lead[2];
+        }
+        args[0] = args[0].replace(/^vllm serve /, '--model ');
+      }
       else if (c.runtime.server === 'tgi' || c.runtime.server === 'llama') args.shift(); // the image's entrypoint is the server itself
       // Inside the container the server must listen on every interface for the published port to reach it;
       // the -p mapping below still exposes it on this machine's loopback only.
@@ -5072,7 +5091,7 @@
       ).join(',');
       var prefix =
         'docker run --rm ' + spec.flags.join(' ') + ' -e CUDA_VISIBLE_DEVICES=' + devices +
-        ' -e HF_TOKEN -v ' + spec.cache + ' -p 127.0.0.1:' + hostPort + ':' + c.runtime.port + ' ' + spec.image;
+        ' -e HF_TOKEN' + envFlags + ' -v ' + spec.cache + ' -p 127.0.0.1:' + hostPort + ':' + c.runtime.port + ' ' + (c.model.recipe_image || spec.image);
       return [prefix]
         .concat(args)
         .map(function (part, i, all) {
@@ -5090,7 +5109,7 @@
       if (ENGINE_PROFILES[id]) {
         rows = profileRows(ENGINE_PROFILES[id], c);
         if (state.tab === 'docker' && DOCKER[id])
-          rows.unshift({ label: 'Container', flag: DOCKER[id].image, target: 'outputModes' });
+          rows.unshift({ label: 'Container', flag: c.model.recipe_image || DOCKER[id].image, target: 'outputModes' });
       } else if (id === 'tgi') {
         add('Model', '--model-id ' + c.model.reference, 'modelFocus');
         add('Host', '--hostname ' + r.host, 'hostChoices');
@@ -5393,7 +5412,7 @@
       var env = /(?:^|[\s&])([A-Z][A-Z0-9_]{3,})=('[^']*'|"[^"]*"|[^\s&]+)/g;
       while ((m = env.exec(command))) found.push([m[1], m[2].replace(/^['"]|['"]$/g, '')]);
       var first = command.split('\n')[0],
-        model = /^(?:vllm serve|trtllm-serve|text-generation-launcher|llama-server|mlx_lm\.server)/.test(first)
+        model = /^(?:[A-Z][A-Z0-9_]*=(?:'[^']*'|\S+) )*(?:vllm serve|trtllm-serve|text-generation-launcher|llama-server|mlx_lm\.server)/.test(first)
           ? first.match(/serve\s+('[^']*'|\S+)/)
           : null;
       if (model && engine !== 'trtllm')
@@ -5675,8 +5694,42 @@
       },
     };
     // The parts of the command, in order: the head, then one entry per flag whose condition holds.
+    // What the model's recipe requires on every launch (flags and environment). A flag the person already controls is
+    // left as they set it: the comparison ignores hyphen/underscore spelling and the --no- prefix.
+        // quoted only when the shell needs it: --tokenizer-mode mistral, not --tokenizer-mode 'mistral'
+    function plain(v) {
+      return /^[\w@%+=:,.\/-]+$/.test(v) ? v : sh(v);
+    }
+    function flagKey(f) {
+      return f.replace(/^--(no-)?/, '').replace(/_/g, '-');
+    }
+    function recipeGroups(config, emitted) {
+      var seen = {},
+        groups = [];
+      emitted.forEach(function (part) {
+        seen[flagKey(part.split(' ')[0])] = 1;
+      });
+      (config.model.recipe_args || []).forEach(function (token) {
+        if (/^--/.test(token)) groups.push({ flag: token, values: [] });
+        else if (groups.length) groups[groups.length - 1].values.push(token);
+      });
+      return groups
+        .filter(function (g) {
+          return !seen[flagKey(g.flag)];
+        })
+        .map(function (g) {
+          return g.flag + g.values.map(function (v) { return ' ' + plain(v); }).join('');
+        });
+    }
+    function recipeEnv(config) {
+      var env = config.model.recipe_env || {};
+      return Object.keys(env).map(function (k) {
+        return k + '=' + plain(env[k]);
+      });
+    }
     function profileParts(profile, config) {
-      var parts = [profile.head.replace('{model}', sh(config.model.reference || 'MODEL_REFERENCE'))];
+      var env = profile.engine === 'vllm' ? recipeEnv(config) : [],
+        parts = [env.concat([profile.head.replace('{model}', sh(config.model.reference || 'MODEL_REFERENCE'))]).join(' ')];
       profile.rules.forEach(function (rule) {
         if (!profileHolds(rule.when, config)) return;
         var value = rule.literal !== undefined ? rule.literal : rule.value ? profileGet(config, rule.value) : undefined;
@@ -5684,6 +5737,10 @@
           value = rule.fallback;
         parts.push(rule.flag + (rule.value || rule.literal !== undefined ? ' ' + (PROFILE_FORMATS[rule.format || 'raw'])(value) : ''));
       });
+      if (profile.engine === 'vllm')
+        recipeGroups(config, parts.slice(1)).forEach(function (g) {
+          parts.push(g);
+        });
       return parts;
     }
     // The finished command: one flag per line, then any extra arguments the user typed.
@@ -5721,6 +5778,14 @@
         if (rule.group) byGroup[rule.group] = row;
         rows.push(row);
       });
+      if (profile.engine === 'vllm') {
+        recipeEnv(config).forEach(function (e) {
+          rows.push({ label: 'Required by the model', flag: e, target: 'modelFocus' });
+        });
+        recipeGroups(config, rows.map(function (r) { return r.flag; })).forEach(function (g) {
+          rows.push({ label: 'Required by the model', flag: g, target: 'modelFocus' });
+        });
+      }
       return rows;
     }
     /* ▸ js: flag map, checks, fit estimate */
@@ -6079,6 +6144,16 @@
         if (trustRequired() && !on('trust'))
           checks.push(['ok', chosen.name + ' ships its own code and ' + server().name + ' has no built-in version, so --trust-remote-code is added.']);
       }
+      var recipe = recipeOf();
+      if (recipe) {
+        if (recipe.nightly)
+          checks.push(['warn', chosen.name + ' needs the vLLM nightly build' + (recipe.minVllm && recipe.minVllm !== 'nightly' ? ' (' + recipe.minVllm + ' or newer)' : '') + ': the PyPI release is not enough.' + (recipe.image ? ' Use the image ' + recipe.image + '.' : '')]);
+        else if (recipe.image && state.tab !== 'docker')
+          checks.push(['warn', chosen.name + ' has its own vLLM image, ' + recipe.image + '. The general release may not run it.']);
+        (recipe.deps || []).forEach(function (d) {
+          checks.push(['warn', 'Before launching: ' + (d.command || d.note) + (d.command && d.note ? ' (' + d.note + ')' : '')]);
+        });
+      }
       if (diffusionKind() && config.runtime.quantization === 'NVFP4' && currentCard() && currentCard().cc < 10)
         checks.push(['warn', 'NVFP4 needs a Blackwell GPU (B200, B300, RTX PRO 6000, RTX 5090). The ' + currentCard().name + ' is not one.']);
       if (diffusionKind() && !state.customModel && models[state.model] && models[state.model].unlisted)
@@ -6277,6 +6352,8 @@
       if (builds.length) rows.push(['Also as', builds.join(' · ')]);
       if (model.kind === 'image' || model.kind === 'video')
         rows.push(['Precisions', ['BF16', 'FP8'].concat(model.nvfp4 ? ['NVFP4'] : []).join(' · ')]);
+      if (shape && shape.recipe && shape.recipe.minVllm)
+        rows.push(['Needs', 'vLLM ' + (shape.recipe.nightly ? 'nightly' : shape.recipe.minVllm + ' or newer')]);
       rows.push([
         'Runs on',
         servers

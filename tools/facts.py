@@ -4,7 +4,7 @@
     python3 tools/facts.py                 # every model in the catalog
     python3 tools/facts.py Qwen/Qwen3.8-27B
 
-Writes catalog/facts.json: { ref: { billions, gib, heads, kvHeads, maxCtx, arch, type, custom, quant, kv, fetched } }
+Writes catalog/facts.json: { ref: { billions, gib, heads, kvHeads, maxCtx, arch, type, custom, quant, kv, recipe, fetched } }
 
   maxCtx   the longest context the model supports (a longer one is refused at startup)
   kv       what one token costs in cache, by attention design, or null when the design is not one we can
@@ -15,6 +15,8 @@ Writes catalog/facts.json: { ref: { billions, gib, heads, kvHeads, maxCtx, arch,
            layers that keep a fixed-size state (linear attention, Mamba) cost nothing per token and are left out
   custom   the repository ships its own modelling code (it needs --trust-remote-code unless the engine has the model natively)
   quant    the quantization the checkpoint was published in, if any
+  recipe   what the vLLM recipe says it needs: minimum version, nightly or not, required arguments and environment,
+           packages to install first (tools/recipes.py)
 
 A gated repository's config is only readable with a Hugging Face token (HF_TOKEN). Without one, what is already
 known stays, and nothing is invented. Standard library only.
@@ -22,6 +24,8 @@ known stays, and nothing is invented. Standard library only.
 import datetime as dt, json, os, pathlib, re, subprocess, sys, urllib.error, urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import recipes  # noqa: E402
 OUT = ROOT / "catalog" / "facts.json"
 WEIGHT = re.compile(r"\.(safetensors)$")
 
@@ -131,6 +135,14 @@ def main():
             continue
         old = known.get(ref, {})
         merged = {**old, **new}
+        try:  # what the vLLM recipe says the model needs; no recipe means nothing is claimed
+            recipe = recipes.for_model(ref)
+            if recipe:
+                merged["recipe"] = recipe
+            else:
+                merged.pop("recipe", None)
+        except Exception as e:
+            print(f"  could not read recipes: {str(e)[:60]}")
         if "unreadable" not in new:
             merged.pop("unreadable", None)
         merged["fetched"] = dt.date.today().isoformat()
