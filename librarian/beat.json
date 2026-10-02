@@ -13,5 +13,6 @@
     "ollama": { "repo": "ollama/ollama" },
     "mlx":    { "repo": "ml-explore/mlx-lm" }
   },
-  "models": { "scan_every_hours": 24 }
+  "models": { "scan_every_hours": 24 },
+  "facts_every_hours": 24
 }

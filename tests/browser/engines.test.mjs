@@ -140,6 +140,11 @@ export default async function (t) {
     await pickPill('Mistral', 'Medium'); await click('#serverList .server', 'SGLang'); await sleep(250);
     t.ok(!/tokenizer_mode|VLLM_/.test((await read()).cmd), 'a recipe is vLLM\'s: other engines do not get its flags');
     await click('#serverList .server', 'vLLM'); await click('#outputModes .choice', 'All flags'); await sleep(150);
+    // a download too big to assume: say so before it fills a disk
+    await pickPill('Qwen3.8', '2.4T'); await sleep(200);
+    t.ok((await read()).checks.some((c) => /The download is about 4,\d{3} GB/.test(c)), 'a 4.5 TB checkpoint is named as a download, with a reminder to check the disk', JSON.stringify((await read()).checks));
+    await pickPill('Qwen3.8', '27B'); await sleep(200);
+    t.ok(!(await read()).checks.some((c) => /The download is about/.test(c)), 'but a 52 GB one is not worth a warning');
     // a speech model has its own, fixed window: a text context length and a prefix cache do not belong in its command
     await click('#archChoices .choice', 'Audio'); await sleep(200);
     const speech = (await read()).cmd;

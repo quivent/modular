@@ -3,6 +3,7 @@
 
     python3 tools/facts.py                 # every model in the catalog
     python3 tools/facts.py Qwen/Qwen3.8-27B
+    python3 tools/facts.py --out FILE        # start from FILE and write it back (the librarian stages this way)
 
 Writes catalog/facts.json: { ref: { billions, gib, heads, kvHeads, maxCtx, arch, type, custom, quant, kv, recipe, fetched } }
 
@@ -124,8 +125,14 @@ def catalog():
 
 
 def main():
+    global OUT
+    args = sys.argv[1:]
+    if "--out" in args:  # write somewhere else, starting from what is already there (the librarian stages this way)
+        i = args.index("--out")
+        OUT = pathlib.Path(args[i + 1])
+        del args[i : i + 2]
     token = os.environ.get("HF_TOKEN")
-    refs = sys.argv[1:] or [m["ref"] for m in catalog()]
+    refs = args or [m["ref"] for m in catalog()]
     known = json.loads(OUT.read_text()) if OUT.exists() else {}
     for ref in refs:
         try:

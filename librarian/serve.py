@@ -79,6 +79,8 @@ class Listener:
                     triggers.process(self.lib, triggers.poll(self.lib, self.beat), self.log)
                     if triggers.models_due(self.lib, self.beat["models"]["scan_every_hours"]):
                         models.run(self.lib)
+                    if triggers.facts_due(self.lib, self.beat.get("facts_every_hours", 24)):
+                        self.log(self.lib.refresh_facts()["said"])
                 else:
                     triggers.process(self.lib, [event], self.log)
             except Exception as e:  # one bad event must not stop the desk

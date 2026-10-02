@@ -6144,6 +6144,8 @@
         if (trustRequired() && !on('trust'))
           checks.push(['ok', chosen.name + ' ships its own code and ' + server().name + ' has no built-in version, so --trust-remote-code is added.']);
       }
+      if (facts && facts.gib >= 400)
+        checks.push(['warn', 'The download is about ' + Math.round(facts.gib).toLocaleString('en-US') + ' GB. Make sure the disk that holds the Hugging Face cache has that much free space before launching.']);
       var recipe = recipeOf();
       if (recipe) {
         if (recipe.nightly)

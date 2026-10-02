@@ -68,3 +68,8 @@ def process(lib, events, log=print):
 def models_due(lib, hours):
     ran = lib.state()["models"].get("ran", "")
     return ran < (dt.datetime.now() - dt.timedelta(hours=hours)).isoformat()
+
+
+def facts_due(lib, hours=24):
+    ran = lib.state()["facts"].get("ran", "")
+    return ran < (dt.datetime.now() - dt.timedelta(hours=hours)).isoformat()

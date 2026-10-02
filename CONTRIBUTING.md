@@ -62,6 +62,13 @@ generates (`inbox`, then `apply` or `dismiss`), runs the tests, and commits loca
 deploys, and it leaves alone any file you have uncommitted changes in. `python3 tools/flags.py` is the
 extractor it uses. The page carries its own copy of the lists: before a deploy run `python3 -m librarian gate`.
 
+**Model facts.** What decides whether a model starts (its context limit, what a token costs in cache, its
+architecture, whether it ships its own code) is read from its own `config.json` by `python3 tools/facts.py`
+into `catalog/facts.json`, together with what the vLLM recipes say it needs (`tools/recipes.py`). Nothing about a
+model is typed into the page by hand. Gated repositories need `HF_TOKEN` to be read. The librarian refreshes
+these daily (`python3 -m librarian facts` does it now). After any change to the data, `python3 tools/bundle.mjs`
+puts it into the page and the tests check the two agree.
+
 **Add an engine.** Add it to `servers` and `portDefaults` (region `js: data`), write its branch in
 `command()` and `flagRows()`, add a parser for its documentation to `tools/flags.py`, and cover it in
 `tests/browser/app.test.mjs`. Take flag names from the engine's reference, not from memory.

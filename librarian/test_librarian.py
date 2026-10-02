@@ -2,7 +2,7 @@
 import copy, json, pathlib, shutil, subprocess, tempfile, unittest, urllib.request
 
 from . import feeds, models, serve, service, triggers
-from .core import ROOT, Librarian, apply_ops, classify, diff, flags_of, validate
+from .core import ROOT, Librarian, apply_fact_ops, apply_ops, classify, classify_facts, diff, diff_facts, flags_of, validate
 
 
 def sh(cwd, *cmd):
@@ -332,6 +332,71 @@ class Triggers(Shelf):
         self.assertEqual(feeds.from_hf_webhook({"event": {"action": "update", "scope": "repo.content"}, "repo": {"type": "model", "name": "a/b"}}), {"models": True})
         self.assertIsNone(feeds.from_hf_webhook({"event": {"action": "update"}, "repo": {"type": "dataset", "name": "a/b"}}))
         self.assertIsNone(feeds.from_hf_webhook({"hello": 1}))
+
+
+class Facts(Shelf):
+    """The facts desk: what models and recipes say, refreshed and filed like the flags."""
+
+    def current(self):
+        return json.loads((self.tmp / "catalog" / "facts.json").read_text())
+
+    def desk(self, fresh):
+        self.lib.extract_facts = lambda: fresh
+        return self.lib
+
+    def test_changes_are_found_field_by_field_and_a_vanished_fact_is_held(self):
+        cur = {"a/b": {"maxCtx": 100, "kv": {"full": [1, 1, 1]}, "fetched": "2026-01-01"}}
+        fresh = {"a/b": {"maxCtx": 200, "recipe": {"minVllm": "1"}, "fetched": "2026-02-02"}, "c/d": {"maxCtx": 5}}
+        safe, held = classify_facts(diff_facts(cur, fresh))
+        self.assertEqual(sorted((o["ref"], o["field"]) for o in safe), [("a/b", "maxCtx"), ("a/b", "recipe"), ("c/d", "maxCtx")])
+        self.assertEqual([(o["ref"], o["field"]) for o in held], [("a/b", "kv")], "a fact that disappears may be a failed read")
+        out = apply_fact_ops(cur, safe, "2030-01-01")
+        self.assertEqual((out["a/b"]["maxCtx"], out["a/b"]["fetched"], out["c/d"]["maxCtx"]), (200, "2030-01-01", 5))
+        self.assertIn("kv", out["a/b"], "and nothing was removed that was not approved")
+
+    def test_a_new_recipe_requirement_is_filed_tested_and_committed(self):
+        fresh = self.current()
+        ref = "Qwen/Qwen3.8-27B"
+        fresh[ref] = {**fresh[ref], "recipe": {"minVllm": "9.9.9", "nightly": True}}
+        before = self.head()
+        r = self.desk(fresh).refresh_facts()
+        self.assertEqual(r["outcome"], "filed")
+        self.assertNotEqual(self.head(), before)
+        self.assertEqual(self.current()[ref]["recipe"]["minVllm"], "9.9.9")
+        self.assertTrue(self.in_sync(), "the page's copy was rebuilt")
+        self.assertEqual(sh(self.tmp, "git", "log", "-1", "--format=%an"), "Librarian")
+
+    def test_nothing_new_changes_nothing(self):
+        before = self.head()
+        self.assertEqual(self.desk(self.current()).refresh_facts()["outcome"], "unchanged")
+        self.assertEqual(self.head(), before)
+
+    def test_a_fact_that_vanishes_waits_for_a_person_and_is_applied_when_approved(self):
+        fresh = self.current()
+        ref = "Qwen/Qwen3.8-27B"
+        del fresh[ref]["kv"]
+        r = self.desk(fresh).refresh_facts()
+        self.assertEqual(r["outcome"], "held")
+        self.assertIn("kv", self.current()[ref], "nothing was deleted")
+        before = self.head()
+        self.assertIn("applied", self.lib.resolve(r["item"] if "item" in r else self.lib.items()[0]["id"], apply=True))
+        self.assertNotIn("kv", self.current()[ref])
+        self.assertNotEqual(self.head(), before)
+
+    def test_if_the_tests_fail_the_facts_are_put_back_exactly(self):
+        fresh = self.current()
+        fresh["Qwen/Qwen3.8-27B"]["maxCtx"] = 1
+        self.ok = (False, "1 failed")
+        files = {p: p.read_bytes() for p in (self.tmp / "index.html", self.tmp / "catalog/facts.json")}
+        before = self.head()
+        self.assertEqual(self.desk(fresh).refresh_facts()["outcome"], "rolled-back")
+        self.assertEqual(self.head(), before)
+        self.assertEqual({p: p.read_bytes() for p in files}, files)
+
+    def test_it_will_not_touch_facts_a_person_has_changed(self):
+        path = self.tmp / "catalog" / "facts.json"
+        path.write_text(path.read_text() + " ")
+        self.assertEqual(self.desk(self.current()).refresh_facts()["outcome"], "deferred")
 
 
 def dt_now_iso():

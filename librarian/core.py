@@ -3,14 +3,14 @@
 Everything that changes a data file goes through `apply_ops`, and everything is written down in the
 ledger. Nothing here pushes, deploys, or deletes without a person approving it.
 """
-import contextlib, copy, datetime as dt, json, os, pathlib, re, subprocess, sys, threading, urllib.request
+import contextlib, copy, datetime as dt, json, os, pathlib, re, shutil, subprocess, sys, threading, urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FIELDS = ("aliases", "negation", "choices", "default", "help", "value")
 # A change to these on a flag our commands use could change what the app generates: a person decides.
 GUARDED = ("default", "choices", "aliases", "negation")
 NAME = re.compile(r"^(-{1,2}[A-Za-z0-9][\w.\-]*|[A-Z][A-Z0-9_]+)$")
-TOUCHED = ["index.html", "catalog/flags"]  # what the librarian may change: nothing else
+TOUCHED = ["index.html", "catalog/flags", "catalog/facts.json"]  # what the librarian may change: nothing else
 LOCK = threading.RLock()
 
 
@@ -146,10 +146,49 @@ def apply_ops(current, ops, release=None, when=None):
     return {**head, **rest, "sections": data["sections"]}
 
 
+# ── facts about models (context limits, cache costs, recipe requirements) ────────────────────
+def diff_facts(current, fresh):
+    """Field-level changes that would make the shelf match a fresh read."""
+    ops = []
+    for ref, f in fresh.items():
+        old = current.get(ref, {})
+        for k, v in f.items():
+            if k != "fetched" and old.get(k) != v:
+                ops.append({"op": "fact", "ref": ref, "field": k, "from": old.get(k), "to": v})
+        for k in old:
+            if k != "fetched" and k not in f:
+                ops.append({"op": "fact", "ref": ref, "field": k, "from": old[k], "to": None})
+    return ops
+
+
+def classify_facts(ops):
+    """A fact that gains or changes a value is filed. One that vanishes may be a failed read, so a person decides."""
+    safe, held = [], []
+    for op in ops:
+        if op["to"] is None and op["from"] is not None:
+            held.append({**op, "why": f"{op['field']} of {op['ref']} is gone from the fresh read"})
+        else:
+            safe.append(op)
+    return safe, held
+
+
+def apply_fact_ops(current, ops, when=None):
+    data = copy.deepcopy(current)
+    for op in ops:
+        entry = data.setdefault(op["ref"], {})
+        if op["to"] is None:
+            entry.pop(op["field"], None)
+        else:
+            entry[op["field"]] = op["to"]
+        entry["fetched"] = when or today()
+    return dict(sorted(data.items()))
+
+
 # ── the desk ─────────────────────────────────────────────────────────────────────────────────
 class Librarian:
-    def __init__(self, root=ROOT, extract=None, verify=None, commit=True, tracker=None):
+    def __init__(self, root=ROOT, extract=None, verify=None, commit=True, tracker=None, extract_facts=None):
         self.root = pathlib.Path(root)
+        self.extract_facts = extract_facts or self._extract_facts
         self.flags = self.root / "catalog" / "flags"
         self.var = self.root / "librarian" / "var"
         self.extract = extract or self._extract
@@ -172,7 +211,7 @@ class Librarian:
     def state(self):
         p = self.var / "state.json"
         state = json.loads(p.read_text()) if p.exists() else {}
-        for key in ("seen", "ran", "models", "fingerprints"):
+        for key in ("seen", "ran", "models", "fingerprints", "facts"):
             state.setdefault(key, {})
         return state
 
@@ -198,6 +237,12 @@ class Librarian:
         stage.mkdir(parents=True, exist_ok=True)
         self.run(sys.executable, "tools/flags.py", "--out", str(stage), engine, timeout=300)
         return json.loads((stage / f"{engine}.json").read_text())
+
+    def _extract_facts(self):
+        stage = self.var / "stage" / "facts.json"
+        shutil.copy(self.root / "catalog" / "facts.json", stage)  # the read starts from what is known and only adds to it
+        self.run(sys.executable, "tools/facts.py", "--out", str(stage), timeout=1500)
+        return json.loads(stage.read_text())
 
     def _verify(self):
         r = self.run("node", "tests/run.mjs", "unit", check=False)
@@ -306,6 +351,67 @@ class Librarian:
             result.update(outcome="filed" if safe else ("held" if held else "unchanged"), said=f"{engine} {release or ''}: " + ", ".join(said))
             return result
 
+    def file_facts(self, ops, message):
+        """Like file(), for the facts: write, rebuild the page's copy, test, commit, and put everything back if a test fails."""
+        with LOCK:
+            path = self.root / "catalog" / "facts.json"
+            page = self.root / "index.html"
+            before = {path: path.read_text(), page: page.read_text()}
+            try:
+                write_atomic(path, json.dumps(apply_fact_ops(json.loads(before[path]), ops), indent=1) + "\n")
+                self.rebuild()
+                ok, tail = self.verify()
+                if not ok:
+                    raise RuntimeError("tests failed after the change:\n" + tail)
+            except Exception as e:
+                for p, text in before.items():
+                    write_atomic(p, text)
+                return False, str(e)
+            sha = None
+            if self.commit and (self.root / ".git").exists():
+                self.run("git", "add", "--", "catalog/facts.json", "index.html")
+                env = {**os.environ, "GIT_AUTHOR_NAME": "Librarian", "GIT_AUTHOR_EMAIL": "librarian@modular.local",
+                       "GIT_COMMITTER_NAME": "Librarian", "GIT_COMMITTER_EMAIL": "librarian@modular.local"}
+                subprocess.run(["git", "commit", "-q", "-m", message, "--", "catalog/facts.json", "index.html"],
+                               cwd=self.root, env=env, capture_output=True, text=True, check=True)
+                sha = self.run("git", "rev-parse", "--short", "HEAD").stdout.strip()
+            return True, sha
+
+    def refresh_facts(self):
+        """Re-read what the models and the vLLM recipes say, and file what changed."""
+        with LOCK:
+            dirty = self.busy()
+            if dirty:
+                return {"outcome": "deferred", "said": "facts: waiting, these have uncommitted changes: " + ", ".join(dirty)}
+            current = json.loads((self.root / "catalog" / "facts.json").read_text())
+            try:
+                fresh = self.extract_facts()
+            except Exception as e:
+                return {"outcome": "unreadable", "said": f"facts: could not read: {str(e)[:120]}"}
+            safe, held = classify_facts(diff_facts(current, fresh))
+            state = self.state()
+            state["facts"]["ran"] = dt.datetime.now().isoformat(timespec="seconds")
+            said = []
+            if safe:
+                refs = len({o["ref"] for o in safe})
+                ok, info = self.file_facts(safe, f"Librarian: model facts — {len(safe)} change(s) across {refs} model(s)")
+                if not ok:
+                    item = self.hold("failed", "facts", None, "facts: a change broke the tests, so I put everything back", ops=safe, problems=[info])
+                    self.note(kind="rolled-back", engine="facts", item=item["id"])
+                    self.save_state(state)
+                    return {"outcome": "rolled-back", "said": "facts: change undone, the tests failed", "item": item["id"]}
+                said.append(f"filed {len(safe)} change(s) across {refs} model(s)")
+                self.note(kind="filed", engine="facts", commit=info, count=len(safe))
+            if held:
+                item = self.hold("review", "facts", None, f"facts: {len(held)} change(s) need a person", ops=held)
+                said.append(f"held {len(held)} for you ({item['id']})")
+                self.note(kind="held", engine="facts", item=item["id"], count=len(held))
+            if not safe and not held:
+                self.note(kind="checked", engine="facts")
+                said.append("nothing new")
+            self.save_state(state)
+            return {"outcome": "filed" if safe else ("held" if held else "unchanged"), "said": "facts: " + ", ".join(said)}
+
     def remember(self, fingerprints):
         """Keep what a page looked like when we last read from it."""
         if not fingerprints:
@@ -337,14 +443,18 @@ class Librarian:
                 dirty = self.busy()
                 if dirty:
                     return "not now: these have uncommitted changes: " + ", ".join(dirty)
-                ok, info = self.file(item["engine"], item["ops"], item["release"], f"Librarian: {item['engine']} {item['release'] or ''} — approved: {len(item['ops'])} change(s)")
+                if item["engine"] == "facts":
+                    ok, info = self.file_facts(item["ops"], f"Librarian: model facts — approved: {len(item['ops'])} change(s)")
+                else:
+                    ok, info = self.file(item["engine"], item["ops"], item["release"], f"Librarian: {item['engine']} {item['release'] or ''} — approved: {len(item['ops'])} change(s)")
                 if not ok:
                     return "undone, the tests failed:\n" + info
                 self.note(kind="approved", engine=item["engine"], item=ident, commit=info)
-                state = self.state()
-                state["seen"][item["engine"]] = item["release"]
-                state["ran"][item["engine"]] = dt.datetime.now().isoformat(timespec="seconds")
-                self.save_state(state)
+                if item["engine"] != "facts":
+                    state = self.state()
+                    state["seen"][item["engine"]] = item["release"]
+                    state["ran"][item["engine"]] = dt.datetime.now().isoformat(timespec="seconds")
+                    self.save_state(state)
             item["status"] = "applied" if apply else "dismissed"
             write_atomic(p, json.dumps(item, indent=1, ensure_ascii=False) + "\n")
             return f"{ident}: {item['status']}"

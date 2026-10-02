@@ -7,6 +7,7 @@
   inbox             what is waiting for a person        show ID    the details
   apply ID          approve a held change: it is filed, tested, committed        dismiss ID    set it aside
   models            run the Hugging Face scan and note what is worth a look
+  facts             re-read every model's facts and vLLM recipe; file what changed, hold what vanished
   sync              rebuild the page's copy of the flag lists from the data files (safe: touches only the generated block)
   gate              before a deploy: in step, or brought into step, or a clear message
   install / uninstall   run it by itself: start at login, restart if it stops (macOS)
@@ -79,6 +80,9 @@ def main(argv):
         ok, said = service.install(lib.root) if cmd == "install" else service.uninstall()
         print(said)
         return 0 if ok else 1
+    if cmd == "facts":
+        print(lib.refresh_facts()["said"])
+        return 0
     if cmd == "sync":
         ok, said = lib.sync()
         print(said)
