@@ -6150,11 +6150,10 @@
       if (recipe) {
         if (recipe.nightly)
           checks.push(['warn', chosen.name + ' needs the vLLM nightly build' + (recipe.minVllm && recipe.minVllm !== 'nightly' ? ' (' + recipe.minVllm + ' or newer)' : '') + ': the PyPI release is not enough.' + (recipe.image ? ' Use the image ' + recipe.image + '.' : '')]);
-        else if (recipe.image && state.tab !== 'docker')
-          checks.push(['warn', chosen.name + ' has its own vLLM image, ' + recipe.image + '. The general release may not run it.']);
-        (recipe.deps || []).forEach(function (d) {
-          checks.push(['warn', 'Before launching: ' + (d.command || d.note) + (d.command && d.note ? ' (' + d.note + ')' : '')]);
-        });
+        if (state.tab !== 'docker') // a container's image already has what the recipe asks to install
+          (recipe.deps || []).forEach(function (d) {
+            checks.push(['warn', 'Before launching: ' + (d.command || d.note) + (d.command && d.note ? ' (' + d.note + ')' : '')]);
+          });
       }
       if (diffusionKind() && config.runtime.quantization === 'NVFP4' && currentCard() && currentCard().cc < 10)
         checks.push(['warn', 'NVFP4 needs a Blackwell GPU (B200, B300, RTX PRO 6000, RTX 5090). The ' + currentCard().name + ' is not one.']);

@@ -459,7 +459,8 @@
   "type": "gemma3",
   "gib": 51.1,
   "custom": false,
-  "fetched": "2026-10-02"
+  "fetched": "2026-10-02",
+  "unreadable": 401
  },
  "google/gemma-4-12B-it": {
   "billions": 11.96,
@@ -804,7 +805,8 @@
   "recipe": {
    "source": "https://github.com/vllm-project/recipes/blob/main/models/meta-llama/Llama-3.3-70B-Instruct.yaml",
    "minVllm": "0.12.0"
-  }
+  },
+  "unreadable": 401
  },
  "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
   "billions": 108.64,
@@ -814,7 +816,7 @@
    "Llama4ForConditionalGeneration"
   ],
   "type": "llama4",
-  "unreadable": 403,
+  "unreadable": 401,
   "fetched": "2026-10-02",
   "recipe": {
    "source": "https://github.com/vllm-project/recipes/blob/main/models/meta-llama/Llama-4-Scout-17B-16E-Instruct.yaml",
@@ -1385,7 +1387,7 @@
   "type": null,
   "billions": 2.31,
   "gib": 8.6,
-  "unreadable": 404,
+  "unreadable": 401,
   "fetched": "2026-10-02"
  },
  "zai-org/GLM-5.3": {
