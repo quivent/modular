@@ -41,7 +41,9 @@ for (const file of files) {
   const once = () => spawnSync('node', [fileURLToPath(import.meta.url), file, '--child'], { encoding: 'utf8', timeout: 180000 });
   let r = once();
   let m = /@@RESULTS@@(.*)/.exec(r.stdout || '');
-  if (!m) { // a browser that failed to start says nothing at all: ask once more before calling it a failure
+  const slowStart = (text) => !text || /waiting for Chrome to start/.test(text);
+  if (slowStart(m && m[1] && (JSON.parse(m[1]).results.find((x) => x.ok === false && /waiting for Chrome/.test(x.detail || '')) || {}).detail) && (!m || /waiting for Chrome/.test(m[1]))) {
+    // a browser that failed to start (silently, or by timing out) is not a failure of the thing being tested: ask once more
     r = once();
     m = /@@RESULTS@@(.*)/.exec(r.stdout || '');
   }

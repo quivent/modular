@@ -2380,6 +2380,25 @@
     body[data-diffusion='true'] #parallelField, body[data-diffusion='true'] #pipelineField,
     body[data-diffusion='true'] #vllmControls, body[data-diffusion='true'] #memoryDetails,
     body[data-diffusion='true'] #requestDetails, body[data-diffusion='true'] #advanced { display: none; }
+    /* the model card */
+    .model-focus { cursor: pointer; }
+    .model-focus strong:after { content: '\24D8'; margin-left: 12px; font: 400 18px var(--font-body); color: var(--faint); vertical-align: 3px; transition: color .12s; }
+    .model-focus:hover strong:after, .model-focus:focus-visible strong:after { color: var(--accent-text); }
+    .model-focus:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: var(--r-sm); }
+    .card-rows { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 20px; margin: 0; font-size: 14px; }
+    .card-rows dt { color: var(--soft); }
+    .card-rows dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
+    .card-rows a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+    #modelDialog { width: min(480px, calc(100vw - 30px)); }
+    #modelDialog .dialog-body { padding: 22px 25px 26px; }
+    .model-peek { position: fixed; z-index: 40; width: 300px; max-width: calc(100vw - 16px); padding: 16px 18px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 48px var(--shadow-2); pointer-events: none; }
+    .model-peek strong { display: block; font: 700 15px var(--font-display); letter-spacing: -0.02em; }
+    .model-peek > span { display: block; font-size: 13px; color: var(--soft); margin: 2px 0 12px; }
+    .model-peek .card-rows { font-size: 13px; gap: 6px 14px; }
+    :root[data-theme='windows'] .model-peek { background: #ffffe1; border: 1px solid #000; border-radius: 0; box-shadow: none; padding: 4px 6px; }
+    :root[data-theme='windows'] .model-peek strong { font: 700 12px Tahoma, sans-serif; }
+    :root[data-theme='windows'] .model-peek .card-rows { font-size: 11px; gap: 2px 10px; }
+    :root[data-theme='windows'] .model-focus strong:after { color: #000080; }
     @media (max-width: 1000px) {
       .workspace { grid-template-columns: minmax(0, 1fr); gap: 56px; }
       .preview { position: static; }
@@ -2404,7 +2423,7 @@
       <div class="workspace" id="builder">
         <div class="builder">
           <section class="group" aria-labelledby="model-title"><div class="group-head"><span class="number">01</span><div><h2 id="model-title">Model</h2></div></div><div class="body-indent">
-            <div class="model-focus" id="modelFocus" aria-live="polite"><div class="model-focus-label">Selected</div><strong id="selectedModelName">Qwen3 8B</strong><div class="selected-ref"><span id="modelRefLabel">Hugging Face</span><code id="modelRefDisplay">Qwen/Qwen3-8B</code></div></div>
+            <div class="model-focus" id="modelFocus" aria-live="polite" role="button" tabindex="0" aria-haspopup="dialog" title="Model details"><div class="model-focus-label">Selected</div><strong id="selectedModelName">Qwen3 8B</strong><div class="selected-ref"><span id="modelRefLabel">Hugging Face</span><code id="modelRefDisplay">Qwen/Qwen3-8B</code></div></div>
             <div class="field" id="architectureField"><div class="field-head"><span class="label" id="architectureLabel">Kind of model</span></div><div class="choice-grid" id="archChoices" role="group" aria-labelledby="architectureLabel"></div><div class="arch-sub" id="archSub" hidden><span class="arch-sub-label" id="archSubLabel">Design</span><div class="choice-row" id="archDesign" role="group" aria-labelledby="archSubLabel"></div></div></div>
             <div class="model-list" id="modelList" aria-label="Available models"></div><div class="field" id="checkpointField" hidden><div class="field-head"><span class="label" id="checkpointLabel">Checkpoint</span></div><div class="choice-row" id="checkpointChoices" role="group" aria-labelledby="checkpointLabel"></div></div>
             <details class="advanced" id="hfProfile"><summary>Hugging Face profile</summary><div class="advanced-body"><div class="field"><div class="field-head"><label for="hfNamespace">Username or profile link</label></div><div class="paste-row"><input id="hfNamespace" class="control mono" spellcheck="false" autocomplete="off" placeholder="huggingface.co/your-name"><button type="button" class="secondary" id="pasteProfile">Paste</button><button type="button" class="primary" id="loadProfile">Load</button></div><p class="setting-help" id="hfStatus" role="status">Public models only.</p></div></div></details><div id="hfModelList" class="model-list" aria-label="Models from Hugging Face profile" hidden></div>
@@ -2442,6 +2461,12 @@
     <div class="dialog-head"><div><h2 id="themeTitle">Themes</h2></div><button class="close" type="button" id="themeClose" aria-label="Close themes">×</button></div>
     <div class="dialog-body"><div class="theme-grid" id="themeGrid" role="group" aria-label="Theme"></div></div>
   </dialog>
+  <!-- ▸ html: model card -->
+  <dialog id="modelDialog" aria-labelledby="modelCardTitle">
+    <div class="dialog-head"><div><h2 id="modelCardTitle"></h2><p id="modelCardSub"></p></div><button class="close" type="button" id="modelCardClose" aria-label="Close model details">×</button></div>
+    <div class="dialog-body" id="modelCardBody"></div>
+  </dialog>
+  <div class="model-peek" id="modelPeek" role="tooltip" hidden></div>
   <!-- ▸ html: tracker dialog -->
   <dialog id="trackerDialog" aria-labelledby="trackerTitle">
     <div class="dialog-head"><div><h2 id="trackerTitle">Tracker</h2><p id="trackerSummary">Road to a finished release.</p></div><button class="close" type="button" id="trackerClose" aria-label="Close tracker">×</button></div>
@@ -6079,6 +6104,125 @@
       }
     } catch (e) {}
 
+    /* ▸ js: model card */
+    // What is worth knowing about a model, in one small card: on hover for any pill, in full when the selected name is opened.
+    var LICENSES = { 'apache-2.0': 'Apache 2.0', mit: 'MIT', other: 'Custom license', 'cc-by-nc-4.0': 'CC BY-NC 4.0 (non-commercial)', 'cc-by-4.0': 'CC BY 4.0', 'llama4': 'Llama 4 license', gemma: 'Gemma terms', openrail: 'OpenRAIL' };
+    function cardRows(model) {
+      var rows = [],
+        shape = MEMORY_SHAPES[model.ref],
+        engines = ARCH_ENGINES[model.arch];
+      rows.push(['Repository', model.ref, 'https://huggingface.co/' + model.ref]);
+      if (model.released)
+        rows.push(['Released', new Date(model.released + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })]);
+      if (model.license) rows.push(['License', LICENSES[model.license] || model.license]);
+      if (shape && shape.gib) rows.push(['Weights', Math.round(shape.gib) + ' GB on disk']);
+      if (HF_GATED[model.ref]) rows.push(['Access', 'Gated: accept the license on Hugging Face']);
+      var builds = [model.gguf ? 'GGUF' : '', model.mlx ? 'MLX' : ''].filter(Boolean);
+      if (builds.length) rows.push(['Also as', builds.join(' · ')]);
+      if (model.kind === 'image' || model.kind === 'video')
+        rows.push(['Precisions', ['BF16', 'FP8'].concat(model.nvfp4 ? ['NVFP4'] : []).join(' · ')]);
+      rows.push([
+        'Runs on',
+        servers
+          .filter(function (sv) {
+            return engines ? engines.indexOf(sv.id) !== -1 : (sv.id !== 'llama' && sv.id !== 'ollama') || model.gguf || model.build;
+          })
+          .map(function (sv) { return sv.name; })
+          .join(' · '),
+      ]);
+      return rows;
+    }
+    function cardBody(model, links) {
+      var dl = document.createElement('dl');
+      dl.className = 'card-rows';
+      cardRows(model).forEach(function (r) {
+        var dt = document.createElement('dt'),
+          dd = document.createElement('dd');
+        dt.textContent = r[0];
+        if (r[2] && links) {
+          var a = document.createElement('a');
+          a.href = r[2];
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = r[1];
+          dd.appendChild(a);
+        } else dd.textContent = r[1];
+        dl.appendChild(dt);
+        dl.appendChild(dd);
+      });
+      return dl;
+    }
+    (function () {
+      var dlg = $('modelDialog'),
+        peek = $('modelPeek'),
+        timer = null;
+      function open() {
+        var model = !state.customModel && models[state.model];
+        if (!model) return;
+        hidePeek();
+        $('modelCardTitle').textContent = model.name;
+        $('modelCardSub').textContent = modelDetail(model);
+        $('modelCardBody').textContent = '';
+        $('modelCardBody').appendChild(cardBody(model, true));
+        if (dlg.showModal) dlg.showModal();
+        else dlg.setAttribute('open', '');
+      }
+      function hidePeek() {
+        clearTimeout(timer);
+        peek.hidden = true;
+      }
+      function showPeek(button) {
+        var model = models[Number(button.dataset.model)];
+        if (!model) return;
+        peek.textContent = '';
+        var head = document.createElement('strong');
+        head.textContent = model.name;
+        var sub = document.createElement('span');
+        sub.textContent = modelDetail(model);
+        peek.appendChild(head);
+        peek.appendChild(sub);
+        peek.appendChild(cardBody(model, false));
+        peek.hidden = false;
+        var r = button.getBoundingClientRect(),
+          w = peek.offsetWidth,
+          h = peek.offsetHeight,
+          left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)),
+          top = r.bottom + 8 + h > window.innerHeight ? Math.max(8, r.top - h - 8) : r.bottom + 8;
+        peek.style.left = left + 'px';
+        peek.style.top = top + 'px';
+      }
+      var list = $('modelList');
+      list.addEventListener('pointerover', function (e) {
+        var b = e.target.closest && e.target.closest('.model-option');
+        if (!b || e.pointerType !== 'mouse') return; // touch has the opened card instead
+        clearTimeout(timer);
+        timer = setTimeout(function () { showPeek(b); }, 280);
+      });
+      list.addEventListener('pointerout', function (e) {
+        if (e.target.closest && e.target.closest('.model-option')) hidePeek();
+      });
+      list.addEventListener('focusin', function (e) {
+        var b = e.target.closest && e.target.closest('.model-option');
+        if (b) showPeek(b);
+      });
+      list.addEventListener('focusout', hidePeek);
+      list.addEventListener('click', hidePeek);
+      window.addEventListener('scroll', hidePeek, { passive: true });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') hidePeek();
+      });
+      $('modelFocus').addEventListener('click', open);
+      $('modelFocus').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          open();
+        }
+      });
+      $('modelCardClose').onclick = function () { dlg.close(); };
+      dlg.addEventListener('click', function (e) {
+        if (e.target === dlg) dlg.close();
+      });
+    })();
     /* ▸ js: themes */
     /* The theme lives in the data-theme attribute on <html>; the CSS does the rest. Meadow is the
        default and has no attribute. The early script in <head> applies a saved choice before paint. */

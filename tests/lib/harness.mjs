@@ -143,6 +143,7 @@ export async function startBrowser() {
         rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 150 }); // Chrome may still be writing as it exits
       } catch {}
     },
+    send, // raw DevTools commands, e.g. a real mouse move
     pid: child.pid,
   };
 }
