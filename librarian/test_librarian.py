@@ -20,6 +20,7 @@ class Shelf(unittest.TestCase):
         shutil.copy(ROOT / "tools" / "bundle.mjs", self.tmp / "tools" / "bundle.mjs")
         shutil.copy(ROOT / ".gitignore", self.tmp / ".gitignore")
         shutil.copytree(ROOT / "catalog" / "flags", self.tmp / "catalog" / "flags")
+        shutil.copy(ROOT / "catalog" / "facts.json", self.tmp / "catalog" / "facts.json")
         sh(self.tmp, "git", "init", "-q")
         sh(self.tmp, "git", "config", "user.email", "t@t")
         sh(self.tmp, "git", "config", "user.name", "t")

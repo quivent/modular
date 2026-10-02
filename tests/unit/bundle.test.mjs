@@ -34,5 +34,12 @@ export default async function (t) {
   }
   t.equal(differing, [], `${flags} flags: same names in the same order, descriptions stable`);
   t.equal(dated, [], 'each engine keeps its source and the date it was read');
+  // the model facts the estimate runs on
+  const fm = page.match(/<script type="application\/json" id="factData">\n([\s\S]*?)\n<\/script>/);
+  t.ok(!!fm, 'the page has its model facts block');
+  const embeddedFacts = Object.assign({}, ...fm[1].split('\n').map((l) => JSON.parse(l)));
+  const source = JSON.parse(readFileSync(join(ROOT, 'catalog', 'facts.json'), 'utf8'));
+  t.equal(Object.keys(embeddedFacts).sort(), Object.keys(source).sort(), 'every model with facts is in the page');
+  t.equal(Object.entries(embeddedFacts).filter(([ref, f]) => ['billions', 'gib', 'heads', 'maxCtx', 'kv'].some((k) => f[k] !== undefined && f[k] !== source[ref][k] && JSON.stringify(f[k]) !== JSON.stringify(source[ref][k]))).map((x) => x[0]), [], 'and carries the same numbers');
   t.ok(page.length < 600000, 'the page stays a sensible size', String(page.length));
 }
