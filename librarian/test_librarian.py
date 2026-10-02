@@ -270,11 +270,11 @@ class Triggers(Shelf):
         probe, calls = self.pages(changed=False)
         ev = triggers.poll(self.lib, self.BEAT, fetch=lambda u: self.ATOM, probe=probe)
         self.assertEqual([(e["engine"], e["why"], e["release"]) for e in ev], [("vllm", "release", "v9.0.0")])
-        self.assertEqual(calls, [data["source"]], "it looked at the page the data came from")
+        self.assertEqual(calls, data["sources"], "it looked at every page the data came from")
         # the same release has been handled; the page is unchanged -> nothing to do
         self.lib.handle("vllm", "v9.0.0", force=True)
         s = self.lib.state(); s["ran"]["vllm"] = "2000-01-01T00:00:00"; self.lib.save_state(s)
-        self.lib.remember({data["source"]: {"sha": "same"}})
+        self.lib.remember({u: {"sha": "same"} for u in data["sources"]})
         probe, _ = self.pages(changed=False)
         self.assertEqual(triggers.poll(self.lib, self.BEAT, fetch=lambda u: self.ATOM, probe=probe), [])
         # no new release, but the page changed: a docs-only change is caught

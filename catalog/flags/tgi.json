@@ -1,8 +1,12 @@
 {
  "engine": "tgi",
  "source": "https://raw.githubusercontent.com/huggingface/text-generation-inference/main/docs/source/reference/launcher.md",
- "fetched": "2026-09-30",
+ "fetched": "2026-10-01",
  "count": 56,
+ "sources": [
+  "https://raw.githubusercontent.com/huggingface/text-generation-inference/main/docs/source/reference/launcher.md",
+  "https://raw.githubusercontent.com/huggingface/text-generation-inference/main/docs/source/supported_models.md"
+ ],
  "sections": [
   {
    "title": "text-generation-launcher options",
@@ -581,5 +585,49 @@
     }
    ]
   }
- ]
+ ],
+ "support": {
+  "by": "type",
+  "names": [
+   "Baichuan",
+   "Bloom",
+   "Cohere",
+   "Dbrx",
+   "Deepseek V2",
+   "Deepseek V3",
+   "Falcon",
+   "Galactica",
+   "Gemma",
+   "Gemma2",
+   "Gemma3",
+   "Gemma3 Text",
+   "Gpt Bigcode",
+   "Gpt Neox",
+   "Gpt2",
+   "Gptj",
+   "Granite",
+   "Idefics",
+   "Idefics 2",
+   "Idefics 3",
+   "Llama",
+   "Llama4",
+   "Llava Next (1.6)",
+   "Mamba",
+   "Mistral",
+   "Mixtral",
+   "Mllama",
+   "Mpt",
+   "Opt",
+   "PaliGemma",
+   "Phi",
+   "Phi 3",
+   "PhiMoe",
+   "Qwen 2",
+   "Qwen 2 VL",
+   "Qwen 2.5 VL",
+   "SantaCoder",
+   "StarCoder 2",
+   "T5"
+  ]
+ }
 }

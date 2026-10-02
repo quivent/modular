@@ -39,6 +39,7 @@ export function lean(root = ROOT) {
       source: d.source,
       fetched: d.fetched,
       ...(d.release ? { release: d.release } : {}),
+      ...(d.support ? { support: d.support } : {}),
       count: d.count,
       sections: d.sections.map((s) => ({
         title: s.title,

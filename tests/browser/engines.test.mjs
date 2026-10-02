@@ -79,6 +79,28 @@ export default async function (t) {
     await click('#archChoices .choice', 'Retrieval'); await sleep(200);
     t.equal(await $(() => getComputedStyle(document.getElementById('quantField')).display), 'none', 'retrieval models: no precision row of options that mean nothing for them');
     await click('#archChoices .choice', 'Language'); await sleep(200);
+    // what the model and the engine each declare: support, shipped code, and the quantization a checkpoint was made in
+    const pickPill = async (family, pill) => { await $(([f, p]) => { const row = [...document.querySelectorAll('#modelList .family-row')].find((r) => r.querySelector('.family-label strong').textContent.startsWith(f)); [...row.querySelectorAll('.model-option')].find((b) => b.textContent.trim().startsWith(p)).click(); }, [family, pill]); await sleep(250); };
+    await click('#archChoices .choice', 'Language'); await sleep(200);
+    await click('#serverList .server', 'vLLM'); await pickPill('Qwen3.8', '27B');
+    t.ok(!(await read()).checks.some((c) => /own list of supported|no built-in/.test(c)), 'the default model raises no support warning on vLLM');
+    await click('#serverList .server', 'MLX'); await pickPill('DeepSeek V4', 'V4 Pro'); await sleep(200);
+    t.ok((await read()).checks.some((c) => /MLX's own list of supported models does not include DeepseekV4ForCausalLM/.test(c)), 'MLX is told it has no module for DeepSeek V4 Pro (no converted build exists either)', JSON.stringify((await read()).checks));
+    await pickPill('Qwen3.8', 'Flash-Next'); await sleep(200);
+    t.ok(!(await read()).checks.some((c) => /own list of supported/.test(c)), 'but not for a model that has a converted MLX build');
+    await click('#serverList .server', 'vLLM'); await pickPill('Qwen3.8', '27B');
+    await click('#quantChoices .choice', 'AWQ'); await sleep(250);
+    t.ok((await read()).checks.some((c) => /AWQ loads a checkpoint that was published in AWQ/.test(c)), 'AWQ on a plain bf16 repository is called out before launch');
+    await click('#quantChoices .choice', 'Native'); await sleep(200);
+    t.ok(!(await read()).checks.some((c) => /AWQ loads/.test(c)), 'and goes away with Native');
+    await click('#archChoices .choice', 'Retrieval'); await sleep(200);
+    for (const label of await $(() => [...document.querySelectorAll('#archDesign .choice[aria-pressed=true]')].map((b) => b.textContent))) await click('#archDesign .choice', label); // show every retrieval model
+    await pickPill('jina-reranker', 'v3.5'); await click('#serverList .server', 'vLLM'); await sleep(250);
+    t.ok(!/--trust-remote-code/.test((await read()).cmd), 'a reranker whose code vLLM already has built in is not trusted needlessly');
+    await pickPill('jina-embeddings-v5', 'omni small'); await click('#serverList .server', 'vLLM'); await sleep(250);
+    const jina = await read();
+    t.ok(/--trust-remote-code/.test(jina.cmd) && jina.checks.some((c) => /ships its own code/.test(c)), 'an embedding model that ships code vLLM lacks gets --trust-remote-code, and the page says why', jina.cmd + JSON.stringify(jina.checks));
+    await click('#archChoices .choice', 'Language'); await sleep(200);
     // a speech model has its own, fixed window: a text context length and a prefix cache do not belong in its command
     await click('#archChoices .choice', 'Audio'); await sleep(200);
     const speech = (await read()).cmd;

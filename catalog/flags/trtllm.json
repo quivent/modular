@@ -1,8 +1,12 @@
 {
  "engine": "trtllm",
  "source": "https://nvidia.github.io/TensorRT-LLM/commands/trtllm-serve/trtllm-serve.html",
- "fetched": "2026-09-30",
+ "fetched": "2026-10-01",
  "count": 50,
+ "sources": [
+  "https://nvidia.github.io/TensorRT-LLM/commands/trtllm-serve/trtllm-serve.html",
+  "https://raw.githubusercontent.com/NVIDIA/TensorRT-LLM/main/docs/source/models/supported-models.md"
+ ],
  "sections": [
   {
    "title": "trtllm-serve options",
@@ -521,5 +525,71 @@
     }
    ]
   }
- ]
+ ],
+ "support": {
+  "by": "arch",
+  "names": [
+   "AfmoeForCausalLM",
+   "BartForConditionalGeneration",
+   "BertForSequenceClassification",
+   "Cohere2ForCausalLM",
+   "Cosmos3ForConditionalGeneration",
+   "DeciLMForCausalLM",
+   "DeepseekV32ForCausalLM",
+   "DeepseekV3ForCausalLM",
+   "DeepseekV4ForCausalLM",
+   "Exaone4ForCausalLM",
+   "Exaone4_5_ForConditionalGeneration",
+   "ExaoneMoEForCausalLM",
+   "Gemma3ForCausalLM",
+   "Gemma3ForConditionalGeneration",
+   "Gemma4AssistantForCausalLM",
+   "Gemma4ForConditionalGeneration",
+   "Gemma4UnifiedForConditionalGeneration",
+   "Glm4MoeForCausalLM",
+   "Glm5NextForConditionalGeneration",
+   "GlmMoeDsaForCausalLM",
+   "GptOssForCausalLM",
+   "HCXVisionForCausalLM",
+   "KimiK25ForConditionalGeneration",
+   "KimiK3ForConditionalGeneration",
+   "KimiLinearForCausalLM",
+   "LagunaForCausalLM",
+   "Llama4ForConditionalGeneration",
+   "LlamaForCausalLM",
+   "LlavaNextForConditionalGeneration",
+   "MBartForConditionalGeneration",
+   "MiniCPMV4_6ForConditionalGeneration",
+   "MiniMaxM3SparseForCausalLM",
+   "MiniMaxM3SparseForConditionalGeneration",
+   "Mistral3ForConditionalGeneration",
+   "MistralForCausalLM",
+   "MixtralForCausalLM",
+   "MllamaForConditionalGeneration",
+   "NemotronForCausalLM",
+   "NemotronHForCausalLM",
+   "NemotronNASForCausalLM",
+   "Phi3ForCausalLM",
+   "Phi4MMForCausalLM",
+   "Qwen2ForCausalLM",
+   "Qwen2ForProcessRewardModel",
+   "Qwen2ForRewardModel",
+   "Qwen2VLForConditionalGeneration",
+   "Qwen2_5_VLForConditionalGeneration",
+   "Qwen3ForCausalLM",
+   "Qwen3MoeForCausalLM",
+   "Qwen3NextForCausalLM",
+   "Qwen3VLForConditionalGeneration",
+   "Qwen3VLMoeForConditionalGeneration",
+   "Qwen3_5ForConditionalGeneration",
+   "Qwen3_5MoeForCausalLM",
+   "Qwen3_5MoeForConditionalGeneration",
+   "Qwen4ExpForCausalLM",
+   "Qwen4ExpForConditionalGeneration",
+   "Step3p5ForCausalLM",
+   "Step3p7ForConditionalGeneration",
+   "T5ForConditionalGeneration",
+   "WhisperForConditionalGeneration"
+  ]
+ }
 }

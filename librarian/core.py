@@ -82,8 +82,9 @@ def diff(current, staged):
     for name, (section, flag) in now.items():
         if name not in new:
             ops.append({"op": "remove", "name": name, "section": section, "flag": flag})
-    if staged.get("sources") and staged["sources"] != current.get("sources"):
-        ops.append({"op": "meta", "field": "sources", "to": staged["sources"]})  # which pages the data came from
+    for field in ("sources", "support"):  # which pages the data came from, and which architectures the engine runs
+        if staged.get(field) and staged[field] != current.get(field):
+            ops.append({"op": "meta", "field": field, "to": staged[field]})
     return ops
 
 

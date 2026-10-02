@@ -11,6 +11,9 @@ shows all of it. Standard library only.
 """
 import datetime as dt, html, json, pathlib, re, sys, urllib.request
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import support  # noqa: E402  which model architectures each engine can run
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "catalog" / "flags"
 
@@ -35,13 +38,27 @@ def clean(title):
     return title.replace("\u200b", "").replace("¶", "").strip()
 
 
+def with_support(extra=None, engine=None):
+    """The engine's own list of the architectures it runs, when we know where to read it. A failure here never loses the flags."""
+    extra = dict(extra or {})
+    try:
+        listed = support.read(engine)
+        if listed:
+            extra["support"] = listed
+    except Exception as e:
+        print(f"  could not read {engine}'s supported models: {str(e)[:70]}")
+    return extra
+
+
 def write(engine, source, sections, extra=None):
+    extra = with_support(extra, engine)
     for s in sections:
         s["title"] = clean(s["title"])
     n = sum(len(s["flags"]) for s in sections)
     data = {"engine": engine, "source": source, "fetched": dt.date.today().isoformat(), "count": n,
-            "sources": list(READ), "sections": [s for s in sections if s["flags"]]}
+            "sources": list(READ) + [u for u in support.SEEN if u not in READ], "sections": [s for s in sections if s["flags"]]}
     READ.clear()
+    support.SEEN.clear()
     if extra:
         data.update(extra)
     OUT.mkdir(parents=True, exist_ok=True)
