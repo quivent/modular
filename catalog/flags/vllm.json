@@ -1,8 +1,8 @@
 {
  "engine": "vllm",
  "source": "https://docs.vllm.ai/en/latest/cli/serve/",
- "fetched": "2026-09-30",
- "release": "v0.31.0rc2",
+ "fetched": "2026-10-01",
+ "release": "v0.31.0rc3",
  "count": 312,
  "sections": [
   {
@@ -132,7 +132,7 @@
      "negation": null,
      "choices": null,
      "default": null,
-     "help": ""
+     "help": "LoRA modules configurations in either 'name=path' format or JSON format or JSON list format. Example (old format): 'name=path' Example (new format): {\"name\": \"name\", \"path\": \"lora_path\", \"base_model_name\": \"id\"}"
     },
     {
      "name": "--chat-template",
@@ -140,7 +140,7 @@
      "negation": null,
      "choices": null,
      "default": null,
-     "help": ""
+     "help": "The file path to the chat template, or the template in single-line form for the specified model."
     },
     {
      "name": "--chat-template-content-format",
@@ -152,7 +152,7 @@
       "string"
      ],
      "default": "auto",
-     "help": ""
+     "help": "The format to render message content within a chat template. \"string\" will render the content as a string. Example: \"Hello World\" \"openai\" will render the content as a list of dictionaries, similar to OpenAI schema. Example: [{\"type\": \"text\", \"text\": \"Hello world!\"}]"
     },
     {
      "name": "--trust-request-chat-template",
@@ -160,7 +160,7 @@
      "negation": "--no-trust-request-chat-template",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "Whether to trust the chat template provided in the request. If False, the server will always use the chat template specified by --chat-template or the ones from tokenizer."
     },
     {
      "name": "--trust-request-mm-kwargs",
@@ -168,7 +168,7 @@
      "negation": "--no-trust-request-mm-kwargs",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "Whether to trust per-request multimodal kwargs (mm_processor_kwargs and media_io_kwargs). If False, the server rejects non-empty values because they can change multimodal preprocessing resource usage. Only enable this when API clients are trusted."
     },
     {
      "name": "--default-chat-template-kwargs",
@@ -176,7 +176,7 @@
      "negation": null,
      "choices": null,
      "default": null,
-     "help": ""
+     "help": "Default keyword arguments to pass to the chat template renderer. These will be merged with request-level chat_template_kwargs, with request values taking precedence. Useful for setting default behavior for reasoning models. Example: '{\"enable_thinking\": false}' to disable thinking mode by default for Qwen3/DeepSeek models. Should either be a valid JSON string or JSON keys passed individually."
     },
     {
      "name": "--response-role",
@@ -184,7 +184,7 @@
      "negation": null,
      "choices": null,
      "default": "assistant",
-     "help": ""
+     "help": "The role name to return if request.add_generation_prompt=true."
     },
     {
      "name": "--return-tokens-as-token-ids",
@@ -192,7 +192,7 @@
      "negation": "--no-return-tokens-as-token-ids",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "When --max-logprobs is specified, represents single tokens as strings of the form 'token_id:{token_id}' so that tokens that are not JSON-encodable can be identified."
     },
     {
      "name": "--enable-auto-tool-choice",
@@ -200,7 +200,7 @@
      "negation": "--no-enable-auto-tool-choice",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "Enable auto tool choice for supported models. Use --tool-call-parser to specify which parser to use."
     },
     {
      "name": "--exclude-tools-when-tool-choice-none",
@@ -208,7 +208,7 @@
      "negation": "--no-exclude-tools-when-tool-choice-none",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "If specified, exclude tool definitions in prompts when tool_choice='none'."
     },
     {
      "name": "--tool-call-parser",
@@ -216,7 +216,7 @@
      "negation": null,
      "choices": null,
      "default": null,
-     "help": ""
+     "help": "Select the tool call parser depending on the model that you're using. This is used to parse the model-generated tool call into OpenAI API format. Required for --enable-auto-tool-choice. You can choose any option from the built-in parsers or register a plugin via --tool-parser-plugin."
     },
     {
      "name": "--tool-parser-plugin",
@@ -224,7 +224,7 @@
      "negation": null,
      "choices": null,
      "default": "\"\"",
-     "help": ""
+     "help": "Special the tool parser plugin write to parse the model-generated tool into OpenAI API format, the name register in this plugin can be used in --tool-call-parser."
     },
     {
      "name": "--tool-strict-level",
@@ -236,7 +236,7 @@
       "parameter"
      ],
      "default": "auto",
-     "help": ""
+     "help": "Server-side floor for structural-tag based tool calling, applied on top of the per-tool strict field. auto follows the request's tool choice and per-tool strictness; function constrains the tool-call envelope (markup and function name) for every request with tools; parameter additionally pins argument schemas, as if every tool were strict: true."
     },
     {
      "name": "--tool-server",
@@ -244,7 +244,7 @@
      "negation": null,
      "choices": null,
      "default": null,
-     "help": ""
+     "help": "Comma-separated list of host:port pairs (IPv4, IPv6, or hostname). Examples: 127.0.0.1:8000, [::1]:8000, localhost:1234. Or demo for built-in demo tools (browser and Python code interpreter). WARNING: The demo Python tool executes model-generated code in Docker without network isolation by default. See the security guide for more information."
     },
     {
      "name": "--max-log-len",
@@ -252,7 +252,7 @@
      "negation": null,
      "choices": null,
      "default": null,
-     "help": ""
+     "help": "Max number of prompt characters or prompt ID numbers being printed in log. The default of None means unlimited."
     },
     {
      "name": "--enable-prompt-tokens-details",
@@ -260,7 +260,7 @@
      "negation": "--no-enable-prompt-tokens-details",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "If set to True, enable prompt_tokens_details in usage."
     },
     {
      "name": "--enable-per-request-metrics",
@@ -268,7 +268,7 @@
      "negation": "--no-enable-per-request-metrics",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "If set to True, include per-request timing metrics in API responses."
     },
     {
      "name": "--enable-server-load-tracking",
@@ -276,7 +276,7 @@
      "negation": "--no-enable-server-load-tracking",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "If set to True, enable tracking server_load_metrics in the app state."
     },
     {
      "name": "--enable-force-include-usage",
@@ -284,7 +284,7 @@
      "negation": "--no-enable-force-include-usage",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "If set to True, including usage on every request."
     },
     {
      "name": "--sse-keep-alive-interval",
@@ -292,7 +292,7 @@
      "negation": null,
      "choices": null,
      "default": "0",
-     "help": ""
+     "help": "Send an SSE keep-alive comment line every this many seconds when a /v1/chat/completions or /v1/completions streaming response is idle (queued, prefill, or between tokens), to prevent reverse proxies/tunnels with read timeouts from closing the connection. Defaults to 0, which disables keep-alive comments entirely."
     },
     {
      "name": "--enable-tokenizer-info-endpoint",
@@ -300,7 +300,7 @@
      "negation": "--no-enable-tokenizer-info-endpoint",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "Enable the /tokenizer_info endpoint. May expose chat templates and other tokenizer configuration."
     },
     {
      "name": "--enable-log-outputs",
@@ -308,7 +308,7 @@
      "negation": "--no-enable-log-outputs",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "If set to True, log model outputs (generations). Requires --enable-log-requests. Output text and finish reasons are logged at INFO, while output token IDs are logged at DEBUG."
     },
     {
      "name": "--enable-log-deltas",
@@ -316,7 +316,7 @@
      "negation": "--no-enable-log-deltas",
      "choices": null,
      "default": "True",
-     "help": ""
+     "help": "If set to False, output deltas will not be logged. Relevant only if --enable-log-outputs is set."
     },
     {
      "name": "--cohere-is-reasoning-model",
@@ -324,7 +324,7 @@
      "negation": "--no-cohere-is-reasoning-model",
      "choices": null,
      "default": "True",
-     "help": ""
+     "help": "Cohere /cohere/v2/chat only. Whether the served model is a reasoning Command-family model. When True (default), the assistant's chain-of-thought is surfaced as a thinking content block (or content-* events on the stream). When False, reasoning is surfaced as Cohere's tool_plan field (or tool-plan-delta events) whenever the model emits tool calls, matching older non- reasoning Command models. Has no effect on the non-Cohere endpoints."
     },
     {
      "name": "--cohere-format",
@@ -332,7 +332,7 @@
      "negation": null,
      "choices": null,
      "default": "cmd4",
-     "help": ""
+     "help": "Cohere --tokenizer-mode cohere only. Which Cohere prompt format to render: cmd4 (current Command A+ models; default) or cmd3 (earlier Cmd-A and Cmd-A reasoning models). Selecting the wrong format silently produces a prompt the model wasn't trained on, which most commonly manifests as the model emitting text but no citations / tool calls / thinking blocks. Equivalent to passing --default-chat-template-kwargs '{\"cohere_format\": \"...\"}' -- any explicit request-level chat_template_kwargs.cohere_format takes priority."
     },
     {
      "name": "--anthropic-disabled-thinking-effort",
@@ -348,7 +348,7 @@
       "xhigh"
      ],
      "default": "auto",
-     "help": ""
+     "help": "Anthropic /v1/messages only. The reasoning_effort used for requests with thinking: {\"type\": \"disabled\"}. none turns thinking off for models that support it; low suits models that always think (e.g. GLM-5.3) or reject none (e.g. gpt-oss). auto (default) uses low when the renderer rejects none or renders it the same as a thinking effort, and none otherwise."
     },
     {
      "name": "--log-error-stack",
@@ -356,7 +356,7 @@
      "negation": "--no-log-error-stack",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "If set to True, log the stack trace of error responses"
     },
     {
      "name": "--tokens-only",
@@ -364,7 +364,7 @@
      "negation": "--no-tokens-only",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "If set to True, only enable the Tokens In<>Out endpoint. This is intended for use in a Disaggregated Everything setup."
     },
     {
      "name": "--enable-scale-out",
@@ -372,7 +372,7 @@
      "negation": "--no-enable-scale-out",
      "choices": null,
      "default": "False",
-     "help": ""
+     "help": "If set to True, register the scale-out endpoints (/render, /derender, and /inference/v1/generate) on vllm serve. Has no effect on vllm launch render or vllm serve --tokens-only, which always register their required endpoints regardless of this flag."
     },
     {
      "name": "--fingerprint-mode",
@@ -385,7 +385,7 @@
       "none"
      ],
      "default": "full",
-     "help": ""
+     "help": "Controls the system_fingerprint field on responses. full (default): vllm-<version>[-<parallelism>]-<hash8>. Encodes server version, non-trivial parallelism degrees (tp/pp/dp/ep), and an 8-char config hash. hash: vllm-<version>-<hash8>. Parallelism stripped. custom: emits the literal string from --fingerprint-value. none: the field is omitted (serialized as null)."
     },
     {
      "name": "--fingerprint-value",
@@ -393,7 +393,7 @@
      "negation": null,
      "choices": null,
      "default": null,
-     "help": ""
+     "help": "Literal fingerprint string used when --fingerprint-mode=custom."
     },
     {
      "name": "--host",
@@ -632,7 +632,7 @@
      "negation": "--no-enable-flash-late-interaction",
      "choices": null,
      "default": "True",
-     "help": "If set, run pooling score MaxSim on GPU in the API server process. Can significantly improve late-interaction scoring performance."
+     "help": "If set, run pooling score MaxSim on GPU in the API server process. Can significantly improve late-interaction scoring performance. When disabled, the setting is also propagated to the engine's PoolerConfig, so the engine-side scorer uses the reference MaxSim path instead of the fused Triton kernel."
     }
    ]
   },
@@ -1841,11 +1841,10 @@
      "negation": null,
      "choices": [
       "align",
-      "all",
       "none"
      ],
      "default": "none",
-     "help": "The cache strategy for Mamba layers: \"none\": set when prefix caching is disabled. \"all\": cache the mamba state of all tokens at position i * block_size. \"align\": only cache the mamba state of the last token of each scheduler step and when the token is at position i * block_size. This is the default when prefix caching is enabled."
+     "help": "The cache strategy for Mamba layers: \"none\": set when prefix caching is disabled. \"align\": only cache the mamba state of the last token of each scheduler step and when the token is at position i * block_size. This is the default when prefix caching is enabled."
     },
     {
      "name": "--enable-mamba-shared-prefix-checkpoint",
