@@ -75,6 +75,10 @@ export default async function (t) {
     t.ok(/FLUX\.1-schnell/.test(sch.cmd) && sch.checks.some((c) => /does not list/.test(c)), 'FLUX.1 schnell is in the catalog, and says SGLang\'s documentation does not list it', JSON.stringify(sch.checks));
     t.equal((await prec()).options, ['Native / auto', 'FP8'], 'schnell offers only the precisions that need no special repository');
     await click('#archChoices .choice', 'Language'); await sleep(200);
+    // a row of precisions appears only where there is a real choice: not for speech, embedding or reranking models
+    await click('#archChoices .choice', 'Retrieval'); await sleep(200);
+    t.equal(await $(() => getComputedStyle(document.getElementById('quantField')).display), 'none', 'retrieval models: no precision row of options that mean nothing for them');
+    await click('#archChoices .choice', 'Language'); await sleep(200);
     // a speech model has its own, fixed window: a text context length and a prefix cache do not belong in its command
     await click('#archChoices .choice', 'Audio'); await sleep(200);
     const speech = (await read()).cmd;

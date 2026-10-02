@@ -3517,7 +3517,7 @@
         family: 'Nemotron Rerank',
         kind: 'retrieval',
         group: 'Nemotron Rerank',
-        label: 'Rerank 1B v2',
+        label: '1B v2',
         arch: 'reranker',
         size: '1.2B',
         icon: 'N',
@@ -3994,6 +3994,7 @@
     /* ▸ js: render — quantization & checkpoint */
     // Image and video models offer the precisions SGLang documents for them; text models offer their engine's list.
     function quantOptions() {
+      if (['speech', 'embedding', 'reranker'].indexOf(val('architecture')) !== -1) return ['Native / auto']; // no documented lower precisions for these
       if (!diffusionKind()) return server().quant;
       var m = !state.customModel && models[state.model];
       return ['Native / auto', 'FP8'].concat(m && m.nvfp4 ? ['NVFP4'] : []);
@@ -4030,7 +4031,7 @@
           },
         );
       }
-      $('quantField').hidden = !!availableBuilds();
+      $('quantField').hidden = !!availableBuilds() || options.length < 2; // a row with one entry is not a choice
       $('customQuantField').hidden = !!availableBuilds() || val('quant') !== 'Custom…';
     }
     function renderCheckpoint() {
