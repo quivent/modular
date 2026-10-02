@@ -7,11 +7,19 @@ import json, os, subprocess, sys
 MIN_DOWNLOADS = 20000
 
 
-def notable(scan, seen):
-    """Things in a scan worth a person's time that we have not already pointed out."""
+def catalog(root):
+    """The models in the page's catalog, as {ref: retired}."""
+    out = subprocess.run(["node", "tools/catalog.mjs"], cwd=root, capture_output=True, text=True, check=True, timeout=60).stdout
+    return {m["ref"]: m["retired"] for m in json.loads(out)}
+
+
+def notable(scan, seen, retired=()):
+    """Things in a scan worth a person's time that we have not already pointed out, or already acted on."""
     found = []
     for c in scan.get("curated", []):
         key = f"{c['id']}={c.get('suggested')}"
+        if c["id"] in retired:  # the catalog already retired it: a suggestion to retire it is not news
+            continue
         if c.get("suggested") in ("retired", "hot") and key not in seen:
             found.append((key, f"{c['id']}: {c['suggested']}" + (f" ({'; '.join(c.get('reasons', []))})" if c.get("reasons") else "")))
     for lab, info in scan.get("labs", {}).items():
@@ -33,7 +41,8 @@ def run(lib, scan_fn=None):
     else:
         subprocess.run([sys.executable, "tools/scan.py", "--quiet", "--out", str(out)], cwd=lib.root, check=True, timeout=1800)
         scan = json.loads(out.read_text())
-    found = notable(scan, seen)
+    cat = catalog(lib.root)
+    found = notable(scan, seen, {r for r, gone in cat.items() if gone})
     if first:  # an empty memory would report the whole world: remember it, report only the catalog's own status
         found_now = [f for f in found if not f[0].startswith("new=")]
         seen |= {k for k, _ in found if k.startswith("new=")}

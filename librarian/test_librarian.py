@@ -210,6 +210,11 @@ class World(unittest.TestCase):
         found = dict(models.notable(scan, set()))
         self.assertEqual(sorted(found), ["a/old=retired", "new=lab/big"])
         self.assertEqual(models.notable(scan, set(found)), [])
+        self.assertEqual(sorted(dict(models.notable(scan, set(), retired={"a/old"}))), ["new=lab/big"], "a model the catalog already retired is not news")
+
+    def test_the_catalog_can_be_read_without_opening_a_browser(self):
+        cat = models.catalog(ROOT)
+        self.assertTrue(cat["Qwen/Qwen3.8-27B"] is False and cat["Qwen/Qwen3-8B"] is True and len(cat) > 60)
 
     def test_the_login_agent_starts_serve_from_this_folder_and_keeps_it_running(self):
         a = service.agent(ROOT, python="/usr/bin/python3", path="/opt/homebrew/bin:/usr/bin")
