@@ -9,6 +9,28 @@ export default async function (t) {
     await browser.open(server.base + '/');
     const $ = (fn, arg) => browser.eval(fn, arg);
 
+    // ── every kind has the same structure: a kind row, then one row of toggles, then families with sizes ──
+    const shape = {};
+    for (const kind of ['Language', 'Image', 'Video', 'Audio', 'Retrieval']) {
+      await $((k) => [...document.querySelectorAll('#archChoices .choice')].find((b) => b.textContent.trim() === k).click(), kind);
+      await new Promise((r) => setTimeout(r, 150));
+      shape[kind] = await $(() => ({
+        rowVisible: getComputedStyle(document.getElementById('archSub')).display !== 'none' && document.getElementById('archSub').offsetHeight > 0,
+        label: document.getElementById('archSubLabel').textContent,
+        toggles: [...document.querySelectorAll('#archDesign .choice')].map((b) => b.textContent),
+        nonePressed: document.querySelectorAll('#archDesign [aria-pressed=true]').length === 0,
+        families: document.querySelectorAll('#modelList .family-row').length,
+        pills: [...document.querySelectorAll('#modelList .family-row')].filter((r) => r.querySelector('.family-label strong').textContent.trim().toLowerCase() === [...r.querySelectorAll('.model-option strong')].map((x) => x.textContent.trim().toLowerCase()).join('') ).length,
+      }));
+    }
+    t.equal(Object.values(shape).map((x) => x.rowVisible), [true, true, true, true, true], 'every kind shows its toggle row');
+    t.ok(Object.values(shape).every((x) => x.toggles.length >= 2 && x.nonePressed && x.families > 0), 'every kind has at least two toggles, none switched on, and models', JSON.stringify(shape));
+    t.equal(Object.values(shape).map((x) => x.pills), [0, 0, 0, 0, 0], 'no pill repeats the name of its own family');
+    t.equal(Object.fromEntries(Object.entries(shape).map(([k, v]) => [k, v.toggles])), {
+      Language: ['Dense', 'Mixture of experts', 'Multimodal'], Image: ['Generation', 'Editing'], Video: ['Text to video', 'Image to video'],
+      Audio: ['Speech to text', 'Text to speech', 'Music'], Retrieval: ['Embeddings', 'Rerankers'],
+    }, 'and each kind\'s toggles say what it can do');
+    await $(() => [...document.querySelectorAll('#archChoices .choice')].find((b) => b.textContent.trim() === 'Language').click());
     // ── kinds, in one row, by output ──
     t.equal(await $(() => [...document.querySelectorAll('#archChoices .choice')].map((b) => b.textContent.trim())), ['Language', 'Image', 'Video', 'Audio', 'Retrieval'], 'one row of five kinds');
     t.equal(await $(() => [...document.querySelectorAll('#archDesign .choice')].map((b) => b.textContent.trim())), ['Dense', 'Mixture of experts', 'Multimodal'], 'language has the design filters, with no All button');
@@ -21,7 +43,7 @@ export default async function (t) {
     t.equal(await $(() => document.getElementById('output').textContent.split('\n').slice(0, 2).join(' ')), "sglang serve \\   --model-path 'Wan-AI/Wan2.2-T2V-A14B-Diffusers' \\", 'video gets a real command, through SGLang Diffusion');
     t.equal(await $(() => [document.getElementById('copy').textContent, document.getElementById('copy').disabled]), ['Copy command', false], 'and the command can be copied');
     t.equal(await $(() => [...document.querySelectorAll('#serverList .server strong')].map((x) => x.textContent)), ['SGLang'], 'the one engine that serves video is the only one listed');
-    t.equal(await $(() => ['contextField', 'quantField', 'vllmControls'].map((id) => getComputedStyle(document.getElementById(id)).display)), ['none', 'none', 'none'], 'text-only settings step aside');
+    t.equal(await $(() => ['contextField', 'quantField', 'vllmControls'].map((id) => getComputedStyle(document.getElementById(id)).display)), ['none', 'block', 'none'], 'text-only settings step aside, and the precision row stays');
     await pick('#archChoices .choice', 'Audio');
     t.equal(await $(() => [...document.querySelectorAll('#archDesign .choice')].map((b) => b.textContent.trim())), ['Speech to text', 'Text to speech', 'Music'], 'audio has its three roles');
     await pick('#archChoices .choice', 'Language');

@@ -20,7 +20,7 @@ export default async function (t) {
     t.equal(new Set(Object.values(paper).map((x) => x.bg)).size, 6, 'all six themes have their own page background')
     t.equal(paper.Meadow.bg, 'rgb(248, 249, 246)', 'Meadow is the original palette');
     t.ok(/^rgb\((?:[0-9]|1[0-9]|2[0-9]|3[0-9]), /.test(paper.Midnight.bg) && /^rgb\((?:[0-9]|1[0-9]), /.test(paper.Terminal.bg), 'Midnight and Terminal are dark');
-    t.equal(await $(() => getComputedStyle(document.body).fontFamily.includes('Segoe')), true, 'Windows uses Segoe UI');
+    t.equal(await $(() => getComputedStyle(document.body).fontFamily.includes('Tahoma')), true, 'Windows uses Tahoma, as Windows 98 did');
     // remembered across a reload and applied before first paint
     await browser.open(server.base + '/', { init: `document.addEventListener('DOMContentLoaded', () => { window.__themeAtLoad = document.documentElement.getAttribute('data-theme'); });` });
     t.equal(await $(() => window.__themeAtLoad), 'windows', 'a saved theme is already on the page at DOMContentLoaded (no flash of the default)');

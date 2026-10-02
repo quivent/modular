@@ -295,6 +295,21 @@ def sglang_diffusion():
     if serve_example and not any(f["name"] == "--port" for s in sections.values() for f in s["flags"]):
         sections["In the serve examples"] = {"title": "In the serve examples", "flags": [
             {"name": "--port", "aliases": [], "negation": None, "choices": None, "default": None, "help": "", "value": "<PORT>"}]}
+    # The quantization guide shows the flags that choose a precision only in its examples, so read those too.
+    guide = "https://docs.sglang.io/docs/sglang-diffusion/quantization"
+    try:
+        blocks = re.findall(r"<(?:pre|code)[^>]*>(.*?)</(?:pre|code)>", fetch(guide), re.S)  # code only: prose runs words together
+        examples = "\n".join(html.unescape(re.sub(r"<[^>]+>", "", b)) for b in blocks)
+        have = {f["name"] for sec in sections.values() for f in sec["flags"]}
+        found = []
+        for m in re.finditer(r"(?<![\w-])--(?:transformer-|component-|quantization)(?:[\w.\-]*[A-Za-z0-9_])?(?=[\s\\=\"'`]|$)", examples):
+            if m.group(0) not in have and m.group(0) not in found:
+                found.append(m.group(0))
+        if found:
+            sections["In the quantization guide"] = {"title": "In the quantization guide", "flags": [
+                {"name": n, "aliases": [], "negation": None, "choices": None, "default": None, "help": "", "value": "<VALUE>"} for n in found]}
+    except Exception as e:
+        print("could not read the quantization guide:", e)
     return write("sglang-diffusion", url, list(sections.values()))
 
 

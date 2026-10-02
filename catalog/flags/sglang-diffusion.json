@@ -2,7 +2,7 @@
  "engine": "sglang-diffusion",
  "source": "https://docs.sglang.io/docs/sglang-diffusion/api/cli",
  "fetched": "2026-10-01",
- "count": 57,
+ "count": 68,
  "sections": [
   {
    "title": "Generate",
@@ -568,6 +568,110 @@
      "default": null,
      "help": "",
      "value": "<PORT>"
+    }
+   ]
+  },
+  {
+   "title": "In the quantization guide",
+   "flags": [
+    {
+     "name": "--transformer-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--transformer-weights-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--quantization",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--component-weights-paths.transformer",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--component-paths.transformer",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--component-quantizations.transformer",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--quantization-ignored-layers",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--component-paths.text_encoder_2",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--transformer-2-path",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--quantization-precision",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
+    },
+    {
+     "name": "--quantization-rank",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": "",
+     "value": "<VALUE>"
     }
    ]
   }

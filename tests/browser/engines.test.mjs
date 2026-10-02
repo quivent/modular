@@ -14,6 +14,8 @@ export default async function (t) {
       cmd: document.getElementById('output').textContent,
       checks: [...document.querySelectorAll('#checks li')].map((x) => x.textContent),
     }));
+    // a model is picked the way a person does: find its family row, take the first size in it
+    const pickModel = async (family) => { await $((x) => { const row = [...document.querySelectorAll('#modelList .family-row')].find((r) => r.querySelector('.family-label strong').textContent.startsWith(x)); row && row.querySelector('.model-option').click(); }, family); await sleep(250); };
     // the default model, one engine after another: the checks stay quiet
     const seen = {};
     for (const engine of ['llama.cpp', 'Ollama', 'MLX', 'TGI', 'vLLM']) {
@@ -52,6 +54,27 @@ export default async function (t) {
     await $(() => { const b = [...document.querySelectorAll('#modelList .model-option')].find((x) => x.textContent.trim().startsWith('27B')); b && b.click(); });
     await click('#serverList .server', 'Ollama'); await sleep(200);
     t.equal((await $(() => document.getElementById('status').hidden ? '' : document.getElementById('status').textContent)), '', 'Ollama with a catalog model raises no error banner');
+    // precision: every image model offers it, in the same row the text models use
+    await click('#archChoices .choice', 'Image'); await sleep(200);
+    const prec = () => $(() => ({ label: document.querySelector('#quantField .label').textContent, shown: getComputedStyle(document.getElementById('quantField')).display !== 'none', options: [...document.querySelectorAll('#quantChoices .choice')].map((b) => b.textContent) }));
+    await pickModel('FLUX.2');
+    t.equal(await prec(), { label: 'Weight format / quantization', shown: true, options: ['Native / auto', 'FP8', 'NVFP4'] }, 'FLUX.2 dev: a precision row, in the same place and with the same name as for text models');
+    await click('#quantChoices .choice', 'FP8'); await sleep(200);
+    t.ok(/--component-quantizations\.transformer fp8/.test((await read()).cmd), 'FP8 is SGLang\'s online quantization of the transformer');
+    await click('#quantChoices .choice', 'NVFP4'); await sleep(200);
+    const fp4 = await read();
+    t.ok(/--transformer-weights-path 'black-forest-labs\/FLUX\.2-dev-NVFP4'/.test(fp4.cmd) && !/fp8/.test(fp4.cmd), 'NVFP4: the weights repo SGLang documents for FLUX.2 dev, replacing the FP8 flag');
+    t.ok(fp4.checks.some((c) => /NVFP4 needs a Blackwell GPU/.test(c)), 'and an H100 is told it is not Blackwell', JSON.stringify(fp4.checks));
+    await click('#gpuCardChoices .choice', 'B200'); await sleep(200);
+    t.ok(!(await read()).checks.some((c) => /Blackwell/.test(c)), 'on a B200 that warning goes away');
+    await $(() => { const row = [...document.querySelectorAll('#modelList .family-row')].find((r) => r.querySelector('.family-label strong').textContent.startsWith('FLUX.1')); [...row.querySelectorAll('.model-option')].find((b) => b.textContent.trim().startsWith('dev')).click(); }); await sleep(250);
+    await click('#quantChoices .choice', 'NVFP4'); await sleep(200);
+    t.ok(/--transformer-path 'lmsys\/flux1-dev-modelopt-nvfp4-sglang-transformer'/.test((await read()).cmd), 'FLUX.1 dev: its documented NVFP4 transformer');
+    await $(() => { const row = [...document.querySelectorAll('#modelList .family-row')].find((r) => r.querySelector('.family-label strong').textContent.startsWith('FLUX.1')); [...row.querySelectorAll('.model-option')].find((b) => b.textContent.trim().startsWith('schnell')).click(); }); await sleep(250);
+    const sch = await read();
+    t.ok(/FLUX\.1-schnell/.test(sch.cmd) && sch.checks.some((c) => /does not list/.test(c)), 'FLUX.1 schnell is in the catalog, and says SGLang\'s documentation does not list it', JSON.stringify(sch.checks));
+    t.equal((await prec()).options, ['Native / auto', 'FP8'], 'schnell offers only the precisions that need no special repository');
+    await click('#archChoices .choice', 'Language'); await sleep(200);
     // a speech model has its own, fixed window: a text context length and a prefix cache do not belong in its command
     await click('#archChoices .choice', 'Audio'); await sleep(200);
     const speech = (await read()).cmd;
@@ -62,8 +85,6 @@ export default async function (t) {
     // text to speech: the two models vLLM-Omni documents get its command; the rest say plainly that nothing is documented
     await click('#archChoices .choice', 'Audio'); await sleep(150);
     await click('#archDesign .choice', 'Text to speech'); await sleep(250);
-    // a model is picked the way a person does: find its family row, take the first size in it
-    const pickModel = async (family) => { await $((x) => { const row = [...document.querySelectorAll('#modelList .family-row')].find((r) => r.querySelector('.family-label strong').textContent.startsWith(x)); row && row.querySelector('.model-option').click(); }, family); await sleep(250); };
     await pickModel('Qwen3-TTS');
     const qwenTts = (await read()).cmd.replace(/\s+/g, ' ');
     t.equal(qwenTts.split(' ').slice(0, 6), ['vllm', 'serve', "'Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice'", '\\', '--omni', '\\'], 'Qwen3-TTS: the documented vLLM-Omni command');
