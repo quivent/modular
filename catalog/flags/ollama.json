@@ -1,8 +1,12 @@
 {
  "engine": "ollama",
  "source": "https://raw.githubusercontent.com/ollama/ollama/main/envconfig/config.go",
- "fetched": "2026-09-30",
+ "fetched": "2026-10-02",
+ "release": "v0.35.1-rc2",
  "count": 30,
+ "sources": [
+  "https://raw.githubusercontent.com/ollama/ollama/main/envconfig/config.go"
+ ],
  "sections": [
   {
    "title": "Environment variables",
