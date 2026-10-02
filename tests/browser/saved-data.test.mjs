@@ -36,7 +36,7 @@ export default async function (t) {
                    engine: document.querySelector('#serverList .active').dataset.server, out: document.getElementById('output').textContent.slice(0, 28) };
         });
         t.equal([r.envelope, r.snapV, r.ref, r.dropped], [1, 1, 'Qwen/Qwen3.8-27B', true], 'an old setup is upgraded: versioned, model named, favorites no longer inside it');
-        t.equal([r.engine, r.out.startsWith('python -m sglang')], ['sglang', true], 'loading it switches the engine and the command');
+        t.equal([r.engine, r.out.startsWith('sglang serve')], ['sglang', true], 'loading it switches the engine and the command');
       },
     );
 

@@ -167,7 +167,7 @@ Docker output listens inside the container and publishes only on your loopback, 
 | | Engine | Command shape | Notable controls in the prototype |
 | --- | --- | --- | --- |
 | 🟢 | **vLLM** | `vllm serve …` | Tensor and pipeline parallelism, CPU offload, fixed KV cache, priority scheduling, prefix caching, chunked prefill, dtype, request logging, Docker output |
-| 🔵 | **SGLang** | `python -m sglang.launch_server …` | Tensor parallelism, static memory fraction, radix cache toggle, reasoning and tool-call parsers |
+| 🔵 | **SGLang** | `sglang serve …` | Tensor parallelism, static memory fraction, radix cache toggle, reasoning and tool-call parsers |
 | 🟣 | **TensorRT** | `trtllm-serve …` | Tensor and pipeline parallelism, KV-cache memory fraction, sequence length; FP8 and NVFP4 checkpoints load as shipped |
 | 🟡 | **TGI** | text-generation-inference | Shared context, GPU, and quantization choices |
 | 🟠 | **llama.cpp** | llama.cpp server | Shared context, GPU, and quantization choices |

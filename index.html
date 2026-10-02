@@ -4384,7 +4384,7 @@
         ['readable', 'CLI'],
         ['single', 'One line'],
       ];
-      if (state.server === 'vllm') modes.push(['docker', 'Docker']);
+      if (dockerSupported()) modes.push(['docker', 'Docker']);
       modes.push(['json', 'JSON']);
       choiceButtons('outputModes', modes, state.tab, function (next) {
         state.tab = next;
@@ -5028,17 +5028,41 @@
         })
         .join('\n');
     }
+    // How each engine's own documentation runs its image. TensorRT-LLM and MLX publish no one-line command, so they have none here.
+    var DOCKER = {
+      vllm: { image: 'vllm/vllm-openai:latest', flags: ['--runtime nvidia', '--gpus all', '--ipc=host'], cache: '"$HOME/.cache/huggingface:/root/.cache/huggingface"' },
+      sglang: { image: 'lmsysorg/sglang:latest', flags: ['--gpus all', '--shm-size 32g', '--ipc=host'], cache: '"$HOME/.cache/huggingface:/root/.cache/huggingface"' },
+      tgi: { image: 'ghcr.io/huggingface/text-generation-inference:latest', flags: ['--gpus all', '--shm-size 1g'], cache: '"$PWD/data:/data"' },
+      llama: { image: 'ghcr.io/ggml-org/llama.cpp:server-cuda', flags: ['--gpus all'], cache: '"$HOME/.cache/llama.cpp:/root/.cache/llama.cpp"' },
+      ollama: { image: 'ollama/ollama' },
+    };
+    function dockerSupported() {
+      return !!DOCKER[state.server] && !diffusionKind() && !(state.server === 'vllm' && models[state.model] && models[state.model].omni && !state.customModel);
+    }
     function dockerCommand(c) {
+      var spec = DOCKER[c.runtime.server];
+      if (!spec) return '';
+      var hostPort = c.runtime.server === 'ollama' ? c.runtime.port : 8080;
+      if (c.runtime.server === 'ollama') {
+        var pull = command(c).split('\n')[0]; // "ollama pull <model>"
+        return (
+          'docker run -d --gpus=all -v ollama:/root/.ollama -p 127.0.0.1:' + hostPort + ':11434' +
+          ' -e OLLAMA_CONTEXT_LENGTH=' + c.runtime.context_tokens +
+          ' -e OLLAMA_NUM_PARALLEL=' + c.runtime.parallel_devices +
+          ' --name ollama ' + spec.image + '\n' + pull.replace(/^ollama pull /, 'docker exec ollama ollama pull ')
+        );
+      }
       var args = command(c)
         .split('\n')
         .map(function (line) {
           return line.trim().replace(/ \\$/, '');
         });
-      args[0] = args[0].replace(/^vllm serve /, '--model ');
+      if (c.runtime.server === 'vllm') args[0] = args[0].replace(/^vllm serve /, '--model ');
+      else if (c.runtime.server === 'tgi' || c.runtime.server === 'llama') args.shift(); // the image's entrypoint is the server itself
       // Inside the container the server must listen on every interface for the published port to reach it;
       // the -p mapping below still exposes it on this machine's loopback only.
       args = args.map(function (line) {
-        return line.replace(/^--host '[^']*'$/, "--host '0.0.0.0'");
+        return line.replace(/^(--host|--hostname) '[^']*'$/, "$1 '0.0.0.0'");
       });
       var devices = Array.from(
         { length: c.runtime.parallel_devices * c.runtime.pipeline_stages },
@@ -5047,11 +5071,8 @@
         },
       ).join(',');
       var prefix =
-        'docker run --rm --runtime nvidia --gpus all --ipc=host -e CUDA_VISIBLE_DEVICES=' +
-        devices +
-        ' -e HF_TOKEN -v "$HOME/.cache/huggingface:/root/.cache/huggingface" -p 127.0.0.1:8080:' +
-        c.runtime.port +
-        ' vllm/vllm-openai:v0.30.0';
+        'docker run --rm ' + spec.flags.join(' ') + ' -e CUDA_VISIBLE_DEVICES=' + devices +
+        ' -e HF_TOKEN -v ' + spec.cache + ' -p 127.0.0.1:' + hostPort + ':' + c.runtime.port + ' ' + spec.image;
       return [prefix]
         .concat(args)
         .map(function (part, i, all) {
@@ -5068,8 +5089,8 @@
       }
       if (ENGINE_PROFILES[id]) {
         rows = profileRows(ENGINE_PROFILES[id], c);
-        if (id === 'vllm' && state.tab === 'docker')
-          rows.unshift({ label: 'Container', flag: 'vllm/vllm-openai:v0.30.0', target: 'outputModes' });
+        if (state.tab === 'docker' && DOCKER[id])
+          rows.unshift({ label: 'Container', flag: DOCKER[id].image, target: 'outputModes' });
       } else if (id === 'tgi') {
         add('Model', '--model-id ' + c.model.reference, 'modelFocus');
         add('Host', '--hostname ' + r.host, 'hostChoices');
@@ -5372,11 +5393,11 @@
       var env = /(?:^|[\s&])([A-Z][A-Z0-9_]{3,})=('[^']*'|"[^"]*"|[^\s&]+)/g;
       while ((m = env.exec(command))) found.push([m[1], m[2].replace(/^['"]|['"]$/g, '')]);
       var first = command.split('\n')[0],
-        model = /^(?:vllm serve|python -m sglang\.launch_server|trtllm-serve|text-generation-launcher|llama-server|mlx_lm\.server)/.test(first)
+        model = /^(?:vllm serve|trtllm-serve|text-generation-launcher|llama-server|mlx_lm\.server)/.test(first)
           ? first.match(/serve\s+('[^']*'|\S+)/)
           : null;
       if (model && engine !== 'trtllm')
-        found.unshift([engine === 'sglang' ? '--model-path' : '--model', model[1].replace(/^['"]|['"]$/g, '')]);
+        found.unshift(['--model', model[1].replace(/^['"]|['"]$/g, '')]);
       return found;
     }
     // What a flag's description shows. Long ones are cut to their first sentence; ones that only repeat the flag
@@ -5580,7 +5601,7 @@
       sglang: {
         engine: 'sglang',
         documented: '2026-09-30',
-        head: 'python -m sglang.launch_server',
+        head: 'sglang serve',
         rules: [
           { flag: '--model-path', value: 'model.reference', format: 'sh', fallback: 'MODEL_REFERENCE', label: 'Model', target: 'modelFocus' },
           { flag: '--host', value: 'runtime.host', format: 'sh', fallback: '0.0.0.0', label: 'Host', target: 'hostChoices' },
@@ -5881,7 +5902,7 @@
     }
     /* ▸ js: render — output panel */
     function renderOutput() {
-      if (state.tab === 'docker' && state.server !== 'vllm') state.tab = 'all';
+      if (state.tab === 'docker' && !dockerSupported()) state.tab = 'all';
       var config = spec(),
         out =
           state.tab === 'json'
@@ -5927,7 +5948,9 @@
       $('outputHint').hidden = state.tab !== 'docker';
       if (state.tab === 'docker')
         $('outputHint').textContent =
-          'Host port 8080 stays local for SSH tunneling. Private repositories need HF_TOKEN in the host environment.';
+          state.server === 'ollama'
+            ? 'The model is kept in the ollama volume. The port stays local for SSH tunneling.'
+            : 'Host port 8080 stays local for SSH tunneling. Private repositories need HF_TOKEN in the host environment.';
       renderFlagMap(config);
       var fit = fitAssessment(config);
       $('fitNote').textContent = fit.text;

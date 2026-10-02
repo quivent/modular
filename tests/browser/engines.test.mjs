@@ -101,6 +101,22 @@ export default async function (t) {
     const jina = await read();
     t.ok(/--trust-remote-code/.test(jina.cmd) && jina.checks.some((c) => /ships its own code/.test(c)), 'an embedding model that ships code vLLM lacks gets --trust-remote-code, and the page says why', jina.cmd + JSON.stringify(jina.checks));
     await click('#archChoices .choice', 'Language'); await sleep(200);
+    // Docker: each engine as its own documentation runs it; none where the documentation gives no one-line command
+    await click('#archChoices .choice', 'Language'); await sleep(200);
+    await pickPill('Qwen3.8', '27B');
+    const docker = async (engine) => { await click('#serverList .server', engine); await sleep(250); const has = await click('#outputModes .choice', 'Docker'); await sleep(200); return has ? (await read()).cmd : null; };
+    const dv = await docker('vLLM');
+    t.ok(/--runtime nvidia --gpus all --ipc=host/.test(dv) && /vllm\/vllm-openai:latest/.test(dv) && /--model 'Qwen\/Qwen3\.8-27B'/.test(dv) && /--host '0\.0\.0\.0'/.test(dv), 'vLLM: the documented image and flags, listening on every interface inside the container', dv.split('\n')[0]);
+    const ds = await docker('SGLang');
+    t.ok(/--shm-size 32g --ipc=host/.test(ds) && /lmsysorg\/sglang:latest/.test(ds) && /sglang serve/.test(ds) && !/launch_server/.test(ds), 'SGLang: its image, shared memory, and the current sglang serve', ds.split('\n')[0]);
+    const dt = await docker('TGI');
+    t.ok(/--shm-size 1g/.test(dt) && /text-generation-inference:latest/.test(dt) && /--model-id/.test(dt) && !/text-generation-launcher/.test(dt) && /--hostname '0\.0\.0\.0'/.test(dt), 'TGI: the launcher is the image entrypoint, so it is not repeated', dt.split('\n')[0]);
+    const dl = await docker('llama.cpp');
+    t.ok(/llama\.cpp:server-cuda/.test(dl) && /-hf 'unsloth\/Qwen3\.8-27B-GGUF'/.test(dl) && !/^llama-server/m.test(dl), 'llama.cpp: the server image with the GGUF build', dl.split('\n')[0]);
+    const doll = await docker('Ollama');
+    t.ok(/ollama\/ollama/.test(doll) && /docker exec ollama ollama pull 'hf\.co\/unsloth\/Qwen3\.8-27B-GGUF'/.test(doll), 'Ollama: start the container, then pull the model into it', doll);
+    t.equal([await docker('TensorRT'), await docker('MLX')], [null, null], 'TensorRT-LLM and MLX publish no one-line Docker command, so they offer none');
+    await click('#serverList .server', 'vLLM'); await click('#outputModes .choice', 'All flags'); await sleep(150);
     // a speech model has its own, fixed window: a text context length and a prefix cache do not belong in its command
     await click('#archChoices .choice', 'Audio'); await sleep(200);
     const speech = (await read()).cmd;
