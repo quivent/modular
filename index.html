@@ -3751,6 +3751,40 @@
       }
       if (currentCard() && currentCard().mac) state.hardware = 'single';
     }
+    // Until you choose hardware yourself, it follows the model: the fewest H100s it fits on, else the smallest card
+    // that holds it on up to 8. A model that fits nowhere keeps 1 × H100, so the fit note explains why.
+    function fitHardwareToModel() {
+      state.hardwareNote = '';
+      if (state.hardwareSet || state.customModel || ['vllm', 'sglang', 'trtllm', 'tgi'].indexOf(state.server) === -1) return;
+      var home = GPU_CARDS.filter(function (c) {
+        return c.id === 'h100';
+      })[0];
+      var cards = [home].concat(
+        visibleCards()
+          .filter(function (c) {
+            return c.gb > home.gb;
+          })
+          .sort(function (a, b) {
+            return a.gb - b.gb;
+          }),
+      );
+      function use(card, n) {
+        state.gpuCard = card.id;
+        state.gpuVram = card.gb;
+        state.gpuCount = state.clusterDevices = n;
+        state.hardware = n === 1 ? 'single' : 'multi';
+        $('parallel').value = n;
+      }
+      for (var i = 0; i < cards.length; i++)
+        for (var n = 1; n <= 8; n *= 2) {
+          use(cards[i], n);
+          if (!fitAssessment(spec()).warn) {
+            if (i || n > 1) state.hardwareNote = 'Set to ' + n + ' × ' + cards[i].name + (i ? ' (' + cards[i].gb + ' GB)' : '') + ' to fit this model. ';
+            return;
+          }
+        }
+      use(home, 1);
+    }
     // Repos Hugging Face asks you to sign in and accept a license for (read from the API, 2026-10-01).
     var HF_GATED = {
       'Lightricks/LTX-2.5-Diffusers': 1,
@@ -4047,6 +4081,7 @@
             $('trust').setAttribute('aria-checked', String(!!state.trustStates[state.server]));
             renderServers();
             renderQuant();
+            fitHardwareToModel();
             renderServerFields();
             renderTuning();
             renderHardware();
@@ -4144,6 +4179,7 @@
         multi ? state.gpuCount : 1,
         function (next) {
           state.gpuCount = Number(next);
+          state.hardwareSet = true;
           state.hardware = state.gpuCount === 1 ? 'single' : 'multi';
           state.clusterDevices = state.gpuCount; // use every GPU you said you have; lower it below if you want
           renderHardware();
@@ -4162,6 +4198,7 @@
         function (next) {
           state.gpuCard = next;
           state.gpuVram = currentCard().gb;
+          state.hardwareSet = true;
           renderHardware();
           renderOutput();
         },
@@ -4174,6 +4211,7 @@
         state.gpuVram,
         function (next) {
           state.gpuVram = Number(next);
+          state.hardwareSet = true;
           var card = currentCard();
           if (!card || card.gb !== state.gpuVram) state.gpuCard = null; // a memory size of your own: no card
           renderHardware();
@@ -4191,6 +4229,7 @@
         val('parallel'),
         function (next) {
           state.clusterDevices = Number(next);
+          state.hardwareSet = true;
           renderHardware();
           renderOutput();
         },
@@ -4206,6 +4245,7 @@
         state.pipeline,
         function (next) {
           state.pipeline = Number(next);
+          state.hardwareSet = true;
           renderHardware();
           renderOutput();
         },
@@ -4427,8 +4467,9 @@
       fitEngineToKind();
       renderServers();
       renderTuning();
-      renderHardware();
       renderQuant();
+      fitHardwareToModel();
+      renderHardware();
       renderOrnithServing();
       renderModelList();
       renderProfileModels();
@@ -4632,7 +4673,7 @@
     var SNAPSHOT_VERSION = 1; // one saved configuration
     var STORAGE_VERSION = 1; // the local-storage and server envelopes
     var storageLocked = {}; // keys a newer version wrote: read-only here
-    var NOT_PART_OF_A_SETUP = ['favorites', 'recent', 'defaultModel', 'kindLast', 'facets', 'design']; // dropped from snapshots in v1
+    var NOT_PART_OF_A_SETUP = ['favorites', 'recent', 'defaultModel', 'kindLast', 'facets', 'design', 'hardwareSet', 'hardwareNote']; // dropped from snapshots in v1; the last two are this session's
     function catalogIndex(ref) {
       for (var i = 0; i < models.length; i++) if (models[i].ref === ref && !models[i].retired) return i;
       return -1;
@@ -4818,6 +4859,8 @@
       Object.keys(copy).forEach(function (key) {
         if (['values', 'toggles', 'v', 'catalogRef'].indexOf(key) === -1) state[key] = copy[key];
       });
+      state.hardwareSet = true; // a saved setup's hardware was chosen: never resized
+      state.hardwareNote = '';
       Object.keys(copy.values || {}).forEach(function (id) {
         if ($(id)) $(id).value = copy.values[id];
       });
@@ -6024,7 +6067,7 @@
             : 'Host port 8080 stays local for SSH tunneling. Private repositories need HF_TOKEN in the host environment.';
       renderFlagMap(config);
       var fit = fitAssessment(config);
-      $('fitNote').textContent = fit.text;
+      $('fitNote').textContent = (!state.hardwareSet && state.hardwareNote ? state.hardwareNote : '') + fit.text;
       $('fitNote').hidden = !fit.text;
       $('fitNote').classList.toggle('warn', fit.warn);
       var badges = [
