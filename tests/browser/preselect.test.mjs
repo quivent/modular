@@ -25,6 +25,20 @@ export default async function (t) {
     await pick('Qwen3.8 27B');
     t.equal(await hw(), ['1', 'H100', false], 'and a small model brings it back to 1 × H100');
 
+    // ── precision follows the checkpoint ──
+    const quants = () => $(() => [...document.querySelectorAll('#quantChoices .choice')].map((x) => x.textContent));
+    const engine = (label) => $((x) => [...document.querySelectorAll('#serverList .server')].find((s) => s.querySelector('strong').textContent === x).click(), label);
+    t.equal(await quants(), ['Native / auto', 'FP8', 'bitsandbytes', 'Custom…'], 'a bf16 checkpoint is not offered AWQ or GPTQ, which load only checkpoints published in them');
+    await engine('TensorRT');
+    t.equal(await quants(), ['Native / auto', 'FP8', 'Custom…'], 'nor NVFP4 on TensorRT, which needs a ModelOpt checkpoint');
+    await engine('vLLM');
+    await $(() => { document.getElementById('customModel').open = true; const i = document.getElementById('modelLink'); i.value = 'https://huggingface.co/someone/their-model'; i.dispatchEvent(new Event('input')); });
+    t.equal(await quants(), ['Native / auto', 'FP8', 'AWQ', 'GPTQ', 'bitsandbytes', 'Custom…'], 'a pasted model, whose format is not known, keeps every option');
+    await $(() => [...document.querySelectorAll('#quantChoices .choice')].find((x) => x.textContent === 'AWQ').click());
+    await pick('Qwen3.8 27B');
+    t.equal(await pressed('quantChoices'), 'Native / auto', 'moving to a checkpoint that is not AWQ drops the AWQ choice');
+    await browser.open(server.base + '/?hardware'); // a fresh page: hardware nobody has chosen yet
+
     // ── what you choose is never moved ──
     await $(() => [...document.querySelectorAll('#gpuCardChoices .choice')].find((x) => x.textContent === 'L40S').click());
     await pick('Llama 4 Scout');

@@ -4101,8 +4101,19 @@
       var m = !state.customModel && models[state.model];
       return ['Native / auto', 'FP8'].concat(m && m.nvfp4 ? ['NVFP4'] : []);
     }
+    // What the checkpoint's own config.json says about it, when the precision checks can use it (the same cases as Checks).
+    function checkpointFacts() {
+      var m = !state.customModel && models[state.model];
+      if (!m || diffusionKind() || (state.server === 'vllm' && m.omni)) return null;
+      return MEMORY_SHAPES[val('modelRef')] || null;
+    }
     function renderQuant() {
-      var options = quantOptions();
+      var facts = checkpointFacts();
+      // AWQ, GPTQ and NVFP4 load only a checkpoint published in that format: not offered when the facts say otherwise.
+      // What is already chosen stays, so a restored setup shows what it saved (and Checks says why it will not load).
+      var options = quantOptions().filter(function (q) {
+        return q === val('quant') || !quantProblem(q, facts);
+      });
       if (!options.includes(val('quant'))) $('quant').value = options[0];
       if (options.length === 2 && options[1] === 'Custom…') { // a default and a custom entry: a switch; real choices are always buttons
         var checked = val('quant') === options[1];
@@ -4467,6 +4478,7 @@
       fitEngineToKind();
       renderServers();
       renderTuning();
+      if (quantProblem(val('quant'), checkpointFacts())) $('quant').value = quantOptions()[0]; // a format this checkpoint is not in
       renderQuant();
       fitHardwareToModel();
       renderHardware();

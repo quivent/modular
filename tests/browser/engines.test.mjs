@@ -89,10 +89,10 @@ export default async function (t) {
     await pickPill('Qwen3.8', 'Flash-Next'); await sleep(200);
     t.ok(!(await read()).checks.some((c) => /own list of supported/.test(c)), 'but not for a model that has a converted MLX build');
     await click('#serverList .server', 'vLLM'); await pickPill('Qwen3.8', '27B');
-    await click('#quantChoices .choice', 'AWQ'); await sleep(250);
-    t.ok((await read()).checks.some((c) => /AWQ loads a checkpoint that was published in AWQ/.test(c)), 'AWQ on a plain bf16 repository is called out before launch');
+    t.equal(await click('#quantChoices .choice', 'AWQ'), false, 'AWQ is not offered for a plain bf16 repository: it loads only a checkpoint published in AWQ');
+    await sleep(250);
     await click('#quantChoices .choice', 'Native'); await sleep(200);
-    t.ok(!(await read()).checks.some((c) => /AWQ loads/.test(c)), 'and goes away with Native');
+    t.ok(!(await read()).checks.some((c) => /AWQ loads/.test(c)), 'so Checks has no AWQ warning to give');
     await click('#archChoices .choice', 'Retrieval'); await sleep(200);
     for (const label of await $(() => [...document.querySelectorAll('#archDesign .choice[aria-pressed=true]')].map((b) => b.textContent))) await click('#archDesign .choice', label); // show every retrieval model
     await pickPill('jina-reranker', 'v3.5'); await click('#serverList .server', 'vLLM'); await sleep(250);
