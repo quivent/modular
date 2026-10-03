@@ -54,6 +54,26 @@ export default async function (t) {
     await sleep(200);
     await pick('GLM-5.3 Flash');
     t.equal((await hw()).slice(0, 2), ['4', 'H100'], 'hardware from a restored setup counts as chosen');
+
+    // ── parallelism follows the GPU count ──
+    await browser.open(server.base + '/?parallel');
+    const opts = (id) => $((x) => [...document.querySelectorAll('#' + x + ' .choice')].map((b) => b.textContent).join(' '), id);
+    const choose = (id, v) => $(([x, val]) => [...document.querySelectorAll('#' + x + ' .choice')].find((b) => b.textContent === val).click(), [id, v]);
+    await choose('gpuCountChoices', '8');
+    t.equal([await opts('parallelChoices'), await opts('pipelineChoices')], ['1 2 4 8', '1 2 4 8'], '8 GPUs: every split is offered');
+    await choose('pipelineChoices', '2');
+    t.equal([await pressed('parallelChoices'), await opts('parallelChoices')], ['4', '1 2 4'], 'two pipeline stages leave 4 GPUs for tensor parallelism, and no more is offered');
+    t.equal(await $(() => [document.getElementById('parallelHint').hidden, document.getElementById('parallelHint').textContent]), [false, '× 2 pipeline stages'], 'and the tensor row says why, since the stages are set in Advanced settings');
+    const cmd = await $(() => document.getElementById('output').textContent);
+    t.ok(/--tensor-parallel-size 4/.test(cmd) && /--pipeline-parallel-size 2/.test(cmd), 'the command splits 8 GPUs as 4 × 2');
+    t.equal(await $(() => [...document.querySelectorAll('#checks li')].some((x) => /exceeds the GPU count/.test(x.textContent))), false, 'and never exceeds the GPU count');
+    await choose('gpuCountChoices', '2');
+    t.equal([await pressed('pipelineChoices'), await pressed('parallelChoices'), await opts('parallelChoices')], ['2', '1', '1'], 'down to 2 GPUs: the 2 stages stay and tensor parallelism takes what is left');
+    await choose('gpuCountChoices', '4');
+    t.equal([await pressed('pipelineChoices'), await pressed('parallelChoices')], ['2', '2'], 'and up to 4: 2 stages × 2 GPUs');
+    await choose('gpuCountChoices', '1');
+    await choose('gpuCountChoices', '4');
+    t.equal([await pressed('pipelineChoices'), await pressed('parallelChoices')], ['1', '4'], 'one GPU cannot hold 2 stages, so they reset, and 4 GPUs then go to tensor parallelism');
     t.equal((await browser.errors()).length, 0, 'no page errors');
   } finally {
     await browser.close();

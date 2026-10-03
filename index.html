@@ -2442,7 +2442,7 @@
           <section class="group" aria-labelledby="settings-title"><div class="group-head"><span class="number">03</span><div><h2 id="settings-title">Configuration</h2></div></div><div class="body-indent">
             <div class="field" id="contextField"><div class="field-head"><span class="label" id="contextLabel">Context window</span></div><div class="choice-row" id="contextChoices" role="group" aria-labelledby="contextLabel"></div><input id="context" type="hidden" value="8192"></div>
             <div class="field" id="customContextField" hidden><div class="field-head"><label for="customContext">Custom context window</label><output id="contextDisplay">8,192 tokens</output></div><input id="customContext" class="range" type="range" min="512" max="262144" step="512" value="8192"><div class="range-ends"><span>512</span><span>262K</span></div></div>
-            <div class="setting-cluster hardware-cluster"><div class="field"><div class="field-head"><span class="label" id="gpuCardLabel">GPU</span></div><div class="choice-row" id="gpuCardChoices" role="group" aria-labelledby="gpuCardLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="gpuVramLabel">Memory per GPU</span></div><div class="choice-row" id="gpuVramChoices" role="group" aria-labelledby="gpuVramLabel"></div></div><div class="field" id="gpuCountField"><div class="field-head"><span class="label" id="gpuCountLabel">GPUs</span></div><div class="choice-row" id="gpuCountChoices" role="group" aria-labelledby="gpuCountLabel"></div></div><div class="field" id="parallelField" hidden><div class="field-head"><span class="label" id="parallelLabel">Tensor parallel</span></div><div class="choice-row" id="parallelChoices" role="group" aria-labelledby="parallelLabel"></div></div><input id="parallel" type="hidden" value="1"><p class="fit-note" id="fitNote"></p></div>
+            <div class="setting-cluster hardware-cluster"><div class="field"><div class="field-head"><span class="label" id="gpuCardLabel">GPU</span></div><div class="choice-row" id="gpuCardChoices" role="group" aria-labelledby="gpuCardLabel"></div></div><div class="field"><div class="field-head"><span class="label" id="gpuVramLabel">Memory per GPU</span></div><div class="choice-row" id="gpuVramChoices" role="group" aria-labelledby="gpuVramLabel"></div></div><div class="field" id="gpuCountField"><div class="field-head"><span class="label" id="gpuCountLabel">GPUs</span></div><div class="choice-row" id="gpuCountChoices" role="group" aria-labelledby="gpuCountLabel"></div></div><div class="field" id="parallelField" hidden><div class="field-head"><span class="label" id="parallelLabel">Tensor parallel</span><span class="hint" id="parallelHint" hidden></span></div><div class="choice-row" id="parallelChoices" role="group" aria-labelledby="parallelLabel"></div></div><input id="parallel" type="hidden" value="1"><p class="fit-note" id="fitNote"></p></div>
             <div class="setting-cluster" id="ornithServing" hidden><div class="cluster-head"><h3>Model behavior</h3><span>Ornith 1.5</span></div><div class="toggle-row"><div><strong>Reasoning parser</strong><small>Separate reasoning from the final answer</small></div><button type="button" class="toggle" id="reasoning" role="switch" aria-label="Reasoning parser" aria-checked="true"></button></div><div class="toggle-row"><div><strong>Tool-call parser</strong><small>Expose model tool calls in the API</small></div><button type="button" class="toggle" id="tools" role="switch" aria-label="Tool-call parser" aria-checked="true"></button></div><p class="setting-help" id="parserNote"></p></div><div class="setting-cluster" id="vllmControls"><div class="cluster-head"><h3>Scheduling</h3></div>
               <div class="field"><div class="field-head"><span class="label" id="batchLabel">Tokens per batch</span></div><div class="choice-row" id="batchChoices" role="group" aria-labelledby="batchLabel"></div></div>
               <div class="field"><div class="field-head"><span class="label" id="seqLabel">Sequences per step</span></div><div class="choice-row" id="seqChoices" role="group" aria-labelledby="seqLabel"></div></div>
@@ -4179,6 +4179,20 @@
       $('parallelField').hidden = !multi || !parallel;
       $('pipelineField').hidden = !multi || (state.server !== 'vllm' && state.server !== 'trtllm');
       $('parallel').value = multi && parallel ? state.clusterDevices : 1;
+      // Tensor GPUs × pipeline stages must fit in the GPUs you have, so only splits that fit are offered. What is
+      // already chosen stays, so a restored setup shows what it saved (and Checks says it exceeds the GPU count).
+      var stages = $('pipelineField').hidden ? 1 : state.pipeline;
+      $('parallelHint').hidden = stages === 1; // the pipeline row sits in Advanced settings: say here why fewer GPUs are offered
+      $('parallelHint').textContent = '× ' + stages + ' pipeline stages';
+      function upTo(max, current) {
+        return [1, 2, 4, 8]
+          .filter(function (n) {
+            return n <= max || n === Number(current);
+          })
+          .map(function (n) {
+            return [String(n), String(n)];
+          });
+      }
       choiceButtons(
         'gpuCountChoices',
         [
@@ -4192,7 +4206,8 @@
           state.gpuCount = Number(next);
           state.hardwareSet = true;
           state.hardware = state.gpuCount === 1 ? 'single' : 'multi';
-          state.clusterDevices = state.gpuCount; // use every GPU you said you have; lower it below if you want
+          if (state.pipeline > state.gpuCount) state.pipeline = 1;
+          state.clusterDevices = state.gpuCount / state.pipeline; // use every GPU you said you have; lower it below if you want
           renderHardware();
           renderOutput();
         },
@@ -4231,12 +4246,7 @@
       );
       choiceButtons(
         'parallelChoices',
-        [
-          ['1', '1'],
-          ['2', '2'],
-          ['4', '4'],
-          ['8', '8'],
-        ],
+        upTo(state.gpuCount / stages, val('parallel')),
         val('parallel'),
         function (next) {
           state.clusterDevices = Number(next);
@@ -4247,15 +4257,11 @@
       );
       choiceButtons(
         'pipelineChoices',
-        [
-          ['1', '1'],
-          ['2', '2'],
-          ['4', '4'],
-          ['8', '8'],
-        ],
+        upTo(state.gpuCount, state.pipeline),
         state.pipeline,
         function (next) {
           state.pipeline = Number(next);
+          state.clusterDevices = state.gpuCount / state.pipeline; // the GPUs left over go to tensor parallelism
           state.hardwareSet = true;
           renderHardware();
           renderOutput();
