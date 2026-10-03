@@ -2426,12 +2426,60 @@
       .output-mode { margin-left: 20px; margin-right: 20px; }
       .preview-content { padding: 0 20px 8px; }
     }
+    /* ▸ css: stack */
+    /* The second page. It is built from the same parts as the first (groups, choices, toggles, the panel), so every
+       theme already knows how to draw it. Only the link in the header and the stacked services are new. */
+    .top-right .stack-link { display: inline-grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: var(--r-pill); background: var(--white); color: var(--ink-3); }
+    .top-right .stack-link:hover { background: var(--tint); color: var(--green-ink); }
+    .stack-link svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .top-right .stack-link[aria-current='page'] { background: var(--green); border-color: var(--green-line); color: var(--on-green); }
+    body[data-page='stack'] .copybar { display: none !important; } /* the floating Copy belongs to the first page */
+    body[data-launch='none'] #stackPage .preview-bottom { display: block; }
+    .stack-list { list-style: none; margin: 0 0 32px; padding: 0; }
+    .stack-list:empty { display: none; }
+    .stack-item { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; }
+    .stack-item + .stack-item { margin-top: 8px; }
+    .stack-what { flex: 1; min-width: 0; }
+    .stack-what strong { display: block; font: 700 17px var(--font-display); letter-spacing: -0.03em; }
+    .stack-what small { display: block; margin-top: 3px; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+    .stack-what small.mono { font: 12px var(--mono); color: var(--accent-text); }
+    .stack-item.off { background: none; border-style: dashed; }
+    .stack-item.off strong { color: var(--soft); }
+    .stack-item.off small { color: var(--warn-ink); }
+    .stack-acts { display: flex; gap: 2px; flex: none; }
+    .stack-acts button { width: 32px; height: 32px; border: 0; border-radius: var(--r-pill); background: none; color: var(--muted); font-size: 16px; line-height: 1; padding: 0; }
+    .stack-acts button:hover:not(:disabled) { background: var(--tint-strong); color: var(--ink); }
+    .stack-acts button:disabled { color: var(--line-strong); cursor: default; }
+    .stack-empty { margin: 0 0 32px; padding: 20px; border: 1px dashed var(--line-strong); border-radius: 14px; font-size: 14px; color: var(--muted); }
+    #stackPage .field-head a.hint { text-decoration: underline; text-underline-offset: 3px; }
+    #stackPage .field-head a.hint:hover { color: var(--green-ink); }
+    #stackPage .choice:disabled { color: var(--faint); cursor: default; }
+    #stackPage .choice:disabled:hover { border-color: var(--line); background: var(--white); }
+    #stackPage .setting-help { margin: 10px 0 0; }
+    #stackPage .toggle-list { margin-top: 0; }
+    #stackDomainField { margin-top: 24px; }
+    #stackOutput { max-height: min(60vh, 620px); }
+    :root[data-theme='windows'] .top-right .stack-link { width: 20px; height: 16px; border: 0; border-radius: 0; background: #c0c0c0; color: #000; box-shadow: var(--bevel-out); }
+    :root[data-theme='windows'] .top-right .stack-link[aria-current='page'] { box-shadow: var(--bevel-in); }
+    :root[data-theme='windows'] .stack-link svg { width: 11px; height: 11px; stroke-width: 2.4; }
+    :root[data-theme='windows'] .stack-item { background: #fff; border: 0; border-radius: 0; box-shadow: var(--bevel-in); padding: 6px 8px; gap: 8px; }
+    :root[data-theme='windows'] .stack-item.off { background: #c0c0c0; }
+    :root[data-theme='windows'] .stack-what strong { font: 700 12px Tahoma, sans-serif; letter-spacing: 0; }
+    :root[data-theme='windows'] .stack-what small, :root[data-theme='windows'] .stack-what small.mono { font: 11px Tahoma, sans-serif; color: #000; }
+    :root[data-theme='windows'] .stack-acts button { width: 18px; height: 18px; border-radius: 0; background: #c0c0c0; color: #000; box-shadow: var(--bevel-out); font-size: 11px; }
+    :root[data-theme='windows'] .stack-empty { border: 0; border-radius: 0; box-shadow: var(--bevel-in); padding: 8px; font-size: 12px; color: #000; }
+    @media (max-width: 640px) {
+      .stack-item { padding: 14px 16px; gap: 12px; }
+    }
+    @media (max-width: 480px) {
+      .top-right { gap: 12px; } /* room for the link beside Themes and Tracker */
+    }
   </style>
 </head>
 <body>
   <div class="page">
     <!-- ▸ html: header -->
-    <header class="top"><a class="brand" href="#top" aria-label="Modular home"><span class="brand-mark"></span><span>modular<span style="color:var(--accent)">.</span></span></a><div class="top-right"><span class="caption" aria-hidden="true"><i></i><i></i><i></i></span><button class="secondary" type="button" id="themeOpen" aria-haspopup="dialog">Themes</button><button class="secondary" type="button" id="trackerOpen" aria-haspopup="dialog" hidden>Tracker<span class="count" id="trackerCount"></span></button></div></header>
+    <header class="top"><a class="brand" href="#top" aria-label="Modular home"><span class="brand-mark"></span><span>modular<span style="color:var(--accent)">.</span></span></a><div class="top-right"><span class="caption" aria-hidden="true"><i></i><i></i><i></i></span><button class="secondary" type="button" id="themeOpen" aria-haspopup="dialog">Themes</button><button class="secondary" type="button" id="trackerOpen" aria-haspopup="dialog" hidden>Tracker<span class="count" id="trackerCount"></span></button><a class="stack-link" id="stackLink" href="#stack" aria-label="Deploy a full server" title="Deploy a full server"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7.5l9 4.5 9-4.5z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/></svg></a></div></header>
     <!-- ▸ html: workspace -->
     <main id="top">
       <section class="intro"><h1>Serve a model (it&rsquo;s harder than you think)</h1></section>
@@ -2468,6 +2516,28 @@
         <aside class="preview" aria-label="Configuration preview"><div class="preview-top"><div><h2>Your configuration</h2><p>Updates as you make decisions.</p></div><button class="primary copy-main" type="button" id="copy">Copy command</button></div><div class="output-mode" id="outputModes" role="group" aria-label="Output format"></div><div class="preview-content"><div class="flags-all" id="allFlags" aria-label="Every flag of this engine"></div><pre class="code" id="output" aria-live="polite"></pre><p class="setting-help" id="outputHint" hidden></p><div class="preview-actions"><button class="secondary" type="button" id="download">Export file</button></div><details class="advanced saved-configs" id="savedConfigs"><summary>Saved configurations <span id="savedConfigCount">0</span></summary><div class="advanced-body"><button class="secondary" type="button" id="saveConfig">Save current</button><div id="savedConfigList"></div></div></details><details class="flag-details" id="flagDetails"><summary>Where each choice goes <span id="flagCount"></span></summary><div class="flag-map" id="flagMap"></div></details></div><div class="preview-bottom"><p class="mini-heading">At a glance</p><div class="summary" id="summary"></div><p class="mini-heading">Checks</p><ul class="checks" id="checks"></ul><p class="status" id="status"></p></div></aside>
       </div>
     </main>
+    <!-- ▸ html: stack -->
+    <main id="stackPage" hidden>
+      <section class="intro"><h1>Deploy a full server (one command at a time)</h1></section>
+      <div class="workspace">
+        <div class="builder">
+          <section class="group" aria-labelledby="stack-services-title"><div class="group-head"><span class="number">01</span><div><h2 id="stack-services-title">Services</h2></div></div><div class="body-indent">
+            <ol class="stack-list" id="stackList" aria-label="Stacked services"></ol><p class="stack-empty" id="stackEmpty">Nothing stacked yet.</p>
+            <div class="field"><div class="field-head"><span class="label" id="stackCurrentLabel">Add the current configuration</span><a class="hint" href="#top">Change it</a></div><div class="choice-row" id="stackCurrent" role="group" aria-labelledby="stackCurrentLabel"></div><p class="setting-help" id="stackCurrentNote" hidden></p></div>
+            <div class="field" id="stackSavedField" hidden><div class="field-head"><span class="label" id="stackSavedLabel">Add a saved configuration</span></div><div class="choice-row" id="stackSaved" role="group" aria-labelledby="stackSavedLabel"></div><p class="setting-help" id="stackSavedNote" role="status" hidden></p></div>
+          </div></section>
+          <section class="group" aria-labelledby="stack-startup-title"><div class="group-head"><span class="number">02</span><div><h2 id="stack-startup-title">Startup</h2></div></div><div class="body-indent">
+            <div class="toggle-list"><div class="toggle-row"><div><strong>Check the machine</strong><small>Confirm the GPU driver, the GPU count, and that containers can see the GPUs</small></div><button type="button" class="toggle" id="stackCheck" role="switch" aria-label="Check the machine" aria-checked="true"></button></div><div class="toggle-row"><div><strong>Wait until ready</strong><small>Hold until every service answers, and stop with its log if one fails to start</small></div><button type="button" class="toggle" id="stackWait" role="switch" aria-label="Wait until ready" aria-checked="true"></button></div></div>
+          </div></section>
+          <section class="group" aria-labelledby="stack-gateway-title"><div class="group-head"><span class="number">03</span><div><h2 id="stack-gateway-title">Gateway</h2></div></div><div class="body-indent">
+            <div class="toggle-list"><div class="toggle-row"><div><strong>HTTPS gateway</strong><small>One address for every service, behind an API key</small></div><button type="button" class="toggle" id="stackGateway" role="switch" aria-label="HTTPS gateway" aria-checked="false"></button></div></div>
+            <div class="field" id="stackDomainField" hidden><div class="field-head"><label for="stackDomain">Domain</label></div><input id="stackDomain" class="control mono" spellcheck="false" autocomplete="off" placeholder="models.example.com"></div>
+          </div></section>
+        </div>
+        <aside class="preview" aria-label="Server preview"><div class="preview-top"><div><h2>Your server</h2><p>Updates as you stack.</p></div><button class="primary copy-main" type="button" id="stackCopy">Copy script</button></div><div class="output-mode" id="stackModes" role="group" aria-label="Script"></div><div class="preview-content"><pre class="code" id="stackOutput" aria-live="polite"></pre><div class="preview-actions"><button class="secondary" type="button" id="stackDownload">Export file</button></div></div><div class="preview-bottom"><p class="mini-heading" id="stackGlance">At a glance</p><div class="summary" id="stackSummary"></div><p class="mini-heading">Checks</p><ul class="checks" id="stackChecks"></ul></div></aside>
+      </div>
+    </main>
+    <!-- ▸ html: footer -->
     <div class="copybar" id="copyBar" hidden><button class="primary" type="button" id="copyFloat">Copy command</button></div>
     <footer class="foot"><span>Modular builds a starting specification. Check model, weight, and server compatibility before deployment.</span><span>Server docs: <a href="https://docs.vllm.ai/en/latest/cli/serve/" target="_blank" rel="noopener">vLLM</a> · <a href="https://docs.sglang.ai/" target="_blank" rel="noopener">SGLang</a> · <a href="https://huggingface.co/docs/text-generation-inference/basic_tutorials/launcher" target="_blank" rel="noopener">TGI</a> · <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md" target="_blank" rel="noopener">llama.cpp</a> · <a href="https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md" target="_blank" rel="noopener">MLX</a></span></footer>
   </div>
@@ -7009,6 +7079,520 @@
         })
         .catch(function () {});
     })();
+
+    /* ▸ js: stack */
+    /* The second page (#stack): commands from the first page, stacked into one server. A service is a
+       configuration exactly as spec() built it, and its command comes from dockerCommand(), the same one the
+       Docker output shows, so the two pages cannot disagree. The stack decides only what one command cannot:
+       each container's name, its port on this machine, and which GPUs it gets.
+       What surrounds the services was read from its own documentation on 2026-10-03: the container check
+       (NVIDIA Container Toolkit, "Running a Sample Workload"), restart policies and RestartCount (docker run
+       reference), the gateway (Caddy: route, handle_path, the header matcher, {$ENV}; its image on Docker Hub),
+       and each engine's readiness route. The gateway was run against a local server to confirm that a request
+       without the key gets 401 and that the path prefix is removed. */
+    var STACK_VERSION = 1; // the shape of modular.stack in local storage
+    var STACK_READY = { vllm: '/health', sglang: '/health', tgi: '/health', llama: '/health', ollama: '/api/version' };
+    var stack = { services: [], check: true, wait: true, gateway: false, domain: '' };
+    var stackView = 'deploy';
+    var stackLocked = false; // a newer Modular wrote the saved stack: it is left alone
+    var stackSavedNote = ''; // why the saved configuration just chosen could not be added
+    function oneLine(s) {
+      return String(s).replace(/\s+/g, ' ').trim();
+    }
+    function loadStack() {
+      var saved = readStored('modular.stack');
+      if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return;
+      if ((saved.v || 0) > STACK_VERSION) {
+        stackLocked = true;
+        return;
+      }
+      if (Array.isArray(saved.services))
+        stack.services = saved.services
+          .filter(function (s) {
+            var c = s && s.spec;
+            return c && c.model && c.runtime && c.runtime.hardware && c.runtime.scheduling;
+          })
+          .map(function (s) {
+            return { label: oneLine(s.label || s.spec.model.reference || 'Service'), fit: oneLine(s.fit || ''), spec: s.spec };
+          });
+      ['check', 'wait', 'gateway'].forEach(function (key) {
+        if (typeof saved[key] === 'boolean') stack[key] = saved[key];
+      });
+      if (typeof saved.domain === 'string') stack.domain = saved.domain;
+    }
+    function storeStack() {
+      if (stackLocked) return;
+      try {
+        localStorage.setItem(
+          'modular.stack',
+          JSON.stringify({ v: STACK_VERSION, services: stack.services, check: stack.check, wait: stack.wait, gateway: stack.gateway, domain: stack.domain }),
+        );
+      } catch (e) {}
+    }
+    function engineName(id) {
+      var found = servers.find(function (x) {
+        return x.id === id;
+      });
+      return found ? found.name : id;
+    }
+    function stackSlug(label) {
+      return String(label).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'service';
+    }
+    // The domain as Caddy takes it, or '' when what was typed is not a host name.
+    function stackDomain(st) {
+      var d = st.domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+      return /^(?=.{4,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(d) ? d : '';
+    }
+    // Why a configuration cannot be deployed by the stack, or '' when it can.
+    function stackProblem(c) {
+      if (c.runtime.hardware.type === 'Apple silicon') return 'This configuration is sized for a Mac, and the stack deploys to a server with NVIDIA GPUs.';
+      var what =
+        c.model.architecture === 'diffusion'
+          ? 'image and video models'
+          : c.runtime.server === 'vllm' && c.model.omni
+            ? 'vLLM-Omni'
+            : DOCKER[c.runtime.server]
+              ? ''
+              : engineName(c.runtime.server);
+      return what ? 'No container command is documented for ' + what + '.' : '';
+    }
+    // llama.cpp and Ollama take the GPUs chosen under Hardware; the others take what their parallelism flags name.
+    function stackGpus(c) {
+      var r = c.runtime;
+      return Math.max(1, (r.server === 'llama' || r.server === 'ollama' ? r.hardware.available_devices : r.parallel_devices * r.pipeline_stages) || 1);
+    }
+    // dockerCommand(), kept running: detached, restarted with the machine, named, on its own port and GPUs.
+    // Returns null when the command is not in the shape this knows, so nothing is rewritten by guesswork.
+    function stackCommands(c, item) {
+      var out = dockerCommand(c),
+        devices = item.gpus.join(',');
+      if (c.runtime.server === 'ollama') {
+        var lines = out.split('\n'),
+          published = ' -p 127.0.0.1:' + c.runtime.port + ':11434 ';
+        if (lines.length !== 2 || lines[0].indexOf('docker run -d --gpus=all ') !== 0 || lines[0].indexOf(published) < 0 || lines[0].indexOf(' --name ollama ') < 0 || lines[1].indexOf('docker exec ollama ollama pull ') !== 0)
+          return null;
+        return {
+          run: lines[0]
+            .replace('docker run -d --gpus=all ', 'docker run -d --restart unless-stopped --gpus=all -e CUDA_VISIBLE_DEVICES=' + devices + ' ')
+            .replace(published, ' -p 127.0.0.1:' + item.port + ':11434 ')
+            .replace(' --name ollama ', ' --name ' + item.container + ' '),
+          after: lines[1].replace('docker exec ollama ', 'docker exec ' + item.container + ' '),
+        };
+      }
+      if (!/^docker run --rm .* -e CUDA_VISIBLE_DEVICES=[0-9,]+ .* -p 127\.0\.0\.1:8080:\d+ /.test(out.split('\n')[0])) return null;
+      return {
+        run: out
+          .replace('docker run --rm ', 'docker run -d --restart unless-stopped --name ' + item.container + ' ')
+          .replace(/ -e CUDA_VISIBLE_DEVICES=[0-9,]+ /, ' -e CUDA_VISIBLE_DEVICES=' + devices + ' ')
+          .replace(/ -p 127\.0\.0\.1:8080:(\d+) /, ' -p 127.0.0.1:' + item.port + ':$1 '),
+        after: '',
+      };
+    }
+    // Every service with what the stack gave it. A service that cannot be deployed carries the reason instead.
+    function stackPlan(st) {
+      var names = { gateway: true },
+        ports = {},
+        nextGpu = 0;
+      // Two services of the same model are told apart by their place in the stack.
+      function title(s, i) {
+        var twin = st.services.some(function (other) {
+          return other !== s && other.label === s.label;
+        });
+        return twin ? s.label + ' (' + (i < 9 ? '0' : '') + (i + 1) + ')' : s.label;
+      }
+      return st.services.map(function (s, i) {
+        var c = s.spec,
+          slug = stackSlug(s.label),
+          name = slug,
+          n = 2;
+        while (names[name]) name = slug + '-' + n++;
+        names[name] = true;
+        var item = {
+          label: s.label,
+          title: title(s, i),
+          fit: s.fit || '',
+          server: c.runtime.server,
+          engine: engineName(c.runtime.server),
+          ref: c.model.reference,
+          card: c.runtime.hardware.name,
+          path: name,
+          container: 'modular-' + name,
+          problem: stackProblem(c),
+        };
+        if (item.problem) return item;
+        var port = c.runtime.port;
+        while (ports[port]) port++;
+        item.port = port;
+        item.gpus = [];
+        for (var i = 0; i < stackGpus(c); i++) item.gpus.push(nextGpu + i);
+        item.commands = stackCommands(c, item);
+        if (!item.commands) {
+          item.problem = 'Its Docker command is in a shape the stack does not know.';
+          return item;
+        }
+        if (port !== c.runtime.port) item.moved = { from: c.runtime.port, by: ports[c.runtime.port] };
+        ports[port] = item.title;
+        nextGpu += item.gpus.length;
+        return item;
+      });
+    }
+    function stackLive(plan) {
+      return plan.filter(function (p) {
+        return !p.problem;
+      });
+    }
+    function stackGpuCount(plan) {
+      return stackLive(plan).reduce(function (sum, p) {
+        return sum + p.gpus.length;
+      }, 0);
+    }
+    function stackGpuText(gpus) {
+      return gpus.length === 1 ? 'GPU ' + gpus[0] : 'GPUs ' + gpus[0] + '–' + gpus[gpus.length - 1];
+    }
+    // The deploy script: one block per layer of the stack, in the order they run.
+    function stackScript(st, plan) {
+      var live = stackLive(plan),
+        domain = st.gateway ? stackDomain(st) : '',
+        gpus = stackGpuCount(plan);
+      if (!live.length) return '';
+      var out = [
+        '#!/usr/bin/env bash',
+        '# Deploys ' + live.length + (live.length === 1 ? ' service' : ' services') + ' on one machine with Docker. Run it on the server.',
+        'set -euo pipefail',
+      ];
+      if (domain) out.push(': "${MODULAR_API_KEY:?Set MODULAR_API_KEY to the key clients must send}"');
+      if (st.check)
+        out.push(
+          '',
+          '# Check the machine: the GPU driver, the GPU count, and that containers can see the GPUs',
+          'nvidia-smi',
+          '[ "$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)" -ge ' + gpus + ' ] || { echo "This stack needs ' + gpus + (gpus === 1 ? ' GPU' : ' GPUs') + '." >&2; exit 1; }',
+          'docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi',
+        );
+      live.forEach(function (p) {
+        out.push(
+          '',
+          '# ' + p.label + ' on ' + p.engine + ': port ' + p.port + ', ' + stackGpuText(p.gpus),
+          'docker rm -f ' + p.container + ' >/dev/null 2>&1 || true',
+          p.commands.run,
+        );
+        if (p.commands.after && !st.wait) out.push(p.commands.after);
+      });
+      if (st.wait) {
+        out.push(
+          '',
+          '# Wait until every service answers. One that keeps restarting stops the script and shows its log',
+          'wait_for() {',
+          '  echo "Waiting for $1"',
+          '  until curl -fsS "$2" >/dev/null 2>&1; do',
+          '    if [ "$(docker inspect -f \'{{.RestartCount}}\' "$1")" != "0" ]; then',
+          '      docker logs --tail 40 "$1"',
+          '      echo "$1 stopped while starting. Its last lines are above." >&2',
+          '      exit 1',
+          '    fi',
+          '    sleep 5',
+          '  done',
+          '}',
+        );
+        live.forEach(function (p) {
+          out.push('wait_for ' + p.container + ' http://127.0.0.1:' + p.port + STACK_READY[p.server]);
+          if (p.commands.after) out.push(p.commands.after);
+        });
+      }
+      if (domain) {
+        out.push(
+          '',
+          '# Gateway: https://' + domain + ' in front of every service, behind the API key',
+          'mkdir -p "$HOME/modular/caddy"',
+          'cat > "$HOME/modular/caddy/Caddyfile" <<\'EOF\'',
+          domain + ' {',
+          '\troute {',
+          '\t\t@denied not header Authorization "Bearer {$MODULAR_API_KEY}"',
+          '\t\trespond @denied 401',
+        );
+        live.forEach(function (p) {
+          out.push('\t\thandle_path /' + p.path + '/* {', '\t\t\treverse_proxy 127.0.0.1:' + p.port, '\t\t}');
+        });
+        out.push(
+          '\t\trespond 404',
+          '\t}',
+          '}',
+          'EOF',
+          'docker rm -f modular-gateway >/dev/null 2>&1 || true',
+          'docker run -d --restart unless-stopped --name modular-gateway --network host \\',
+          '  -e MODULAR_API_KEY \\',
+          '  -v "$HOME/modular/caddy:/etc/caddy" \\',
+          '  -v caddy_data:/data \\',
+          '  caddy',
+        );
+      }
+      return out.join('\n');
+    }
+    // The way back: everything the deploy script started, and nothing it only downloaded.
+    function stackRemoveScript(st, plan) {
+      var live = stackLive(plan);
+      if (!live.length) return '';
+      var names = live.map(function (p) {
+        return p.container;
+      });
+      if (st.gateway && stackDomain(st)) names.unshift('modular-gateway');
+      return [
+        '#!/usr/bin/env bash',
+        '# Stops and removes what the deploy script started. Downloaded models and certificates are kept.',
+        'docker rm -f ' + names.join(' '),
+      ].join('\n');
+    }
+    function stackChecks(st, plan) {
+      var live = stackLive(plan),
+        checks = [];
+      if (!st.services.length) return [['ok', 'Add a service to begin.']];
+      plan.forEach(function (p) {
+        if (p.problem) checks.push(['warn', p.title + ' is left out of the script. ' + p.problem]);
+      });
+      live.forEach(function (p) {
+        if (p.fit) checks.push(['warn', p.title + ' will not run as configured. ' + p.fit]);
+      });
+      live.forEach(function (p) {
+        if (p.moved) checks.push(['ok', p.title + ' listens on port ' + p.port + ': ' + p.moved.from + ' is taken by ' + p.moved.by + '.']);
+      });
+      if (!live.length) return checks;
+      var gpus = stackGpuCount(plan),
+        cards = live
+          .map(function (p) {
+            return p.card;
+          })
+          .filter(function (card, i, all) {
+            return card && all.indexOf(card) === i;
+          });
+      checks.push(['ok', gpus === 1 ? 'The stack uses 1 GPU.' : 'The stack uses ' + gpus + ' GPUs, numbered 0 to ' + (gpus - 1) + '. Each service is pinned to its own.']);
+      if (cards.length > 1)
+        checks.push(['warn', 'Services were sized for different cards (' + cards.join(', ') + '). Check that each GPU number holds the card its service was sized for.']);
+      if (
+        live.some(function (p) {
+          return HF_GATED[p.ref];
+        })
+      )
+        checks.push(['warn', 'Gated model: accept its license on Hugging Face and set HF_TOKEN before running the script.']);
+      if (!st.gateway) checks.push(['ok', 'Every service listens on this machine only (127.0.0.1). The gateway opens them to the network.']);
+      else if (!stackDomain(st)) checks.push(['warn', 'The gateway needs the domain name that points at this machine. It is left out of the script until there is one.']);
+      else
+        checks.push(['warn', 'Before running: point ' + stackDomain(st) + ' at this machine, open ports 80 and 443, and export MODULAR_API_KEY, the key clients send as a Bearer token.']);
+      return checks;
+    }
+    // The first page's configuration as a service, with the reason when it has no command to stack.
+    function stackCurrent() {
+      var c = spec(),
+        fit = fitAssessment(c);
+      return {
+        label: oneLine(state.customModel ? c.model.reference.split('/').pop() || 'Custom model' : models[state.model].name + (availableBuilds() ? ' · ' + state.build : '')),
+        fit: fit.warn ? oneLine(fit.text) : '',
+        blocked: issue(c) || stackProblem(c), // nothing is stacked that the script would have to leave out
+        spec: c,
+      };
+    }
+    // A saved configuration becomes a service the way Load would show it: it is restored, read, and then
+    // what was on the first page is put back exactly, including what a snapshot leaves out.
+    function stackFromSaved(item) {
+      var before = snapshot(),
+        session = NOT_PART_OF_A_SETUP.concat(['modelView']),
+        kept = {};
+      session.forEach(function (key) {
+        if (key in state) kept[key] = JSON.stringify(state[key]);
+      });
+      restoreSnapshot(resolveSnapshot(item.snapshot));
+      var service = stackCurrent();
+      restoreSnapshot(before);
+      session.forEach(function (key) {
+        if (key in kept) state[key] = kept[key] === undefined ? undefined : JSON.parse(kept[key]);
+        else delete state[key];
+      });
+      renderArch();
+      renderModelList();
+      renderHardware();
+      renderOutput();
+      return service;
+    }
+    function stackAdd(service) {
+      stackSavedNote = '';
+      if (service.blocked) return;
+      stack.services.push({ label: service.label, fit: service.fit, spec: service.spec });
+      storeStack();
+      renderStack();
+    }
+    function stackButtons(target, items) {
+      $(target).textContent = '';
+      items.forEach(function (item) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'choice';
+        button.textContent = item.text;
+        if (item.why) {
+          button.disabled = true;
+          button.title = item.why;
+        }
+        button.onclick = item.click;
+        $(target).appendChild(button);
+      });
+    }
+    function renderStack() {
+      var plan = stackPlan(stack),
+        live = stackLive(plan),
+        domain = stack.gateway ? stackDomain(stack) : '';
+      $('stackList').innerHTML = plan
+        .map(function (p, i) {
+          var act = function (what, sign, label, disabled) {
+            return '<button type="button" data-stack-act="' + what + '" data-index="' + i + '" aria-label="' + esc(label) + '" title="' + esc(label) + '"' + (disabled ? ' disabled' : '') + '>' + sign + '</button>';
+          };
+          return (
+            '<li class="stack-item' + (p.problem ? ' off' : '') + '"><span class="number">' + (i < 9 ? '0' : '') + (i + 1) + '</span><div class="stack-what"><strong>' + esc(p.label) + '</strong>' +
+            (p.problem
+              ? '<small>' + esc('Left out of the script. ' + p.problem) + '</small>'
+              : '<small>' + esc(p.engine + ' · port ' + p.port + ' · ' + stackGpuText(p.gpus)) + '</small>' + (domain ? '<small class="mono">' + esc('https://' + domain + '/' + p.path + '/') + '</small>' : '')) +
+            '</div><span class="stack-acts">' +
+            act('up', '↑', 'Move ' + p.label + ' up', i === 0) +
+            act('down', '↓', 'Move ' + p.label + ' down', i === plan.length - 1) +
+            act('remove', '×', 'Remove ' + p.label, false) +
+            '</span></li>'
+          );
+        })
+        .join('');
+      $('stackEmpty').hidden = plan.length > 0;
+      var current = stackCurrent();
+      stackButtons('stackCurrent', [
+        {
+          text: current.label + ' · ' + engineName(state.server),
+          why: current.blocked,
+          click: function () {
+            stackAdd(stackCurrent());
+          },
+        },
+      ]);
+      $('stackCurrentNote').textContent = current.blocked;
+      $('stackCurrentNote').hidden = !current.blocked;
+      $('stackSavedField').hidden = !state.savedConfigs.length;
+      stackButtons(
+        'stackSaved',
+        state.savedConfigs.map(function (item) {
+          return {
+            text: item.name,
+            why: CONFIG_STATUS_NOTE[configStatus(item)] || '',
+            click: function () {
+              var service = stackFromSaved(item);
+              stackAdd(service);
+              if (service.blocked) {
+                stackSavedNote = item.name + ': ' + service.blocked;
+                renderStack();
+              }
+            },
+          };
+        }),
+      );
+      $('stackSavedNote').textContent = stackSavedNote;
+      $('stackSavedNote').hidden = !stackSavedNote;
+      ['check', 'wait', 'gateway'].forEach(function (key) {
+        $('stack' + key[0].toUpperCase() + key.slice(1)).setAttribute('aria-checked', String(stack[key]));
+      });
+      $('stackDomainField').hidden = !stack.gateway;
+      if ($('stackDomain').value !== stack.domain) $('stackDomain').value = stack.domain;
+      choiceButtons('stackModes', [['deploy', 'Deploy'], ['remove', 'Tear down']], stackView, function (next) {
+        stackView = next;
+        renderStack();
+      });
+      var script = stackView === 'remove' ? stackRemoveScript(stack, plan) : stackScript(stack, plan);
+      $('stackOutput').textContent = script || '# Nothing to deploy yet.\n# Add a service to see its place in the script.';
+      $('stackCopy').disabled = $('stackDownload').disabled = !script;
+      $('stackCopy').textContent = script ? 'Copy script' : 'No script yet';
+      $('stackGlance').hidden = $('stackSummary').hidden = !live.length; // nothing stacked is nothing to sum up
+      $('stackSummary').innerHTML = [live.length + (live.length === 1 ? ' service' : ' services'), stackGpuCount(plan) + (stackGpuCount(plan) === 1 ? ' GPU' : ' GPUs'), 'Docker', domain || 'This machine only']
+        .map(function (x) {
+          return '<span>' + esc(x) + '</span>';
+        })
+        .join('');
+      $('stackChecks').innerHTML = stackChecks(stack, plan)
+        .map(function (item) {
+          return '<li class="' + item[0] + '">' + esc(item[1]) + '</li>';
+        })
+        .join('');
+    }
+    $('stackList').onclick = function (event) {
+      var button = event.target.closest('[data-stack-act]');
+      if (!button || button.disabled) return;
+      var i = Number(button.dataset.index),
+        act = button.dataset.stackAct,
+        to = act === 'up' ? i - 1 : i + 1;
+      if (act === 'remove') stack.services.splice(i, 1);
+      else stack.services.splice(to, 0, stack.services.splice(i, 1)[0]);
+      storeStack();
+      renderStack();
+      // the list was redrawn: keep the keyboard where it was, on the service that moved
+      var again = $('stackList').querySelector('[data-stack-act="' + act + '"][data-index="' + (act === 'remove' ? Math.min(i, stack.services.length - 1) : to) + '"]');
+      if (again && again.disabled) again = again.parentElement.querySelector('button:not(:disabled)');
+      if (again) again.focus();
+    };
+    ['check', 'wait', 'gateway'].forEach(function (key) {
+      $('stack' + key[0].toUpperCase() + key.slice(1)).onclick = function () {
+        stack[key] = !stack[key];
+        storeStack();
+        renderStack();
+      };
+    });
+    $('stackDomain').oninput = function () {
+      stack.domain = this.value;
+      storeStack();
+      renderStack();
+    };
+    $('stackCopy').onclick = async function () {
+      var value = $('stackOutput').textContent,
+        ok = false;
+      try {
+        await navigator.clipboard.writeText(value);
+        ok = true;
+      } catch (e) {
+        // no clipboard access: select the script so one keystroke copies it
+        var range = document.createRange();
+        range.selectNodeContents($('stackOutput'));
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+      }
+      $('stackCopy').textContent = ok ? 'Copied' : 'Selected — copy text';
+      setTimeout(renderStack, 1800);
+    };
+    $('stackDownload').onclick = function () {
+      var url = URL.createObjectURL(new Blob([$('stackOutput').textContent + '\n'], { type: 'text/plain' }));
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = stackView === 'remove' ? 'modular-remove.sh' : 'modular-deploy.sh';
+      a.click();
+      setTimeout(function () {
+        URL.revokeObjectURL(url);
+      }, 1000);
+    };
+    // One document, two pages: #stack shows the second, anything else the first. No element is called "stack",
+    // so the browser has nothing to scroll to and the page opens at its top.
+    var stackHomeTitle = document.title;
+    function stackRoute(event) {
+      var onStack = location.hash === '#stack',
+        link = $('stackLink');
+      $('stackPage').hidden = !onStack;
+      $('top').hidden = onStack;
+      document.body.setAttribute('data-page', onStack ? 'stack' : 'configure');
+      document.title = onStack ? 'Modular — Deploy a full server' : stackHomeTitle;
+      // On the second page the same link leads back.
+      link.href = onStack ? '#top' : '#stack';
+      link.title = onStack ? 'Back to the configuration' : 'Deploy a full server';
+      link.setAttribute('aria-label', link.title);
+      if (onStack) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+      if (onStack) renderStack();
+      if (event && /#stack$/.test(event.oldURL) !== onStack) window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    // What the second page offers follows the first: a changed configuration or saved list is shown as it is now.
+    new MutationObserver(function () {
+      if (!$('stackPage').hidden) renderStack();
+    }).observe($('savedConfigList'), { childList: true });
+    loadStack();
+    window.addEventListener('hashchange', stackRoute);
+    stackRoute();
   </script>
 </body>
 </html>

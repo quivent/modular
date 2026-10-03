@@ -73,6 +73,11 @@ puts it into the page and the tests check the two agree.
 `command()` and `flagRows()`, add a parser for its documentation to `tools/flags.py`, and cover it in
 `tests/browser/app.test.mjs`. Take flag names from the engine's reference, not from memory.
 
+**Change the second page (Stack).** It lives in the same file: the regions `html: stack`, `css: stack` and `js: stack`,
+shown when the address ends in `#stack`. A service's command always comes from `dockerCommand()`, so the two pages
+cannot disagree; the stack adds only the name, port and GPUs. Take anything new the script runs from that tool's own
+documentation and say where in the comment at the top of `js: stack`. `tests/browser/stack.test.mjs` covers it.
+
 **Add a theme.** Copy a block in the region `css: themes` and change the role variables. Add it to
 the `THEMES` list in `js: themes`.
 

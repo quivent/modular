@@ -56,6 +56,7 @@ Modular gives that work a calmer shape. Choose a model, an engine, and the hardw
 | 🟠 **Comparing configurations** | Save setups in the browser and restore model, engine, hardware, and settings together. | Save current |
 | 🔴 **Handing a setup to someone else** | Copy readable CLI, a one-liner, JSON, or a vLLM Docker command. The flag map explains where each part came from. | Output |
 | 🟣 **Trying your own fine-tunes** | Load up to 100 public repositories from a Hugging Face profile, or paste a reference, URL, or path. | Models |
+| ⚫ **Putting several models on one machine** | Stack configurations into one deploy script. Each service gets its own port and GPUs, with a machine check, a readiness wait, and an HTTPS gateway. | Stack (the layers icon, top right) |
 
 <br>
 
@@ -112,6 +113,24 @@ Modular keeps **what you want** separate from **how each engine spells it**. You
 | 🔵 | **Risky combinations** | FP8 KV cache needs hardware support; eager mode disables CUDA graphs; CPU offload moves weights during inference; Docker needs the server bound to all interfaces |
 | 🟢 | **Scheduling sanity** | A token batch smaller than the sequence limit may constrain scheduling |
 | 🟢 | **Fixed KV cache** | A fixed allocation replaces the GPU memory target, and Modular says which flag it omitted |
+
+<br>
+
+## Stack: from one command to a full server
+
+The small layers icon in the top-right corner opens a second page. There, configurations from the first page stack into one machine: the one on screen, or any you saved. Each becomes a service, and the stack becomes one deploy script you run on the server.
+
+| | Layer | What the script does |
+| --- | --- | --- |
+| 🟢 | **Services** | Starts each configuration as a container, with exactly the flags its Docker output shows, and keeps it running across restarts. The stack decides only what one command cannot: the container's name, the next free port, and which GPUs it gets |
+| 🔵 | **Check the machine** | Confirms the GPU driver, that the machine has as many GPUs as the stack uses, and that containers can see them, before anything starts |
+| 🟡 | **Wait until ready** | Holds until every service answers on its engine's own health route, and stops with the log of one that keeps restarting |
+| 🟠 | **HTTPS gateway** | Optional. One domain in front of every service through Caddy, each service on its own path, refused without your API key |
+| 🔴 | **Tear down** | The way back: removes exactly what Deploy started, and keeps downloaded models and certificates |
+
+Services listen on this machine only, and the gateway is the one door to the network. The order of the stack is the order of the GPUs, so moving a service moves its GPUs with it. A configuration with no documented container command (TensorRT, MLX, image and video models) cannot be stacked, and the page says so. The stack is kept in your browser.
+
+Every command around the services comes from its own documentation, the gateway configuration was run against a real Caddy, and the script's paths (missing key, too few GPUs, a service that keeps restarting, success) were run against stand-ins for Docker. It has not yet been run end to end on a GPU server.
 
 <br>
 
@@ -214,7 +233,7 @@ Open [127.0.0.1:8420](http://127.0.0.1:8420). No build step or account is requir
 <details>
 <summary>Local data and project files</summary>
 
-Favorites, a default model, and saved configurations live in browser local storage. Recent models last for the current page session. The optional Hugging Face profile picker reads public data without asking for a token and remembers the profile name locally. Google Fonts and the public profile lookup are the page’s external requests.
+Favorites, a default model, saved configurations, and the stack live in browser local storage. Recent models last for the current page session. The optional Hugging Face profile picker reads public data without asking for a token and remembers the profile name locally. Google Fonts and the public profile lookup are the page’s external requests.
 
 | File | Purpose |
 | --- | --- |
