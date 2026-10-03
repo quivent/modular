@@ -1,8 +1,11 @@
 {
  "engine": "vllm-omni",
  "source": "https://docs.vllm.ai/projects/vllm-omni/en/latest/cli/serve/",
- "fetched": "2026-10-01",
- "count": 91,
+ "fetched": "2026-10-02",
+ "count": 92,
+ "sources": [
+  "https://docs.vllm.ai/projects/vllm-omni/en/latest/cli/serve/"
+ ],
  "sections": [
   {
    "title": "OmniConfig",
@@ -741,6 +744,14 @@
     },
     {
      "name": "--auxiliary-text-encoder",
+     "aliases": [],
+     "negation": null,
+     "choices": null,
+     "default": null,
+     "help": ""
+    },
+    {
+     "name": "--hsdp-weight-load-strategy",
      "aliases": [],
      "negation": null,
      "choices": null,
