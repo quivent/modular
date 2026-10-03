@@ -148,7 +148,7 @@ The first screen is a working, cautious starting point. Every default is a decis
 | --- | --- | --- |
 | Model | Qwen3.8 27B | A current-generation dense multimodal model; fits one 80 GB card with room for context |
 | Engine | vLLM | The most widely deployed server for this job |
-| Hardware | 1 × H100 80 GB, or what the model needs | The most common data-center card. A model too big for it gets the fewest H100s it fits on, else the smallest card that holds it on up to 8, until you choose hardware yourself |
+| Hardware | 1 × H100 80 GB, or what the model needs | The most common data-center card. A model too big for it gets the fewest H100s it fits on, else the smallest card that holds it on up to 8, until you choose hardware yourself. The note under Hardware offers the way back to 1 × H100 |
 | Context | 8K tokens | Comfortable on small cards; raise it on purpose |
 | Listens on | This machine (`127.0.0.1`) | An inference endpoint with no API key should not be reachable from the network by accident |
 | Trust remote code | Off, except for Ornith | The flag runs Python from the model's repository on your server |
@@ -166,7 +166,7 @@ Docker output listens inside the container and publishes only on your loopback, 
 
 | | Engine | Command shape | Notable controls in the prototype |
 | --- | --- | --- | --- |
-| 🟢 | **vLLM** | `vllm serve …` | Tensor and pipeline parallelism, CPU offload, fixed KV cache, priority scheduling, prefix caching, chunked prefill, dtype, request logging, Docker output |
+| 🟢 | **vLLM** | `vllm serve …` | The model's own vLLM recipe (switch it off for the plain command), tensor and pipeline parallelism, CPU offload, fixed KV cache, priority scheduling, prefix caching, chunked prefill, dtype, request logging, Docker output |
 | 🔵 | **SGLang** | `sglang serve …` | Tensor parallelism, static memory fraction, radix cache toggle, reasoning and tool-call parsers |
 | 🟣 | **TensorRT** | `trtllm-serve …` | Tensor and pipeline parallelism, KV-cache memory fraction, sequence length; FP8 and NVFP4 checkpoints load as shipped |
 | 🟡 | **TGI** | text-generation-inference | Shared context, GPU, and quantization choices |

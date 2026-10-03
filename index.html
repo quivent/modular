@@ -1064,6 +1064,15 @@
       padding: 10px 12px;
       margin: 0;
     }
+    .fit-note .undo {
+      font: inherit;
+      color: inherit;
+      background: none;
+      border: 0;
+      padding: 0;
+      text-decoration: underline;
+      cursor: pointer;
+    }
     .fit-note.warn {
       background: var(--warn-bg);
       border-color: var(--warn-line-soft);
@@ -2439,7 +2448,7 @@
             <div class="server-list" id="serverList" role="group" aria-label="Inference server"></div>
             <p class="inline-note" id="serverNote"></p>
             <div class="field" id="quantField" style="margin-top:24px"><div class="field-head"><span class="label" id="quantLabel">Weight format / quantization</span></div><div class="choice-row" id="quantChoices" role="group" aria-labelledby="quantLabel"></div><input id="quant" type="hidden" value="Native / auto"></div>
-            <div class="field" id="customQuantField" hidden><div class="field-head"><label for="customQuant">Custom format or quantization</label></div><input id="customQuant" class="control mono" placeholder="e.g. a server-specific format"></div>
+            <div class="field" id="customQuantField" hidden><div class="field-head"><label for="customQuant">Custom format or quantization</label></div><input id="customQuant" class="control mono" placeholder="e.g. a server-specific format"></div><div class="toggle-row" id="recipeRow" hidden><div><strong>vLLM recipe</strong><small id="recipeNote"></small></div><button type="button" class="toggle" id="recipe" role="switch" aria-label="Use the vLLM recipe" aria-checked="true"></button></div>
             <div class="field" id="templateField" hidden><div class="field-head"><label for="commandTemplate">Command template</label></div><input id="commandTemplate" class="control mono" value="my-server --model {{model}} --port {{port}}" spellcheck="false"><p class="hint" style="margin:7px 0 0">Variables: {{model}}, {{port}}, {{host}}, {{context}}, {{quant}}. Quote values in your template as needed.</p></div>
           </div></section>
           <section class="group" aria-labelledby="settings-title"><div class="group-head"><span class="number">03</span><div><h2 id="settings-title">Configuration</h2></div></div><div class="body-indent">
@@ -4494,6 +4503,7 @@
       // --trust-remote-code runs Python from the model's repository on your server, so it starts off
       // and is turned on only for models known to need it.
       $('trust').setAttribute('aria-checked', String(!!(model.ornith || model.trust)));
+      $('recipe').setAttribute('aria-checked', 'true'); // a switched-off recipe was for the model before; this one starts with its own
       state.trustStates[state.server] = !!model.ornith;
       if (model.ornith) $('prefix').setAttribute('aria-checked', 'true');
       state.recent = state.recent || [];
@@ -4890,7 +4900,7 @@
         if (el) copy.values[id] = el.value;
       });
       copy.toggles = {};
-      ['trust', 'prefix', 'chunked', 'eager', 'reasoning', 'tools', 'priority', 'requestLogs'].forEach(
+      ['trust', 'prefix', 'chunked', 'eager', 'reasoning', 'tools', 'priority', 'requestLogs', 'recipe'].forEach(
         function (id) {
           copy.toggles[id] = on(id);
         },
@@ -4978,8 +4988,18 @@
       var c = flagCollection(engine === 'ollama' ? 'llama' : engine);
       return c && c.support;
     }
-    // The vLLM recipe for the chosen model, when one applies to this setup.
+    // The vLLM recipe for the chosen model, when one applies to this setup and has not been switched off.
     function recipeOf() {
+      return on('recipe') ? recipeFor() : null;
+    }
+    // How many flags and environment settings the recipe adds, as one number a person can weigh.
+    function recipeCount() {
+      var r = recipeFor() || {};
+      return (r.args || []).filter(function (t) {
+        return /^--/.test(t);
+      }).length + Object.keys(r.env || {}).length;
+    }
+    function recipeFor() {
       var facts = !state.customModel && MEMORY_SHAPES[val('modelRef')];
       if (!facts || !facts.recipe || state.server !== 'vllm' || val('architecture') === 'diffusion') return null;
       if (models[state.model] && models[state.model].omni) return null;
@@ -6111,7 +6131,30 @@
             : 'Host port 8080 stays local for SSH tunneling. Private repositories need HF_TOKEN in the host environment.';
       renderFlagMap(config);
       var fit = fitAssessment(config);
-      $('fitNote').textContent = (!state.hardwareSet && state.hardwareNote ? state.hardwareNote : '') + fit.text;
+      var auto = !state.hardwareSet && state.hardwareNote;
+      $('fitNote').textContent = (auto ? state.hardwareNote : '') + fit.text;
+      if (auto) {
+        // the way back from hardware set for you: the default, chosen on purpose
+        var undo = document.createElement('button');
+        undo.type = 'button';
+        undo.className = 'undo';
+        undo.textContent = 'Use 1 × H100 instead';
+        undo.onclick = function () {
+          state.gpuCard = 'h100';
+          state.gpuVram = 80;
+          state.gpuCount = state.clusterDevices = state.pipeline = 1;
+          state.hardware = 'single';
+          state.hardwareSet = true;
+          renderHardware();
+          renderOutput();
+        };
+        $('fitNote').append(' ', undo);
+      }
+      $('recipeRow').hidden = !recipeCount(); // a recipe that only asks for an install adds nothing to switch off
+      if (recipeCount())
+        $('recipeNote').textContent = on('recipe')
+          ? 'Adds the ' + recipeCount() + ' settings this model needs on vLLM'
+          : 'Off: ' + recipeCount() + ' required settings left out';
       $('fitNote').hidden = !fit.text;
       $('fitNote').classList.toggle('warn', fit.warn);
       var badges = [
@@ -6239,6 +6282,8 @@
       }
       if (facts && facts.gib >= 400)
         checks.push(['warn', 'The download is about ' + Math.round(facts.gib).toLocaleString('en-US') + ' GB. Make sure the disk that holds the Hugging Face cache has that much free space before launching.']);
+      if (recipeCount() && !recipeOf())
+        checks.push(['warn', 'The vLLM recipe is off: the ' + recipeCount() + ' settings it requires for ' + chosen.name + ' are not in the command, and vLLM may refuse to start it or run it incorrectly.']);
       var recipe = recipeOf();
       if (recipe) {
         if (recipe.nightly)
@@ -6341,7 +6386,7 @@
       $('memoryDisplay').textContent = this.value + '%';
       renderOutput();
     };
-    ['trust', 'prefix', 'chunked', 'eager', 'reasoning', 'tools', 'priority', 'requestLogs'].forEach(
+    ['trust', 'prefix', 'chunked', 'eager', 'reasoning', 'tools', 'priority', 'requestLogs', 'recipe'].forEach(
       function (id) {
         $(id).onclick = function () {
           if (this.disabled) return;

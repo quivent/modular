@@ -55,6 +55,30 @@ export default async function (t) {
     await pick('GLM-5.3 Flash');
     t.equal((await hw()).slice(0, 2), ['4', 'H100'], 'hardware from a restored setup counts as chosen');
 
+    // ── every automatic change has a way back ──
+    await browser.open(server.base + '/?backup');
+    await pick('Kimi K3');
+    t.equal(await $(() => document.querySelector('#fitNote .undo')?.textContent), 'Use 1 × H100 instead', 'hardware set for a model offers the way back');
+    await $(() => document.querySelector('#fitNote .undo').click());
+    t.equal(await hw(), ['1', 'H100', true], 'which returns to 1 × H100, where the warning explains the model will not fit');
+    t.equal(await $(() => !!document.querySelector('#fitNote .undo')), false, 'and is then your choice, with nothing left to undo');
+    await pick('Llama 4 Scout');
+    t.equal((await hw()).slice(0, 2), ['1', 'H100'], 'so the next model does not move it either');
+
+    await browser.open(server.base + '/?recipe');
+    const recipe = () => $(() => [!document.getElementById('recipeRow').hidden, document.getElementById('recipeNote').textContent]);
+    t.equal((await recipe())[0], false, 'a recipe that only asks for an install has no switch: it adds nothing to the command');
+    await pick('Nemotron 3 Ultra');
+    t.equal(await recipe(), [true, 'Adds the 12 settings this model needs on vLLM'], 'a recipe that adds settings says how many');
+    const lines = () => $(() => document.getElementById('output').textContent.split(' --').length);
+    const withRecipe = await lines();
+    await $(() => document.getElementById('recipe').click());
+    t.ok((await lines()) < withRecipe && !/--mamba-backend/.test(await $(() => document.getElementById('output').textContent)), 'switched off, the command is the plain one');
+    t.ok(await $(() => [...document.querySelectorAll('#checks li')].some((x) => /The vLLM recipe is off: the 12 settings it requires for Nemotron 3 Ultra/.test(x.textContent))), 'and Checks says what was left out');
+    await pick('Qwen3.8 27B');
+    await pick('Nemotron 3 Ultra');
+    t.equal(await $(() => document.getElementById('recipe').getAttribute('aria-checked')), 'true', 'a model picked again starts with its recipe on');
+
     // ── engines that refuse the model are dimmed, not hidden ──
     await browser.open(server.base + '/?engines');
     const dim = () => $(() => [...document.querySelectorAll('#serverList .server.unavailable')].map((x) => x.querySelector('strong').textContent));
