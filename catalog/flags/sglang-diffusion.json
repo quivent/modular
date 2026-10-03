@@ -1,8 +1,12 @@
 {
  "engine": "sglang-diffusion",
  "source": "https://docs.sglang.io/docs/sglang-diffusion/api/cli",
- "fetched": "2026-10-01",
+ "fetched": "2026-10-02",
  "count": 68,
+ "sources": [
+  "https://docs.sglang.io/docs/sglang-diffusion/api/cli",
+  "https://docs.sglang.io/docs/sglang-diffusion/quantization"
+ ],
  "sections": [
   {
    "title": "Generate",
