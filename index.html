@@ -401,6 +401,9 @@
       color: var(--muted);
       display: block;
     }
+    .server.unavailable:not(.active) {
+      opacity: 0.45; /* the chosen engine stays solid: Checks says why it will refuse */
+    }
     .server.active:after {
       content: '✓';
       position: absolute;
@@ -4043,16 +4046,39 @@
         });
     }
     /* ▸ js: render — engines */
+    // Why an engine cannot load the chosen catalog model, from the engine's own list or a missing GGUF build; '' when
+    // it can, or when nothing definite is known. vLLM's Transformers fallback still runs, so it is never a reason.
+    function engineRefusal(id) {
+      var m = !state.customModel && models[state.model];
+      if (!m || availableBuilds()) return ''; // a model with its own builds (Ornith) is checked against the build chosen
+      var name = servers.filter(function (s) {
+        return s.id === id;
+      })[0].name;
+      if ((id === 'llama' || id === 'ollama') && !m.gguf) return 'No GGUF build of this model is known: ' + name + ' cannot load the original weights.';
+      var facts = !diffusionKind() && MEMORY_SHAPES[m.ref];
+      if (!facts || id === 'vllm') return '';
+      return supportProblem({
+        engine: id,
+        name: name,
+        support: supportFor(id),
+        facts: facts,
+        hasBuild: ((id === 'llama' || id === 'ollama') && !!m.gguf) || (id === 'mlx' && !!m.mlx),
+      });
+    }
     function renderServers() {
       $('serverList').innerHTML = servers
         .filter(function (s) {
           return !allowedEngines() || allowedEngines().indexOf(s.id) !== -1;
         })
         .map(function (s) {
+          var refusal = engineRefusal(s.id); // dimmed, not hidden: an engine's list can lag its latest release
           return (
             '<button type="button" class="server ' +
             (state.server === s.id ? 'active' : '') +
-            '" data-server="' +
+            (refusal ? ' unavailable' : '') +
+            '"' +
+            (refusal ? ' title="' + esc(refusal) + '"' : '') +
+            ' data-server="' +
             s.id +
             '" aria-pressed="' +
             (state.server === s.id) +

@@ -188,7 +188,7 @@ Docker output listens inside the container and publishes only on your loopback, 
 | Tuning | Context, GPU count and memory, quantization, plus applicable scheduling, precision, cache, offload, network, and extra-argument controls |
 | Output | All flags, readable CLI, one-line CLI, and JSON; Docker for vLLM. Image, video and speech/music generation have no launch command yet |
 
-Catalog inclusion does not establish engine compatibility. Model, engine, hardware, and runtime choices remain separate dimensions.
+Catalog inclusion does not establish engine compatibility. An engine whose own list of supported models leaves the chosen model out (or that needs a GGUF build nobody has published) is shown dimmed, and stays selectable, since those lists can lag a release.
 
 </details>
 

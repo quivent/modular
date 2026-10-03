@@ -55,6 +55,23 @@ export default async function (t) {
     await pick('GLM-5.3 Flash');
     t.equal((await hw()).slice(0, 2), ['4', 'H100'], 'hardware from a restored setup counts as chosen');
 
+    // ── engines that refuse the model are dimmed, not hidden ──
+    await browser.open(server.base + '/?engines');
+    const dim = () => $(() => [...document.querySelectorAll('#serverList .server.unavailable')].map((x) => x.querySelector('strong').textContent));
+    await pick('Llama 4 Scout');
+    t.equal(await dim(), [], 'a model every engine lists: nothing is dimmed');
+    await pick('GLM-5.3 753B');
+    t.equal(await dim(), ['TGI'], 'GLM-5.3: TGI, whose own list leaves it out, is dimmed');
+    t.ok(/TGI's own list of supported models does not include/.test(await $(() => document.querySelector('#serverList .server.unavailable').title)), 'and says why');
+    await pick('Nemotron 3.5 Lightning');
+    t.equal((await dim()).includes('vLLM'), false, 'vLLM falling back to Transformers still runs, so it is not dimmed');
+    await pick('GLM-5.3 753B');
+    await $(() => [...document.querySelectorAll('#serverList .server')].find((x) => /TGI/.test(x.textContent)).click());
+    t.equal(await $(() => { const s = document.querySelector('#serverList .server.active'); return [s.querySelector('strong').textContent, getComputedStyle(s).opacity]; }), ['TGI', '1'], 'a dimmed engine can still be chosen, and the chosen one stays solid');
+    t.ok(await $(() => [...document.querySelectorAll('#checks li')].some((x) => /TGI's own list/.test(x.textContent))), 'with the reason in Checks');
+    await pick('Qwen3.8 27B');
+    t.equal(await $(() => document.querySelector('#serverList .server.active strong').textContent), 'TGI', 'changing the model never moves you off the engine you chose');
+
     // ── parallelism follows the GPU count ──
     await browser.open(server.base + '/?parallel');
     const opts = (id) => $((x) => [...document.querySelectorAll('#' + x + ' .choice')].map((b) => b.textContent).join(' '), id);
