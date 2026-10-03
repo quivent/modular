@@ -148,7 +148,7 @@ The first screen is a working, cautious starting point. Every default is a decis
 | --- | --- | --- |
 | Model | Qwen3.8 27B | A current-generation dense multimodal model; fits one 80 GB card with room for context |
 | Engine | vLLM | The most widely deployed server for this job |
-| Hardware | 1 × H100 80 GB | The most common data-center card; pick another and the memory check follows |
+| Hardware | 1 × H100 80 GB, or what the model needs | The most common data-center card. A model too big for it gets the fewest H100s it fits on, else the smallest card that holds it on up to 8, until you choose hardware yourself |
 | Context | 8K tokens | Comfortable on small cards; raise it on purpose |
 | Listens on | This machine (`127.0.0.1`) | An inference endpoint with no API key should not be reachable from the network by accident |
 | Trust remote code | Off, except for Ornith | The flag runs Python from the model's repository on your server |
