@@ -29,6 +29,8 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
   You said “not using next”. Earlier I retired next.html and moved to branches. Do you want next.html back as the staging copy that gets promoted to index.html?
 - [x] **#34 Update the README and roadmap for all of this**
   Kinds, all-flags panel, catalog, hardware, engines, defaults.
+- [x] **#36 Pasted Ollama models: recognise bare tags, refuse engines that cannot load them**
+  Found by QA on the live site. A bare tag like qwen3:8b parses as a URL (scheme qwen3:), so it was treated as a web address. An Ollama tag with vLLM, SGLang, TGI or TensorRT printed a command that cannot work, with no warning; only MLX and llama.cpp refused it.
 
 ## Foundation
 
@@ -68,6 +70,8 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
 - [ ] **#11 Input validation**
   Validate pasted references, hosts, ports, paths, and extra arguments, and quote them safely in every output format.
   Blocks: #22
+- [ ] **#35 Librarian: models: 4 thing(s) to look at**
+  python3 -m librarian show 2026-10-01-models-2   (apply or dismiss)
 
 ## Reach
 
@@ -114,6 +118,7 @@ Legend: `[ ]` todo, `[~]` doing, `[x]` done, `[!]` blocked. A task is ready when
 ## Ready now (highest priority first)
 
 1. #11 Input validation
+1. #35 Librarian: models: 4 thing(s) to look at
 1. #12 More command forms
 1. #14 Share and import
 1. #15 Catalog upkeep

@@ -4498,18 +4498,21 @@
       if (!raw) return;
       var source = 'huggingface',
         ref = raw;
-      try {
-        var url = new URL(raw);
-        if (url.hostname === 'huggingface.co' || url.hostname === 'www.huggingface.co') {
-          source = 'huggingface';
-          ref = url.pathname.split('/').filter(Boolean).slice(0, 2).join('/');
-        } else if (url.hostname === 'ollama.com' || url.hostname === 'www.ollama.com') {
-          source = 'ollama';
-          ref = url.pathname.replace(/^\/library\//, '').replace(/^\//, '');
-        } else source = 'url';
-      } catch (e) {
-        if (raw.startsWith('/') || raw.startsWith('./')) source = 'path';
-        else if (/^[^/]+:[^/]+$/.test(raw)) source = 'ollama';
+      // A bare Ollama tag (qwen3:8b) also parses as a URL, with "qwen3:" as its scheme: test for it first.
+      if (/^[^/\s:]+:[^/\s:]+$/.test(raw)) source = 'ollama';
+      else {
+        try {
+          var url = new URL(raw);
+          if (url.hostname === 'huggingface.co' || url.hostname === 'www.huggingface.co') {
+            source = 'huggingface';
+            ref = url.pathname.split('/').filter(Boolean).slice(0, 2).join('/');
+          } else if (url.hostname === 'ollama.com' || url.hostname === 'www.ollama.com') {
+            source = 'ollama';
+            ref = url.pathname.replace(/^\/library\//, '').replace(/^\//, '');
+          } else source = 'url';
+        } catch (e) {
+          if (raw.startsWith('/') || raw.startsWith('./')) source = 'path';
+        }
       }
       state.customModel = true;
       state.customOrnith = /ornith[-_. ]?1[._-]?5/i.test(ref);
@@ -5957,6 +5960,8 @@
         return 'MLX expects a converted checkpoint, usually a Hugging Face ID or path.';
       if (r.server === 'llama' && source !== 'path' && source !== 'huggingface')
         return 'llama.cpp expects a GGUF path or compatible Hugging Face reference.';
+      if (source === 'ollama' && r.server !== 'ollama' && r.server !== 'custom')
+        return 'An Ollama tag runs only in Ollama. Choose Ollama, or use the model\'s Hugging Face ID.';
       if (source === 'url' && r.server !== 'custom')
         return 'Most server commands expect a model ID or mounted path. Fetch or mount the URL first.';
       if (!c.model.build && qIsSpecial(r.quantization) && r.server !== 'custom')
