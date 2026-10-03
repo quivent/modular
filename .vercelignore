@@ -1,6 +1,6 @@
-# Local-only tooling: the deployed site is index.html
-server.py
-db
-tools
-assets
-librarian
+# The deployed site is index.html and its fonts. Everything else is local-only (tracker, tools,
+# librarian, loop notes, tests, raw catalog data), so this is an allowlist: a new file stays private.
+/*
+!/index.html
+!/fonts
+!/vercel.json
